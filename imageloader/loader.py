@@ -107,6 +107,9 @@ def download_images(urls):
 
 def main():
     'Handle the very primitive commandline interface'
+
+    # Future versions should provide some options for setting the timeout,
+    # the directory name to be created and so on. Left out for brevity.
     if len(sys.argv) < 2:
         print(__doc__)
         sys.exit(1)
