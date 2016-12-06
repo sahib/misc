@@ -15,7 +15,7 @@ The script in this directory implements the following spec (and a tiny bit more)
 ## Manual Usage:
 
 ```bash
-$ python imageloader/loader.py /path/to/url.list
+$ python3 imageloader/loader.py /path/to/url.list
 # Or after running setup.py:
 $ python3 -m imageloader /path/to/url.list
 $ ls images/by-name
@@ -60,7 +60,7 @@ $ cd /tmp/images/by-name && python3 -m http.server
 ```
 
 The HTTP server might also be converted into an systemd unit, if desired or
-necessary.  This approach assumes that a python version greater than 3.2 and
+necessary.  This approach assumes that a python version greater or equal than 3.2 and
 systemd is installed.  For a larger number of homogeneous (i.e. about the same
 software versions) machines, tools like Ansible (\*) provide a way to execute above
 script on each machine at once (which is probably desirable).
@@ -71,7 +71,7 @@ Later, the tool might also be distributed via PyPI rather than using GitHub.
 In this case, the first 3 commands above would become:
 
 ```bash
-sudo pip install simple-image-loader
+sudo pip3 install simple-image-loader
 ```
 
 ## Strategy Two: Use Docker
@@ -83,8 +83,17 @@ resolving the dependencies turn out to be a problem:
 # Assuming docker is installed and running:
 $ git clone git clone github.com/sahib/misc && cd misc
 $ docker build . -t sahib:image-loader
-# Forward container port 8000 to host port 8000
 $ docker run -i -t --net=host sahib:image-loader
 ```
 
 This assumes that docker is installed on the Debian servers.
+For easier deployment, the image may be pushed to a central instance (like DockerHub),
+so the other Debian machines only need to pull the machine.
+
+# Tests
+
+The tests (currently a single file) can be executed directly:
+
+```bash
+$ python imageloader/loader_test.py
+```
