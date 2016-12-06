@@ -49,12 +49,12 @@ via tools like sshfs (to avoid storage waste).
 For a small number of machines the following bash session should lead to a working setup:
 
 ```bash
-$ git clone github.com/sahib/misc
-$ cd challenges/image-loader
+$ git clone https://github.com/sahib/misc.git && cd misc
 $ sudo python3 setup.py install
 $ sudo systemctl daemon-reload
-$ sudo systemctl enable image-loader.timer
+# You can view the timer with systemctl list-timers:
 $ sudo systemctl start image-loader.timer
+# Downloading might take a bit to the nearest 5m interval:
 $ mkdir -p /tmp/images/by-name
 $ cd /tmp/images/by-name && python3 -m http.server
 ```
@@ -81,8 +81,7 @@ resolving the dependencies turn out to be a problem:
 
 ```bash
 # Assuming docker is installed and running:
-$ git clone github.com/sahib/misc
-$ cd challenges/image-loader
+$ git clone git clone github.com/sahib/misc && cd misc
 $ docker build . -t sahib:image-loader
 # Forward container port 8000 to host port 8000
 $ docker run -i -t --net=host sahib:image-loader
