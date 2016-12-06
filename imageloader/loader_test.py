@@ -99,10 +99,10 @@ class TestSaveImage(unittest.TestCase):
         ld.save_image(self._basedir, 'http://x.com/1.jpg', b'data')
         ld.save_image(self._basedir, 'http://x.com/2.jpg', b'data')
 
-        files = os.listdir(os.path.join(self._basedir, 'images/objects'))
+        files = os.listdir(os.path.join(self._basedir, 'images/by-hash'))
         self.assertEqual(len(files), 1)
 
-        files = os.listdir(os.path.join(self._basedir, 'images/names'))
+        files = os.listdir(os.path.join(self._basedir, 'images/by-name'))
         self.assertEqual(sorted(files), ['1.jpg', '2.jpg'])
 
 
@@ -110,11 +110,14 @@ class TestDownloadImage(unittest.TestCase):
 
     def setUp(self):
         self._server = HTTPServer(('', 8080), MockHTTPHandler)
-        Thread(target=self._server.serve_forever).start()
+        self._thread = Thread(target=self._server.serve_forever)
+        self._thread.start()
+        # Just make sure it got enough time to startup:
         time.sleep(0.25)
 
     def tearDown(self):
         self._server.shutdown()
+        self._thread.join()
 
     def test_base(self):
         _, data = ld.download_image('http://localhost:8080/x.png')
@@ -129,6 +132,10 @@ class TestDownloadImage(unittest.TestCase):
         _, data = ld.download_image('http://nosuchhost:8080/404')
         self.assertEqual(data, None)
 
+        _, data = ld.download_image('http://ä is not a good url.')
+        self.assertEqual(data, None)
+
 
 if __name__ == '__main__':
-    unittest.main()
+    # There was an unclosed fd warning that was likely not my fault:
+    unittest.main(warnings='ignore')
