@@ -1,0 +1,5 @@
+[Unit]
+Description=Run the image-loader every 5 minutes
+
+[Timer]
+OnCalendar=*:0/5
