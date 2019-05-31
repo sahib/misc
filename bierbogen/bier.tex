@@ -42,6 +42,10 @@ hatchthickness=0.4pt,
 hatchshift=0pt,% must be >= 0
 hatchcolor=balken}
 
+% TODO: Preis?
+% TODO: Getrunken auf wen oder was?
+% TODO: Ambiente?
+
 \pgfdeclarepatternformonly[\hatchspread,\hatchthickness,\hatchshift,\hatchcolor]% variables
 {custom north east lines}% name
 {\pgfqpoint{\dimexpr-2\hatchthickness}{\dimexpr-2\hatchthickness}}% lower left corner
@@ -208,6 +212,7 @@ hatchcolor=balken}
 \section{Gesamt}
 \Crit{Persönlicher Geschmack}~\hfill$\square$ Ja $\square$ Nein \\
 \Crit{Katerverdächtig}~\hfill$\square$ Ja $\square$ Nein \\
+\Crit{Angestoßen auf}~\uline{\hfill} \\
 \Crit{Bedienung} {\small $\square$ originell $\square$ nett \\ $\square$ rothaarig $\square$ aufmerksam \\ $\square$ hat alles?} \\
 \vfill
 \textbf{Gesamtnote:}\uline{\hfill}
