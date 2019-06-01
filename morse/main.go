@@ -9,8 +9,10 @@ import (
 )
 
 const (
-	beeperPin = 2
-	short     = 250 * time.Millisecond
+	beeperPin = rpio.Pin(27)
+	buttonPin = rpio.Pin(17)
+	micro     = 50 * time.Millisecond
+	short     = 100 * time.Millisecond
 	long      = 3 * short
 )
 
@@ -24,8 +26,10 @@ func peepMorse(pin rpio.Pin, morse string) {
 	for _, chr := range morse {
 		if chr == '.' {
 			peep(pin, short)
-		} else if chr == '_' {
+		} else if chr == '-' {
 			peep(pin, long)
+		} else {
+			log.Printf("bad morse glyph: %v", chr)
 		}
 
 		time.Sleep(short)
@@ -45,17 +49,26 @@ func main() {
 
 	defer rpio.Close()
 
-	pin := rpio.Pin(beeperPin)
-	pin.Mode(rpio.Output)
+	beeperPin.Mode(rpio.Output)
+	buttonPin.Mode(rpio.Input)
 
 	// startup peep:
-	peep(pin, short)
+	for idx := 0; idx < 3; idx++ {
+		peep(beeperPin, micro)
+		time.Sleep(micro)
+	}
 
+	curr := 0
 	for {
-		for _, morse := range morses {
-			peepMorse(pin, morse)
-			time.Sleep(long)
+		if buttonPin.Read() != rpio.High {
+			time.Sleep(20 * time.Millisecond)
+			continue
 		}
+
+		log.Printf("do peep: %s", morses[curr%len(morses)])
+		peepMorse(beeperPin, morses[curr%len(morses)])
+		time.Sleep(long)
+		curr++
 	}
 
 }
