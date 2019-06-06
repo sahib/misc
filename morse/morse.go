@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"unicode"
 )
 
 var (
@@ -61,6 +62,11 @@ func encode(str string) []string {
 	res := []string{}
 
 	for _, prt := range str {
+		prt = unicode.ToLower(prt)
+		if prt == ' ' {
+			continue
+		}
+
 		mrs, ok := morseITU[string(prt)]
 		if !ok {
 			log.Printf("warning: unknown symbol: %s", string(prt))
