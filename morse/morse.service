@@ -2,7 +2,7 @@
 Description=Morse secret service
 
 [Service]
-ExecStart=/usr/bin/morse "KOMBI: 1239"
+ExecStart=/usr/bin/morse "KOMBI 1239"
 Restart=on-failure
 Type=simple
 

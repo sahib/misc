@@ -1,0 +1,221 @@
+\documentclass[a5paper,ngerman]{scrartcl}
+\usepackage{fontspec}
+\setmainfont[Mapping=tex-text]{Vollkorn}
+\setsansfont[Mapping=tex-text]{Vollkorn}
+\setmonofont{Vollkorn}
+\PassOptionsToPackage{normalem}{ulem}
+\usepackage{ulem}
+\usepackage{tikz}
+\usetikzlibrary{positioning,fadings,through}
+\usetikzlibrary{patterns}
+\definecolor{balken}{HTML}{bbbbbb}
+\definecolor{balken_border}{HTML}{888888}
+
+\usepackage{enumitem,amssymb}
+\usepackage{wasysym}
+\usepackage{xcolor}
+\usepackage{eso-pic}
+\pagestyle{empty}
+\usepackage[left=1cm,right=1cm,top=0.5cm,bottom=0.5cm,includeheadfoot]{geometry}
+\renewcommand*{\sectionformat}{}
+
+\AddToShipoutPicture*{
+  \AtPageCenter{
+    \put(\LenToUnit{-.5\paperwidth},0){
+       \line(1,0){\LenToUnit{0.1cm}}
+    }%
+  }%
+}
+
+\newlength{\hatchspread}
+\newlength{\hatchthickness}
+\newlength{\hatchshift}
+\newcommand{\hatchcolor}{}
+% declaring the keys in tikz
+\tikzset{hatchspread/.code={\setlength{\hatchspread}{#1}},
+hatchthickness/.code={\setlength{\hatchthickness}{#1}},
+hatchshift/.code={\setlength{\hatchshift}{#1}},% must be >= 0
+hatchcolor/.code={\renewcommand{\hatchcolor}{#1}}}
+% setting the default values
+\tikzset{hatchspread=3pt,
+hatchthickness=0.4pt,
+hatchshift=0pt,% must be >= 0
+hatchcolor=balken}
+
+\pgfdeclarepatternformonly[\hatchspread,\hatchthickness,\hatchshift,\hatchcolor]
+{custom north east lines}% name
+{\pgfqpoint{\dimexpr-2\hatchthickness}{\dimexpr-2\hatchthickness}}% lower left corner
+{\pgfqpoint{\dimexpr\hatchspread+2\hatchthickness}{\dimexpr\hatchspread+2\hatchthickness}}% upper right corner
+{\pgfqpoint{\dimexpr\hatchspread}{\dimexpr\hatchspread}}% tile size
+{% shape description
+\pgfsetlinewidth{\hatchthickness}
+\pgfpathmoveto{\pgfqpoint{\dimexpr\hatchshift-0.15pt}{-0.15pt}}
+\pgfpathlineto{\pgfqpoint{\dimexpr\hatchspread+0.15pt}{\dimexpr\hatchspread-\hatchshift+0.15pt}}
+\ifdim \hatchshift > 0pt
+\pgfpathmoveto{\pgfqpoint{-0.15pt}{\dimexpr\hatchspread-\hatchshift-0.15pt}}
+\pgfpathlineto{\pgfqpoint{\dimexpr\hatchshift+0.15pt}{\dimexpr\hatchspread+0.15pt}}
+\fi
+\pgfsetstrokecolor{\hatchcolor}
+%    \pgfsetdash{{1pt}{1pt}}{0pt}% dashing cannot work correctly in all situation this way
+\pgfusepath{stroke}
+}
+
+\definecolor{bier_0}{HTML}{FDFE48}
+\definecolor{bier_1}{HTML}{FEB437}
+\definecolor{bier_2}{HTML}{F8842F}
+\definecolor{bier_3}{HTML}{CE5924}
+\definecolor{bier_4}{HTML}{BC5922}
+\definecolor{bier_5}{HTML}{9B411C}
+\definecolor{bier_6}{HTML}{742912}
+\definecolor{bier_7}{HTML}{6C2511}
+\definecolor{bier_8}{HTML}{381209}
+\definecolor{bier_9}{HTML}{240004}
+
+\newcommand{\Note}{\hfill$\square\,1$ $\square\,2$ $\square\,3$ $\square\,4$ $\square\,5$ $\square\,6$}
+\newcommand{\Crit}[1]{\emph{#1:}~}
+\newcommand{\Balken}{%
+  \hspace{0.04\textwidth}
+  \begin{tikzpicture}
+	\setlength{\hatchthickness}{0.1pt}
+    \fill[pattern=custom north east lines] (0.00\textwidth,0) rectangle (0.7\textwidth, 0.20);
+	\setlength{\hatchthickness}{0.15pt}
+    \fill[pattern=custom north east lines] (0.05\textwidth,0) rectangle (0.7\textwidth, 0.20);
+	\setlength{\hatchthickness}{0.2pt}
+    \fill[pattern=custom north east lines] (0.1\textwidth,0) rectangle (0.7\textwidth, 0.20);
+	\setlength{\hatchthickness}{0.4pt}
+    \fill[pattern=custom north east lines] (0.3\textwidth,0) rectangle (0.7\textwidth, 0.20);
+	\setlength{\hatchthickness}{0.6pt}
+    \fill[pattern=custom north east lines] (0.4\textwidth,0) rectangle (0.7\textwidth, 0.20);
+	\setlength{\hatchthickness}{0.8pt}
+    \fill[pattern=custom north east lines] (0.5\textwidth,0) rectangle (0.7\textwidth, 0.20);
+	\setlength{\hatchthickness}{1.0pt}
+    \fill[pattern=custom north east lines] (0.6\textwidth,0) rectangle (0.7\textwidth, 0.20);
+	\setlength{\hatchthickness}{1.20pt}
+    \fill[pattern=custom north east lines] (0.7\textwidth,0) rectangle (0.7\textwidth, 0.20);
+    \draw[color=black, line width=0.05mm] (0,0) rectangle (0.7\textwidth, 0.2);
+  \end{tikzpicture}
+}
+
+\makeatletter
+\renewcommand*\section{\@startsection{section}{1}{\z@}%
+{-0.5ex \@plus -1ex \@minus -.2ex}%
+{0.5ex \@plus.2ex}%
+{\raggedsection\large\bfseries\scshape\nobreak}%
+}
+\renewcommand*\subsection{\@startsection{subsection}{2}{\z@}%
+{-0.25ex\@plus -1ex \@minus -.2ex}%
+{0.25ex \@plus .2ex}%
+{\raggedsection\normalsize\bfseries\scshape\nobreak}%
+}
+\makeatother
+
+\usepackage{xunicode}
+\usepackage{polyglossia}
+\setdefaultlanguage[]{english}
+
+\begin{document}
+{%
+\Huge
+\begin{center}
+\textbf{Beer Rating Sheet}
+\end{center}
+}%
+
+\begin{minipage}[t]{0.47\textwidth}
+\section{Basics}
+\Crit{Your Name}\uline{\hfill}
+\Crit{Brewery}\uline{\hfill} \\
+\Crit{Beername}\uline{\hfill}
+\Crit{Kind}\uline{\hfill}\\
+\Crit{Current Insobriety\textsuperscript{\tiny 1}}\uline{\hfill}\permil \\
+\Crit{Place}\uline{\hfill} \\
+{\tiny \textsuperscript{1} be honest.}
+\end{minipage}
+\hfill\begin{minipage}[t]{0.47\textwidth}
+\section{The Looks}
+\Crit{Colour}\hfill
+\tikz\draw[black,fill=bier_0] (0,0) circle (.8ex);
+\tikz\draw[black,fill=bier_1] (0,0) circle (.8ex);
+\tikz\draw[black,fill=bier_2] (0,0) circle (.8ex);
+\tikz\draw[black,fill=bier_3] (0,0) circle (.8ex);
+\tikz\draw[black,fill=bier_4] (0,0) circle (.8ex);
+\tikz\draw[black,fill=bier_5] (0,0) circle (.8ex);
+\tikz\draw[black,fill=bier_6] (0,0) circle (.8ex);
+\tikz\draw[black,fill=bier_7] (0,0) circle (.8ex);
+\tikz\draw[black,fill=bier_8] (0,0) circle (.8ex);
+\tikz\draw[black,fill=bier_9] (0,0) circle (.8ex);
+\\
+\Crit{Clearness}\hfill $\square$ clear $\square$ foggy $\square$ murky\\
+\Crit{Whitecap\textsuperscript{\tiny 2}}\uline{\hfill} \\
+\Crit{Grade}\Note \\
+{\tiny \textsuperscript{2} (e.g.: fine-pored, coarse-pored, hardly any, stable)}
+\end{minipage}
+\vspace{0.5cm}
+
+\begin{minipage}[t]{0.47\textwidth}
+\section{The Smell}
+\Crit{Intensity}\Balken \\
+\Crit{Balance}\hspace{0.18cm}\Balken \\  % süß / bitter.
+\Crit{Maltiness\textsuperscript{\tiny 3}}\uline{\hfill} \\
+\Crit{Hoppiness\textsuperscript{\tiny 4}}\uline{\hfill} \\
+\Crit{Grade}\Note \\
+{%
+\textsuperscript{\tiny 3}\tiny (e.g.: Grain, Bread, Sweet, Toast, Nut, Caramel, Choco, Coffee)
+}%
+\end{minipage}
+\hfill\begin{minipage}[t]{0.47\textwidth}
+\section{The Mouthfeel}
+\Crit{Viscosity}\hfill$\square$ light $\square$ middle $\square$ oily \\
+\Crit{Carbonation\textsuperscript{\tiny 5}}\uline{\hfill} \\
+\Crit{Perception\textsuperscript{\tiny 6}}\uline{\hfill} \\
+\Crit{Grade}\Note \\
+{%
+\vfill
+\textsuperscript{\tiny 4}\tiny (e.g.: earthy, flowery, tangy, resiny, citrusy, fruity, chemical)
+}%
+\end{minipage}
+
+\vspace{0.6cm}
+\begin{minipage}[t]{0.47\textwidth}
+\section{The First Sip}
+\Crit{Intensity}\Balken \\
+\Crit{Balance}\hspace{0.18cm}\Balken \\  % süß / bitter.
+\Crit{Maltiness\textsuperscript{\tiny 3}}\uline{\hfill} \\
+\Crit{Hoppiness\textsuperscript{\tiny 4}}\uline{\hfill} \\
+\Crit{Grade}\Note \\
+\vspace{0.1cm}
+{%
+\textsuperscript{\tiny 5}\tiny (e.g.: stale, fizzy, strong, foamy)
+}%
+\end{minipage}
+\hfill\begin{minipage}[t]{0.47\textwidth}
+\section{The Second Impression}
+\Crit{Intensity}\Balken \\
+\Crit{Balance}\hspace{0.18cm}\Balken \\  % süß / bitter.
+\Crit{Maltiness\textsuperscript{\tiny 3}}\uline{\hfill} \\
+\Crit{Hoppiness\textsuperscript{\tiny 4}}\uline{\hfill} \\
+\Crit{Grade}\Note \\
+\vspace{0.1cm}
+{%
+\textsuperscript{\tiny 6}\tiny (e.g.: creamy, warm, chalky, smooth, tangy, fizzy)
+}%
+\end{minipage}
+
+
+\vfill
+\vspace{0.6cm}
+\begin{minipage}[t][4cm]{0.45\textwidth}
+\section{Summary}
+\Crit{Fits my taste}~\hfill$\square$ Yes $\square$ No \\
+\Crit{Gets you a Hangover}~\hfill$\square$ Yes $\square$ No \\
+\Crit{Price}~\uline{\hfill} \\
+\Crit{Atmosphere} {\small $\square$ casual $\square$ rustic \\ $\square$ crowded $\square$ overpriced \\ $\square$ friendly} \\
+\vfill
+\textbf{Total Grade:}\uline{\hfill}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+\vfill
+\hfill\includegraphics[width=0.7\textwidth]{bier-zeichnung.pdf}
+\end{minipage}
+
+\end{document}
