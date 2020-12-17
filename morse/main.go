@@ -12,8 +12,9 @@ const (
 	beeperPin = rpio.Pin(27)
 	buttonPin = rpio.Pin(17)
 	micro     = 50 * time.Millisecond
-	short     = 100 * time.Millisecond
-	long      = 3 * short
+
+	short = 150 * time.Millisecond
+	long  = 3 * short
 )
 
 func peep(pin rpio.Pin, d time.Duration) {
@@ -65,6 +66,7 @@ func main() {
 			continue
 		}
 
+		time.Sleep(micro)
 		log.Printf("do peep: %s", morses[curr%len(morses)])
 		peepMorse(beeperPin, morses[curr%len(morses)])
 		time.Sleep(long)
