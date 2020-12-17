@@ -3,7 +3,7 @@
 This is a small helper I used to produce a Matroska video file that is displayed
 as my desktop background using [mpvpaper](https://github.com/GhostNaN/mpvpaper).
 
-![Thumbnail of the video](/thumbnail.gif?raw=true "Video thumbnail")
+![Thumbnail of the video](/animated_wallpaper/thumbnail.gif?raw=true "Video thumbnail")
 
 Since the video uses variable frame rate it is rather efficient to render. CPU
 is only wasted during blend-over. This happens on my setup only once in a hour,
