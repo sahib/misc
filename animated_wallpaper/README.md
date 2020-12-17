@@ -13,11 +13,15 @@ This setup works in several steps:
 
 1. Get a list of images you want to blend over. I recommend to look over
    [here](https://github.com/adi1090x/dynamic-wallpaper/tree/master/images) for
-   some very good examples (I used the ``firewatch`` directory) & save the images
-   in a directory somewhere.
-2. Run the util provided in this repository over the image in the order you
+   some very good examples (I used the ``firewatch`` directory) & save the
+   images in a directory somewhere. Optionally resize them to fit your desired
+   resolution (1920x1200 for me).
+2. Run the utility provided in this repository over the image in the order you
    want. The ``--blend-duration`` configures how long to blend the images over.
    The ``--key-duration`` says how long to show the last image of the blend.
+   I should probably note that this might take up a lot memory, depending on
+   the input resolution. It will render the intermediate frames using CPU
+   and the result is written to a directory in ``/tmp/``.
 
 ```bash
 $ go run main.go \
@@ -32,7 +36,7 @@ $ go run main.go \
 ```
 
 3. Once rendered you should have a ``/tmp/wp.mkv`` file which you can verify
-   with ``mpv``. You can now follow the ``mpvpaper`` to show it as your
+   with ``mpv``. You can now follow the ``mpvpaper`` docs to show it as your
    background. I call it the following way to show the correct "time" in the
    pictures based on the real time:
 
