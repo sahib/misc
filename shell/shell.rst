@@ -619,6 +619,8 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
     true is also a command
     use $? to check the exit code.
 
+    "!" in front negates whatever follows.
+
 ----
 
 3. Control: while
@@ -980,6 +982,11 @@ Place those things here:
 
     # Always add this to the top of your scripts:
     $ set -euo pipefail
+
+
+.. note::
+
+    Also show set -x to enable debugging.
 
 ----
 

@@ -112,7 +112,7 @@ $ <span class="nb">echo</span> <span class="s2">"ML = More loops"</span> &gt;&gt
     <span class="nb">echo</span> <span class="s2">"I can haz math?"</span>
 <span class="k">fi</span></pre><div class="notes"><p>[ is a command (test)
 true is also a command
-use $? to check the exit code.</p></div></div><div class="step step-level-1" step="33" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="52800" data-y="0" data-z="0"><h1 id="control-while">3. Control: while</h1><pre class="highlight code bash"><span class="k">while</span> ! curl -s www.google.de &gt; /tmp/blah<span class="p">;</span> <span class="k">do</span>
+use $? to check the exit code.</p><p>"!" in front negates whatever follows.</p></div></div><div class="step step-level-1" step="33" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="52800" data-y="0" data-z="0"><h1 id="control-while">3. Control: while</h1><pre class="highlight code bash"><span class="k">while</span> ! curl -s www.google.de &gt; /tmp/blah<span class="p">;</span> <span class="k">do</span>
     <span class="nb">echo</span> <span class="s1">'retrying in 1s'</span>
     sleep <span class="m">1</span>
 <span class="k">done</span></pre></div><div class="step step-level-1" step="34" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="54400" data-y="0" data-z="0"><h1 id="control-for">3. Control: for</h1><pre class="highlight code bash"><span class="k">for</span> x <span class="k">in</span> <span class="s2">"</span><span class="k">$(</span>seq <span class="m">0</span> <span class="m">10</span><span class="k">)</span><span class="s2">"</span><span class="p">;</span> <span class="k">do</span>
@@ -206,7 +206,7 @@ Ctrl-C <span class="o">=</span> Seng SIGINT to current process
 Ctrl-D <span class="o">=</span> Close stdin <span class="o">(</span>causing EOF<span class="o">)</span>
 Ctrl-Z <span class="o">=</span> Background current process
 Ctrl-L <span class="o">=</span> Clear screen.</pre><h1 id="misc-strict-mode">6. Misc: Strict mode</h1><pre class="highlight code console"><span class="gp"># </span>Always add this to the top of your scripts:
-<span class="gp">$ </span><span class="nb">set</span> -euo pipefail</pre></div><div class="step step-level-1" step="54" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="86400" data-y="0" data-z="0"><h1 id="misc-useful-stuff">6. Misc: Useful stuff</h1><pre class="highlight code console"><span class="gp">$ </span>sleep 1m30s
+<span class="gp">$ </span><span class="nb">set</span> -euo pipefail</pre><div class="notes"><p>Also show set -x to enable debugging.</p></div></div><div class="step step-level-1" step="54" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="86400" data-y="0" data-z="0"><h1 id="misc-useful-stuff">6. Misc: Useful stuff</h1><pre class="highlight code console"><span class="gp">$ </span>sleep 1m30s
 <span class="gp">$ </span>date +%H
 <span class="gp">$ </span>sha1sum &lt;file&gt;
 <span class="gp">$ </span>mktemp
