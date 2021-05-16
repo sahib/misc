@@ -597,7 +597,7 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
 
 .. code-block:: bash
 
-    echo "TODO"
+    echo "TODO: find a good example"
 
 ----
 
@@ -711,7 +711,7 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
 
 .. code-block:: console
 
-    # TODO: not good
+    # TODO: find a better example.
     # What does this print?
     $ seq 10 | false || true; echo 'fin'
 
@@ -815,7 +815,14 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
 4. Lines: Exercise
 ==================
 
-TODO: One globbing, one regex
+.. code-block:: bash
+
+    # Name files matched by this glob pattern:
+    ls **/k???v[a-z]*[0-9]
+
+.. code-block:: bash
+
+    # Name things matched by this regex pattern:
 
 ----
 
@@ -825,6 +832,12 @@ TODO: One globbing, one regex
 .. note::
 
     explain directory structure
+
+    dot and dot-dot
+
+    "./x" means x in the current directory (pwd)
+
+    If a path starts with an / it is an absolute path.
 
 .. code-block:: console
 
@@ -867,15 +880,44 @@ TODO: One globbing, one regex
 5. Files: Exercise
 ==================
 
-TODO
+.. code-block:: bash
 
+    # Write a function to check if a file exists and is not a dir
+    # and then create an absolute symbolic link with the suffix
+    # ".link" in the current directory, pointing to the original file.
+    link_me_if_you_can() {
+        # ...
+    }
+
+    link_me_if_you_can /tmp/test-file
+
+.. note::
+
+    .. code-block:: bash
+
+        link_me_if_you_can() {
+            if [ -f "$1" ]; then
+                link_name=$(basename "$1").link
+                rm -f "${link_name}"
+                ln -s "$(realpath "$1")" "./${link_name}"
+            fi
+        }
 
 ----
 
 6. Misc: bashrc
 ===============
 
-``source``-able file that gets sourced automatically.
+Special file that gets sourced on every new session.
+
+Place those things here:
+------------------------
+
+.. class:: substep
+
+    * Utils and aliases.
+    * Environment variables that you need to persist.
+    * Anything setup related.
 
 ----
 
