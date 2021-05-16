@@ -963,7 +963,7 @@ Place those things here:
     melon device list --json | \
         jq '.[] | select(.currentVersion|test("330.9.1-.*")) \
                 | [.id, .serialNO, .customerID] \
-                | @tsv
+                | @tsv \
                 '
 
 
@@ -981,6 +981,8 @@ Place those things here:
     Ctrl-D = Close stdin (causing EOF)
     Ctrl-Z = Background current process
     Ctrl-L = Clear screen.
+
+----
 
 6. Misc: Strict mode
 ====================
@@ -1008,6 +1010,7 @@ Place those things here:
     $ mktemp
     $ df -h <path>
     $ stat [path]
+    $ time <command>
 
 ----
 
