@@ -1,7 +1,0 @@
-[Unit]
-Description=Download all images in /usr/share/image-loader/example.urls to /tmp/images/names
-
-[Service]
-Type=oneshot
-WorkingDirectory=/tmp
-ExecStart=/usr/bin/env python3 -m imageloader /usr/share/image-loader/example.urls
