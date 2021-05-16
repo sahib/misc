@@ -13,7 +13,7 @@
 Welcome 👋
 ==========
 
-Expectations:
+*Expectations:*
 
 .. code-block::
 
@@ -140,9 +140,10 @@ History ⏳
         <span class="big-emoji">🤷</span>
     </center>
 
-.. note::
 
-    The "ba" in "bash" stands for "bastel" -> bastel shell.
+.. class:: substep
+
+    Nope. The *ba* in *bash* stands for *bastel*.
 
 ----
 
