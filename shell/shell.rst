@@ -434,7 +434,7 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
     $ echo "SOURCED_VARIABLE=kikeriki" > /tmp/my-vars
     $ cat /tmp/my-vars
     SOURCED_VARIABLE=kikeriki
-    $ echo SOURCED_VARIABLE
+    $ echo "$SOURCED_VARIABLE"
     <empty>
     $ source /tmp/my-vars
     $ echo SOURCED_VARIABLE
@@ -546,7 +546,6 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
 
 .. code-block:: bash
 
-
     # Stdout:
     $ echo "AI = Automated If/else" > file
     # Stdin:
@@ -556,7 +555,6 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
     # Merge stdout & stderr:
     $ melon blame
     $ echo "ML = More loops" >> file
-
 
 ----
 
@@ -568,7 +566,7 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
 
     true && echo 'Hey!'
     false || echo 'Ho'
-    echo 'Ha!' ;; echo 'He!'
+    echo 'Ha!' ; echo 'He!'
 
 ----
 
@@ -597,7 +595,8 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
 
 .. code-block:: bash
 
-    echo "TODO: find a good example"
+    # Check if a $DEVICE_ID exists and if yes,
+    # assign an update to it.
 
 ----
 
@@ -713,9 +712,8 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
 
 .. code-block:: console
 
-    # TODO: find a better example.
-    # What does this print?
-    $ seq 10 | false || true; echo 'fin'
+    # Go over the device list and print the
+    # mapping of serial to device id.
 
 ----
 
@@ -757,8 +755,6 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
     Warning: Some tools have slightly different dialects of
     regex, some use different escaping rules.
 
-    TODO: Prepare some examples to show the above.
-
 ----
 
 4. Lines: grep
@@ -766,8 +762,13 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
 
 .. code-block:: console
 
-    $ grep '<pattern> /some/file
+    $ grep '<pattern>' /some/file
     $ echo "something" | grep '<pattern>'
+
+.. note::
+
+    Use grepdata.txt from the curl link below.
+    - grep for all phne numbers.
 
 ----
 
@@ -784,6 +785,10 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
 
     There is a way more powerful tool I called awk,
     but I don't really use it.
+
+.. note::
+
+    Grep all dates and delete the ones not from september.
 
 ----
 
@@ -810,7 +815,7 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
     $ seq 10 -1 0 | sort
     $ seq 10 -1 0 | sort -n
     $ seq 10 -1 0 | sort | uniq -c
-    $ seq 10 | wc -l
+    $ seq 10 -1 0 | wc -l
 
 ----
 
@@ -819,12 +824,13 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
 
 .. code-block:: bash
 
-    # Name files matched by this glob pattern:
+    # 1. Name files matched by this glob pattern:
     ls **/k???v[a-z]*[0-9]
 
 .. code-block:: bash
 
-    # Name things matched by this regex pattern:
+    # 2. Grep and sort all phone numbers in this file:
+    $ curl http://evc-cit.info/cit052/grepdata.txt > t.txt
 
 ----
 
@@ -843,8 +849,8 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
 
 .. code-block:: console
 
-    $ basename /some/long/path
-    $ dirname  /some/long/path
+    $ basename /some/long/path  # »path«
+    $ dirname  /some/long/path  # »/some/long«
 
 .. code-block:: console
 
@@ -884,9 +890,10 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
 
 .. code-block:: bash
 
-    # Write a function to check if a file exists and is not a dir
-    # and then create an absolute symbolic link with the suffix
-    # ".link" in the current directory, pointing to the original file.
+    # Write a function to check if a file exists and is
+    # not a dir and then create an symbolic link with
+    # absolute path with the suffix ".link" in the
+    # current directory, # pointing to the original file.
     link_me_if_you_can() {
         # ...
     }
@@ -900,8 +907,7 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
         link_me_if_you_can() {
             if [ -f "$1" ]; then
                 link_name=$(basename "$1").link
-                rm -f "${link_name}"
-                ln -s "$(realpath "$1")" "./${link_name}"
+                ln -sf "$(realpath "$1")" "./${link_name}"
             fi
         }
 
