@@ -21,6 +21,7 @@ Expectations:
     * You know what bash is specifically.
     * You know how to write shell scripts.
     * You won't be an expert in anything.
+    * You ask questions immediately.
     * You don't expect this workshop is complete.
     * Some entertainment.
 
@@ -45,6 +46,25 @@ Expectations:
 
     About 60 slides, so even if I do 1 slide per 2 minutes, we'll still end
     up with several hours.
+
+----
+
+After this workshop... 🧪
+=========================
+
+.. image:: images/expert-beginner.png
+    :width: 110%
+    :class: borderless-img
+    :align: center
+
+.. note::
+
+    You should be able to learn stuff and pick things up.
+    I give you pointers on what to learn and can help
+    but I can't lear stuff for you.
+
+    You should be an advanced beginner now, don't go to
+    an expert beginner afterwards!
 
 ----
 
@@ -78,8 +98,8 @@ Why is the shell? 🦐
 
 ----
 
-Terminology
-===========
+Terminology 🥼
+==============
 
 .. code-block::
 
@@ -91,26 +111,34 @@ Terminology
 ----
 
 History ⏳
-===========
+==========
 
-TODO: funny version of wikipedia
+.. code-block::
 
-1970: Bourne Shell.
-1987: Bash 1.
-2004: Bash 4
+    1969: Mainframes with Terminal.
+    1977: Bourne Shell (»sh«).
+    1987: Bourne again Shell: Bash 1.0
+    1990: POSIX Shell Standard.
+    1995: Cygwin: Windows compatibility
+    2004: Bash 4
 
-Explain Basteligkeit. Was never intended as language,
-got a bit out of control.
+.. note::
 
-POSIX Standard.
-Cygwin
+    Moral of the story: Was intented as language,
+    but somehow got a bit out of control and became one.
+
+    Cygwin
 
 ----
 
-bash > python?
-==============
+``bash`` > ``python``? 🤔
+=========================
 
-🤷
+.. raw:: html
+
+    <center>
+        <span class="big-emoji">🤷</span>
+    </center>
 
 .. note::
 
@@ -122,25 +150,28 @@ The End 🏚
 ==========
 
 Go learn Python.
+----------------
 
 Questions?
 
 ----
 
-Bash is »duct tape«...
-=======================
+Bash is »duct tape«... 🖇
+=========================
 
 ...and an interactive language!
 --------------------------------
 
 Several good high potential use-cases:
 
-* Automation
-* Administration
-* Deployment
-* Test suites
-* Oneliners
-* Text-based tasks
+.. class:: substep
+
+    * Automation
+    * Administration
+    * Deployment
+    * Test suites
+    * Oneliners
+    * Text-based tasks
 
 .. note::
 
@@ -156,15 +187,17 @@ Several good high potential use-cases:
 
 ----
 
-Advantages
-==========
+Advantages 👍
+=============
 
-* Shell integrates well with other tools.
-* Interactive programming.
-* Bash is everywhere where Linux is.
-* Easy to debug.
-* Well known.
-* Shell is the only IDE you'll ever need.
+.. class:: substep
+
+    * Shell integrates well with other tools.
+    * Interactive programming.
+    * Bash is everywhere where Linux is.
+    * Easy to debug.
+    * Well known.
+    * Shell is the only IDE you'll ever need.
 
 I postulate:
 ------------
@@ -181,16 +214,18 @@ I postulate:
 
 ----
 
-Disadvantages
-=============
+Disadvantages 👎
+================
 
-- Slow.
-- Only Data type are strings.
-- Really bad at math.
-- Plain awkward.
-- Not every program integrates well.
-- Not always portable.
-- Sometimes dangerous.
+.. class:: substep
+
+    - Slow as fuck.
+    - Only data type is string.
+    - Really bad at math.
+    - Plain awkward.
+    - Not every program integrates well.
+    - Not always portable.
+    - Sometimes dangerous.
 
 .. note::
 
@@ -204,22 +239,22 @@ Disadvantages
 
 ----
 
-Wait, what? »Dangerous«?
-========================
+What? »Dangerous«? 😱
+===========================
 
 .. image:: images/bumblebee.png
 
 ----
 
-Different Shells
-================
+Different Shells 🐌
+===================
 
 * Microsoft cmd.exe™
 * Windows PowerShell
 * Dash: Minimal
 * Fish: Feelgood-Shell.
 * Zsh: What I use.
-* Oil: Interesting.
+* Oil: *Interesting...*
 
 .. note:: bash
 
@@ -231,44 +266,55 @@ Different Shells
 Table of Contents
 =================
 
-.. note::
-
-    Preface:
-
-    Comments
-    Scripts = line of commands.
-    Shebang
-
 1. Variables
 ------------
 
-.. note::
-
-    - declare command (vs env)
+.. note:: How to use variables in bash.
 
 2. Processes
 ------------
 
+.. note:: All about communication with and between processes.
+
 3. Control
 ----------
 
-4. Patterns
------------
+.. note:: Control structure syntax.
+
+4. Lines
+--------
+
+.. note:: Working with line separated data.
 
 5. Files
 --------
 
+.. note:: Working with files.
+
 6. Misc
 -------
 
-.. note::
+.. note:: Collection of tips and tricks.
 
-    blah
+
+----
+
+0. Preface: Scripts
+===================
+
+.. code-block:: bash
+
+    #!/bin/bash
+    # I'm a comment.
+    # And the first line is a »shebang«.
+
+    # This is a command like you would type it normally:
+    echo "not good."
 
 ----
 
 1. Vars: Basics
-====================
+================
 
 .. code-block:: bash
 
@@ -305,13 +351,13 @@ Table of Contents
 1. Vars: Inheritance #2
 ============================
 
-Different types in a shell:
+*Different types in a shell:*
 
 - Exported variables
 - Local variables
 - Global variables
 
-.. code-block:: bash
+.. code-block:: console
 
     # Default: Global variables.
     $ A=1
@@ -324,6 +370,9 @@ Different types in a shell:
 
 .. note::
 
+    Bash variables start their life not as exported
+    (i.e. they don't make it to the process)
+
     Explain export command here.
 
     Show that you can also prefix a command with a variable.
@@ -335,10 +384,10 @@ Different types in a shell:
 
 .. code-block::
 
-    > V="preschl is a droddl"
-    > echo "${V/droddl/kackvoochel}"
-    > echo "${W:-default}"
-    > echo "${W:-${V}}"
+    V="preschl is a droddl"
+    echo "${V/droddl/kackvoochel}"
+    echo "${W:-default}"
+    echo "${W:-${V}}"
 
 More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
 
@@ -348,11 +397,14 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
 1. Vars: Special Characters
 ================================
 
-.. todo: Is that slide really that relevant?
-
-.. code-block:: bash
+.. code-block::
 
     $ | ; & ' " : {} \ > < * ? -- !
+
+
+.. note::
+
+    Show for example "!" in a double quoted string or "wildcard*".
 
 ----
 
@@ -369,12 +421,15 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
     Prefer single quotes to avoid surprises,
     use double quotes if you need to have
 
+    There are some subtle pitfalls here, but you will pick them
+    up along the way.
+
 ----
 
 1. Vars: source
 ================
 
-.. code-block:: bash
+.. code-block:: console
 
     $ echo "SOURCED_VARIABLE=kikeriki" > /tmp/my-vars
     $ cat /tmp/my-vars
@@ -414,20 +469,29 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
 
 ----
 
-2. Processes
-============
-
-TODO: diagram with process.
+1. Vars: Exercise
+=================
 
 .. code-block:: bash
+
+    # What will this print?
+    $ A="${X:-1}"
+    $ B="${A:-2}"
+    $ echo "${B/2/3}"
+
+----
+
+2. Processes: Communication
+===========================
+
+.. code-block:: console
 
     $ pstree
 
-
-Oldest bash joke there is:
-
 .. code-block:: bash
 
+    # Simplest way is to just list individual commands.
+    # Oldest bash joke there is:
     unzip;strip;touch;finger;mount;fsck;
     more;yes;fsck;fsck;fsck;umount;sleep
 
@@ -443,23 +507,59 @@ Oldest bash joke there is:
 2. Processes: Parameters & Arguments
 ====================================
 
-.
+.. code-block:: console
 
-----
+    $ melon device config set \
+        --device 68 \
+        -c 'UI_SURVEY_DEFAULT=666'
 
-2. Processes: Streams
-=====================
+.. note::
 
-redirects; stdin + stdout + stderr
+    Argument: Everything in os.Args[1:]
+    Option: --device or -c (exists as "flag" or as option with parameter)
+    There are short and long options.
+
+    Parameters: Some options (or subcommands) receive additional information.
+
+    => Parameters: '68' is one or 'HEAD' in 'git show'
+
+    »--« Convention
+
+    Split long commands convention
 
 ----
 
 2. Processes: Pipes
 ====================
 
-.
+.. code-block:: console
+
+    $ echo "foo bar baz" | wc -w
+
+.. image:: images/pipe.svg
+    :class: borderless-img
 
 ----
+
+2. Processes: Streams
+=====================
+
+.. code-block:: bash
+
+
+    # Stdout:
+    $ echo "AI = Automated If/else" > file
+    # Stdin:
+    $ cat < file
+    # Hide Stderr:
+    $ melon login 2> /dev/null
+    # Merge stdout & stderr:
+    $ melon blame
+    $ echo "ML = More loops" >> file
+
+
+----
+
 
 2. Processes: Composition
 =========================
@@ -475,10 +575,10 @@ redirects; stdin + stdout + stderr
 2. Processes: Jobs
 ==================
 
-.. code-block:: bash
+.. code-block:: console
 
-    (sleep 5 && echo 'im late!') &
-    fg
+    $ (sleep 15 && echo 'im late!') &
+    $ fg
     <Ctrl-Z>
 
 ----
@@ -486,9 +586,18 @@ redirects; stdin + stdout + stderr
 2. Processes: Subshell
 ======================
 
+.. code-block:: console
+
+    $ melon --token "$(melon login)" device list
+
+----
+
+2. Processes: Exercise
+======================
+
 .. code-block:: bash
 
-    melon --token "$(melon login)" device list
+    echo "TODO"
 
 ----
 
@@ -503,6 +612,12 @@ redirects; stdin + stdout + stderr
     else
         echo "I can haz math?"
     fi
+
+.. note::
+
+    [ is a command (test)
+    true is also a command
+    use $? to check the exit code.
 
 ----
 
@@ -578,8 +693,11 @@ redirects; stdin + stdout + stderr
 
 .. code-block:: bash
 
-    timeout
-    xargs
+    $ timeout 1 ping -c 1 www.bastelbude.de
+    $ melon device list --json | \
+        jq -r '.[] | .id'      | \
+        xargs printf '-d %d'   | \
+        xargs -n1 melon ota assign -v xyz
 
 .. note::
 
@@ -588,8 +706,19 @@ redirects; stdin + stdout + stderr
 
 ----
 
-4. Patterns: Wildcards
+3. Control: Exercise
 ======================
+
+.. code-block:: console
+
+    # TODO: not good
+    # What does this print?
+    $ seq 10 | false || true; echo 'fin'
+
+----
+
+4. Lines: Globbing
+=====================
 
 .. code-block:: bash
 
@@ -605,73 +734,141 @@ redirects; stdin + stdout + stderr
 
 ----
 
-4. Patterns: Regex
+4. Lines: Regex
 ==================
 
-anchors and blah
+.. code-block::
+
+    .*        - Match everything
+    ^fred$    - Match only "fred"
+    \s        - Whitespace
+    [0-9a-z]  - lowercase alphanumeric
+    {a,b,c}+  - at least one of a b or c
+    \{xxx\}   - matches "{xxx}"
+
+.. note::
+
+    Expression = Characters + Controls
+
+    Mention book.
+
+    Warning: Some tools have slightly different dialects of
+    regex, some use different escaping rules.
+
+    TODO: Prepare some examples to show the above.
 
 ----
 
-4. Patterns: grep
+4. Lines: grep
 =================
 
-crap
+.. code-block:: console
+
+    $ grep '<pattern> /some/file
+    $ echo "something" | grep '<pattern>'
 
 ----
 
-4. Patterns: sed
+4. Lines: sed
 ================
 
-crap
+.. code-block:: console
+
+    $ sed -i 's/<pattern>/<replacement>/g' file1 file2 ...
+    $ echo 'veni\nvidi\nvomit' | sed '/vomit/d'
+    $ echo 'veni\nvidi\nvomit' | sed '3d'
+
+.. note::
+
+    There is a way more powerful tool I called awk,
+    but I don't really use it.
 
 ----
 
-4. Patterns: head, tail
-=======================
+4. Lines: head, tail, cut
+=========================
 
-logs
+.. code-block:: console
+
+    $ echo 'quod\nerat\ndefectum' | head -1
+    quod
+    $ echo 'quod\nerat\ndefectum' | tail -1
+    defectum
+    $ tail -f <file>
+    $ tex --version | head -1 | cut -f2 -d' '
+    3.14159265
 
 ----
 
-4. Patterns: sort, uniq, wc
+4. Lines: sort, uniq, wc
 ===========================
 
-TODO
+.. code-block:: console
+
+    $ seq 10 -1 0 | sort
+    $ seq 10 -1 0 | sort -n
+    $ seq 10 -1 0 | sort | uniq -c
+    $ seq 10 | wc -l
 
 ----
 
-5. Patterns: Directories
+4. Lines: Exercise
+==================
+
+TODO: One globbing, one regex
+
+----
+
+5. Files: Directories
 ========================
 
-explain directory structure
+.. note::
 
-cd
-ls
-pwd
-mkdir
-find
+    explain directory structure
 
-du
+.. code-block:: console
 
-TODO: split up in paths and directories
+    $ basename /some/long/path
+    $ dirname  /some/long/path
 
-basename
-dirname
+.. code-block:: console
+
+    $ cd [path]
+    $ ls [path]
+    $ pwd
+    $ mkdir <path>
+    $ find [path] -iname 'glob'
 
 ----
 
 5. Files: I/O
 =============
 
-cat, tac
-redirects
 
-cp, mv, rm
-ln, touch
-file
+.. code-block:: console
 
-chmod, users etc. I leave that out for now.
-Not because it's not important but because it's kinda boring.
+    $ cat [path]
+    $ tac [path]
+    $ touch [path]
+    $ cp <source1> [<source2>] <dest>
+    $ mv <source1> <dest>
+    $ ln <source> <link-name>
+    $ ln -s <source> <link-name>
+    $ file [path]
+
+
+.. note::
+
+    chmod, users etc. I leave that out for now.
+    Not because it's not important but because it's kinda boring.
+
+----
+
+5. Files: Exercise
+==================
+
+TODO
+
 
 ----
 
@@ -685,9 +882,15 @@ Not because it's not important but because it's kinda boring.
 6. Misc: History
 ================
 
-TODO: history
+.. code-block:: console
 
-Ctrl-r
+    $ history | less
+
+.. note::
+
+    Or what I do: Type the command start and press up.
+
+    Mention pager: more and less (and most)
 
 ----
 
@@ -728,44 +931,69 @@ Ctrl-r
     Ctrl-Z = Background current process
     Ctrl-L = Clear screen.
 
-----
+6. Misc: Strict mode
+====================
 
-6. Misc: Stuff #1
-=================
+.. code-block:: console
 
-sleep
-date
-rg
-fzf
-
-sha1sum
-mktemp
+    # Always add this to the top of your scripts:
+    $ set -euo pipefail
 
 ----
 
-6. Misc: Stuff #2
-=================
+6. Misc: Useful stuff
+=====================
 
+.. code-block:: console
 
-yes
-tee
-dd
-od
-df
-watch
+    $ sleep 1m30s
+    $ date +%H
+    $ sha1sum <file>
+    $ mktemp
+    $ df -h <path>
+    $ stat [path]
 
 ----
 
-6. Misc: Stuff #3
-=================
+6. Misc: Useful stuff
+=====================
 
+.. code-block:: console
 
-more and less (and most)
+    $ rg <pattern> [<path>]
+    $ echo 'fred\nfrodo\nfrater' | fzf
+    $ watch -n1 <command>
+    $ bat <source-file>
+    $ cloc <dir>
+    $ htop
+    $ rmlint
+    $ ranger
+
+.. note::
+
+    Not so much bash but productivity related.
+
+----
+
+6. Misc: Weird stuff
+====================
+
+.. code-block:: console
+
+    $ yes
+    $ tee
+    $ dd if=<path> of=<path> status=progress bs=1M count=10
+    $ od
+    $ cal
 
 ----
 
 6. Misc: shellcheck
 ===================
+
+.. code-block:: console
+
+    $ shellcheck ~/code/platform/backend/build/*.sh
 
 .. note::
 
@@ -774,18 +1002,18 @@ more and less (and most)
 
 ----
 
-Exercises
-=========
+6. Misc: Exercise
+==================
 
-TODO: Check tlpd.org for examples
+.. code-block:: bash
 
-- Explain what X command does.
-- Write oneliner for task X.
+    # What is this doing?
+    :(){ :|:& };:
 
 ----
 
-Last Words
-==========
+Last Words 🌜
+=============
 
 Things I left out:
 
@@ -799,31 +1027,45 @@ Things I left out:
 * Man pages.
 * ...
 
-I trust you can now read the docs.
+----
+
+..Questions? 🤪
+===============
+
+I trust you can now read the docs:
 ----------------------------------
 
-..Questions?
+.. code-block:: bash
+
+    man man
+    whatis this
+    cheese --help
+
+.. note::
+
+    Practice reading a --help output.
 
 ----
 
-References
-==========
+References 🔖
+=============
 
 Bash Bible:
 -----------
 
-https://tldp.org/LDP/abs/html/index.html
+.. raw:: html
+
+    <center>
+        <a class="reflink" href="https://tldp.org/LDP/abs/html/index.html">Advanced Bash Scripting</a>
+    </center>
+    <p/>
 
 Art of Unix Programming
 -----------------------
 
-http://www.catb.org/%7Eesr/writings/taoup/html/index.html
+.. raw:: html
 
-Manpages
---------
-
-.. code-block:: bash
-
-    whatis cp
-    man cp
-
+    <center>
+        <a class="reflink" href="http://www.catb.org/%7Eesr/writings/taoup/html/index.html">Philosophy &amp; History</a>
+    </center>
+    <p/>
