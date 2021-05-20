@@ -314,6 +314,22 @@ Table of Contents
 
 ----
 
+0. Help me!
+===========
+
+.. code-block:: bash
+
+    man man
+    whatis this
+    cheese --help
+
+.. note::
+
+    Practice reading a --help output.
+
+
+----
+
 1. Vars: Basics
 ================
 
@@ -479,6 +495,7 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
     $ A="${X:-1}"
     $ B="${A:-2}"
     $ echo "${B/2/3}"
+    $ /bin/sh -c 'echo ${B/2/3}'
 
 ----
 
@@ -1088,18 +1105,14 @@ Things I left out:
 ..Questions? 🤪
 ===============
 
-I trust you can now read the docs:
+*Congratulations*  you made it so far.
+
+I trust you can now read the docs.
 ----------------------------------
-
-.. code-block:: bash
-
-    man man
-    whatis this
-    cheese --help
 
 .. note::
 
-    Practice reading a --help output.
+    blah
 
 ----
 
