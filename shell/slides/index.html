@@ -1,0 +1,254 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Shell Programming introduction</title><meta charset="UTF-8"></meta><meta name="generator" content="Hovercraft! 1.0 http://regebro.github.com/hovercraft"></meta><link rel="stylesheet" href="css/hovercraft.css" media="all"></link><link rel="stylesheet" href="css/highlight.css" media="all"></link><link rel="stylesheet" href="hovercraft.css" media="screen,projection"></link><script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        showProcessingMessages: false,
+        messageStyle: "none",
+        TeX : { extensions : ['color.js'] }
+      });
+    </script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script></head><body class="impress-not-supported"><div id="impress-help"></div><div id="impress" data-transition-duration="1500"><div class="step step-level-1" step="0" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="0" data-y="0" data-z="0"><h1 id="welcome">Welcome &#x1F44B;</h1><p><em>Expectations:</em></p><pre class="highlight code">* You know what a shell is.
+* You know what bash is specifically.
+* You know how to write shell scripts.
+* You won't be an expert in anything.
+* You ask questions immediately.
+* You don't expect this workshop is complete.
+* Some entertainment.</pre><div class="notes"><p>My expectations:</p><ul><li>You ask immediately when you did not understand something.</li><li>You can try commands in parallel.</li><li>You will be tested at the end.</li><li>You will not need to understand everything, but
+it's good to have a mind map of things that are possible.</li></ul><p>Mythenmetzsche Ausschweifungen all day long.</p><p>Also: First try of those slides. Could happen that I forgot
+something to explain that is obvious to me, but is not for you.
+Please tell me early. I need the feedback to get the knowledge across.</p><p>Remember: Learning bash takes usually long and you just get the intro
+today with the lemur-condensed knowledge. You need to practice it.</p><p>About 60 slides, so even if I do 1 slide per 2 minutes, we'll still end
+up with several hours.</p></div></div><div class="step step-level-1" step="1" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="1600" data-y="0" data-z="0"><h1 id="after-this-workshop">After this workshop... &#x1F9EA;</h1><img src="images/expert-beginner.png" width="110%" class="borderless-img" align="center"></img><div class="notes"><p>You should be able to learn stuff and pick things up.
+I give you pointers on what to learn and can help
+but I can't lear stuff for you.</p><p>You should be an advanced beginner now, don't go to
+an expert beginner afterwards!</p><p>WHAT IS BASH? Please define.</p></div></div><div class="step step-level-1" step="2" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="3200" data-y="0" data-z="0"><h1 id="what-is-a-shell">What is a shell? &#x1F41A;</h1><pre class="highlight code python"><span class="c1"># The dumbest interpreter on earth:</span>
+<span class="kn">from</span> <span class="nn">shlex</span> <span class="kn">import</span> <span class="n">split</span>
+<span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span>
+<span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">call</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="c1"># Draw prompt:</span>
+    <span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'&gt; '</span><span class="p">)</span>
+    <span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="c1"># Start requested program,</span>
+    <span class="c1"># print to stdout and stderr.</span>
+    <span class="n">call</span><span class="p">(</span><span class="n">split</span><span class="p">(</span><span class="n">stdin</span><span class="o">.</span><span class="n">readline</span><span class="p">()))</span></pre></div><div class="step step-level-1" step="3" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="4800" data-y="0" data-z="0"><h1 id="why-is-the-shell">Why is the shell? &#x1F990;</h1><img src="images/layer-model.svg" width="75%" class="borderless-img"></img></div><div class="step step-level-1" step="4" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="6400" data-y="0" data-z="0"><h1 id="terminology">Terminology &#x1F97C;</h1><pre class="highlight code">shell    := the intepreter.
+bash     := one specific shell.
+script   := list of shell commands.
+terminal := the &#xBB;UI&#xAB; of the shell.</pre></div><div class="step step-level-1" step="5" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="8000" data-y="0" data-z="0"><h1 id="history">History &#x23F3;</h1><pre class="highlight code">1969: Mainframes with Terminal.
+1977: Bourne Shell (&#xBB;sh&#xAB;).
+1987: Bourne again Shell: Bash 1.0
+1990: POSIX Shell Standard.
+1995: Cygwin: Windows compatibility
+2004: Bash 4</pre><div class="notes"><p>Moral of the story: Was intented as language,
+but somehow got a bit out of control and became one.</p><p>Cygwin</p><p>Note that this is a bash workshop but we focus
+on the part that all Posix shells implement.
+There are almost no bash specific features in this workshop.</p></div></div><div class="step step-level-1" step="6" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="9600" data-y="0" data-z="0"><h1 id="bash-python"><tt>bash</tt> &gt; <tt>python</tt>? &#x1F914;</h1><center>
+    <span class="big-emoji">&#129335;</span>
+</center><p class="substep">Nope. The <em>ba</em> in <em>bash</em> stands for <em>bastel</em>.</p><p class="substep">Do not write large programs in it.</p><div class="notes"><p>Python's use case is writing small to middle large programs.
+Bash is to write tiny to small programs.</p><p>There's Perl, which is the evil bastard child of both worlds,
+which kinda succeeds in both.</p></div></div><div class="step step-level-1" step="7" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="11200" data-y="0" data-z="0"><h1 id="the-end">The End &#x1F3DA;</h1><h2 id="go-learn-python">Go learn Python.</h2><p>Questions?</p></div><div class="step step-level-1" step="8" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="12800" data-y="0" data-z="0"><h1 id="bash-is-duct-tape">Bash is &#xBB;duct tape&#xAB;... &#x1F587;</h1><h2 id="and-an-interactive-language">...and an interactive language!</h2><p>Several good high potential use-cases:</p><ul><li class="substep">Automation</li><li class="substep">Administration</li><li class="substep">Deployment</li><li class="substep">Test suites</li><li class="substep">Oneliners</li><li class="substep">Text-based tasks</li></ul><div class="notes"><p>glue: not in the sense you can sniff it though.
+Not a programming languages, but rather easy way to integrate
+tools made in different languages.</p><p>Examples in GBS:</p><ul><li>melon</li><li>test suite</li><li>deployment scripts</li></ul></div></div><div class="step step-level-1" step="9" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="14400" data-y="0" data-z="0"><h1 id="advantages">Advantages &#x1F44D;</h1><ul><li class="substep">Shell integrates well with other tools.</li><li class="substep">Interactive programming.</li><li class="substep">Bash is everywhere where Linux is.</li><li class="substep">Easy to debug.</li><li class="substep">Well known.</li><li class="substep">Shell is the only IDE you'll ever need.</li></ul><h2 id="i-postulate">I postulate:</h2><div class="math-block ">$$\begin{align}\frac{loc(python)}{10} &gt; loc(bash)\end{align}$$</div><div class="notes"><p>And other tools include python for more complicated
+automation tasks.</p></div></div><div class="step step-level-1" step="10" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="16000" data-y="0" data-z="0"><h1 id="disadvantages">Disadvantages &#x1F44E;</h1><ul><li class="substep">Slow as fuck.</li><li class="substep">Only data type is string.</li><li class="substep">Really bad at math.</li><li class="substep">Plain awkward.</li><li class="substep">Not every program integrates well.</li><li class="substep">Not always portable.</li><li class="substep">Sometimes dangerous.</li></ul><div class="notes"><ul><li>Slow -&gt; Not relevant usually.</li><li>Math -&gt; No floating point. That's annoying.</li><li>Plain awkward -&gt; And sometimes annoying. Easy to make mistakes.</li><li>Integration -&gt; Only for unix philosophy programs.</li></ul><p>Little lie: bash also supports integers... kind of.
+But we're not talking about this here and it does not really matter.</p></div></div><div class="step step-level-1" step="11" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="17600" data-y="0" data-z="0"><h1 id="what-dangerous">What? &#xBB;Dangerous&#xAB;? &#x1F631;</h1><img src="images/bumblebee.png"></img></div><div class="step step-level-1" step="12" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="19200" data-y="0" data-z="0"><h1 id="different-shells">Different Shells &#x1F40C;</h1><ul><li>Microsoft cmd.exe&#x2122;</li><li>Windows PowerShell</li><li>Dash: Minimal</li><li>Fish: Feelgood-Shell.</li><li>Zsh: What I use.</li><li>Oil: <em>Interesting...</em></li></ul><div class="notes"><p>bash</p><ul><li>Nicht immer kompatibel</li><li>Viele andere, viele die sich nicht verbreitet haben.</li></ul></div></div><div class="step step-level-1" step="13" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="20800" data-y="0" data-z="0"><h1 id="table-of-contents">Table of Contents</h1><h2 id="variables">1. Variables</h2><div class="notes"><p>How to use variables in bash.</p></div><h2 id="processes">2. Processes</h2><div class="notes"><p>All about communication with and between processes.</p></div><h2 id="control">3. Control</h2><div class="notes"><p>Control structure syntax.</p></div><h2 id="lines">4. Lines</h2><div class="notes"><p>Working with line separated data.</p></div><h2 id="files">5. Files</h2><div class="notes"><p>Working with files.</p></div><h2 id="misc">6. Misc</h2><div class="notes"><p>Collection of tips and tricks.</p></div><h2 id="practice-optional">Practice (optional)</h2><div class="notes"><p>Actual ticket we can do.</p></div></div><div class="step step-level-1" step="14" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="22400" data-y="0" data-z="0"><h1 id="preface-scripts">0. Preface: Scripts</h1><pre class="highlight code bash"><span class="ch">#!/bin/bash
+</span><span class="c1"># I'm a comment.
+# And the first line is a &#xBB;shebang&#xAB;.
+</span>
+<span class="c1"># This is a command like you would type it normally:
+</span><span class="nb">echo</span> <span class="s2">"not good."</span></pre></div><div class="step step-level-1" step="15" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="24000" data-y="0" data-z="0"><h1 id="help-me">0. Help me!</h1><pre class="highlight code bash">man man
+whatis this
+cheese --help</pre><div class="notes"><p>Practice reading a --help output.</p></div></div><div class="step step-level-1" step="16" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="25600" data-y="0" data-z="0"><h1 id="vars-basics">1. Vars: Basics</h1><pre class="highlight code bash">$ <span class="nv">PRESCHL</span><span class="o">=</span><span class="s2">"kackvooochel"</span>
+$ <span class="nb">echo</span> <span class="s2">"Q: Tier des Jahres? A: Der </span><span class="si">${</span><span class="nv">PRESCHL</span><span class="si">}</span><span class="s2">."</span>
+Q: Tier des Jahres? A: Der kackvooochel</pre><div class="notes"><ul><li>Always key value.</li><li>You don't have to quote it, but you should.</li><li>You can write it lower case, but if it's
+used by other parts of a script, upper case is preferred
+to tell it apart it from commands.</li></ul></div></div><div class="step step-level-1" step="17" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="27200" data-y="0" data-z="0"><h1 id="vars-inheritance-1">1. Vars: Inheritance #1</h1><img src="images/env-inheritance.svg" class="borderless-img"></img><div class="notes"><ul><li>Processes build a tree.</li><li>Each process has a list of environment variables (and values)</li><li>New processes inherit the variables of the previous process.</li><li>But: Only exported variables get inherited (unexported vars exist only in the shell)</li></ul></div></div><div class="step step-level-1" step="18" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="28800" data-y="0" data-z="0"><h1 id="vars-inheritance-2">1. Vars: Inheritance #2</h1><p><em>Different types in a shell:</em></p><ul><li>Exported variables</li><li>Local variables</li><li>Global variables</li></ul><pre class="highlight code console"><span class="gp"># </span>Default: Global variables.
+<span class="gp">$ </span><span class="nv">A</span><span class="o">=</span><span class="m">1</span>
+<span class="gp">$ </span><span class="nb">echo</span> <span class="nv">$A</span>
+<span class="go">1
+</span><span class="gp">$ </span>sh -c <span class="s1">'echo $A'</span>
+<span class="go">&lt;empty&gt;
+</span><span class="gp">$ </span><span class="nb">export</span> A
+<span class="gp">$ </span>sh -c <span class="s1">'echo $A'</span></pre><div class="notes"><p>Bash variables start their life not as exported
+(i.e. they don't make it to the process)</p><p>Explain export command here.</p><p>Show that you can also prefix a command with a variable.</p></div></div><div class="step step-level-1" step="19" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="30400" data-y="0" data-z="0"><h1 id="vars-substitutions">1. Vars: Substitutions</h1><pre class="highlight code">V="preschl is a droddl"
+echo "${V/droddl/kackvoochel}"
+echo "${W:-default}"
+echo "${W:-${V}}"</pre><p>More info <a href="https://tldp.org/LDP/abs/html/parameter-substitution.html">here</a>.</p></div><div class="step step-level-1" step="20" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="32000" data-y="0" data-z="0"><h1 id="vars-special-characters">1. Vars: Special Characters</h1><pre class="highlight code">$ | ; &amp; ' " : {} \ &gt; &lt; * ? -- !</pre><div class="notes"><p>Show for example "!" in a double quoted string or "wildcard*".</p></div></div><div class="step step-level-1" step="21" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="33600" data-y="0" data-z="0"><h1 id="vars-quoting">1. Vars: Quoting</h1><pre class="highlight code bash"><span class="s2">"Hello </span><span class="si">${</span><span class="nv">who</span><span class="si">}</span><span class="s2">"</span>  <span class="c1"># Several strings belonging together.
+</span><span class="s1">'Hello ${who}'</span>  <span class="c1"># Literal strings, no escaping needed.</span></pre><div class="notes"><p>Prefer single quotes to avoid surprises,
+use double quotes if you need to have</p><p>There are some subtle pitfalls here, but you will pick them
+up along the way.</p></div></div><div class="step step-level-1" step="22" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="35200" data-y="0" data-z="0"><h1 id="vars-source">1. Vars: source</h1><pre class="highlight code console"><span class="gp">$ </span><span class="nb">echo</span> <span class="s2">"SOURCED_VARIABLE=kikeriki"</span> &gt; /tmp/my-vars
+<span class="gp">$ </span>cat /tmp/my-vars
+<span class="go">SOURCED_VARIABLE=kikeriki
+</span><span class="gp">$ </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$SOURCED_VARIABLE</span><span class="s2">"</span>
+<span class="go">&lt;empty&gt;
+</span><span class="gp">$ </span><span class="nb">source</span> /tmp/my-vars
+<span class="gp">$ </span><span class="nb">echo</span> SOURCED_VARIABLE
+<span class="go">kikeriki</span></pre><div class="notes"><ul><li>Important technique!</li><li>Can also execute code.</li><li>Often used for configuration.</li></ul><p>Exercise: Name at least one file you source regularly!
+Also one GBS specific.</p></div></div><div class="step step-level-1" step="23" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="36800" data-y="0" data-z="0"><h1 id="vars-pre-existing">1. Vars: Pre-Existing</h1><pre class="highlight code bash"><span class="nv">$PATH</span>
+<span class="nv">$RANDOM</span>
+<span class="nv">$HOME</span>
+<span class="nv">$PWD</span>
+<span class="nv">$USER</span>
+<span class="c1"># ...</span></pre><div class="notes"><p>Explain PATH</p><p>There are more, but those are the important ones.
+Also some are not listed here: $? $0 etc.</p></div></div><div class="step step-level-1" step="24" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="38400" data-y="0" data-z="0"><h1 id="vars-exercise">1. Vars: Exercise</h1><pre class="highlight code bash"><span class="c1"># What will this print?
+</span>$ <span class="nv">A</span><span class="o">=</span><span class="s2">"</span><span class="si">${</span><span class="nv">X</span><span class="k">:-</span><span class="nv">1</span><span class="si">}</span><span class="s2">"</span>
+$ <span class="nv">B</span><span class="o">=</span><span class="s2">"</span><span class="si">${</span><span class="nv">A</span><span class="k">:-</span><span class="nv">2</span><span class="si">}</span><span class="s2">"</span>
+$ <span class="nb">echo</span> <span class="s2">"</span><span class="si">${</span><span class="nv">B</span><span class="p">/2/3</span><span class="si">}</span><span class="s2">"</span>
+$ /bin/sh -c <span class="s1">'echo ${B/2/3}'</span></pre></div><div class="step step-level-1" step="25" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="40000" data-y="0" data-z="0"><h1 id="processes-communication">2. Processes: Communication</h1><pre class="highlight code console"><span class="gp">$ </span>pstree</pre><pre class="highlight code bash"><span class="c1"># Simplest way is to just list individual commands.
+# Oldest bash joke there is:
+</span>unzip<span class="p">;</span>strip<span class="p">;</span>touch<span class="p">;</span>finger<span class="p">;</span>mount<span class="p">;</span>fsck<span class="p">;</span>
+more<span class="p">;</span>yes<span class="p">;</span>fsck<span class="p">;</span>fsck<span class="p">;</span>fsck<span class="p">;</span>umount<span class="p">;</span>sleep</pre><div class="notes"><p>Whenever you type in a command you start a new process.
+Again, processes form a big tree. But often you want
+to communicate and glue processes together to do something cool.</p></div></div><div class="step step-level-1" step="26" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="41600" data-y="0" data-z="0"><h1 id="processes-parameters-arguments">2. Processes: Parameters &amp; Arguments</h1><pre class="highlight code console"><span class="gp">$ </span>melon device config <span class="nb">set</span> <span class="se">\
+</span><span class="go">    --device 68 \
+    -c 'UI_SURVEY_DEFAULT=666'</span></pre><div class="notes"><p>Argument: Everything in os.Args[1:]
+Option: --device or -c (exists as "flag" or as option with parameter)
+There are short and long options.</p><p>Parameters: Some options (or subcommands) receive additional information.</p><p>=&gt; Parameters: '68' is one or 'HEAD' in 'git show'</p><p>&#xBB;--&#xAB; Convention</p><p>Split long commands convention</p></div></div><div class="step step-level-1" step="27" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="43200" data-y="0" data-z="0"><h1 id="processes-pipes">2. Processes: Pipes</h1><pre class="highlight code console"><span class="gp">$ </span><span class="nb">echo</span> <span class="s2">"foo bar baz"</span> <span class="p">|</span> wc -w</pre><img src="images/pipe.svg" class="borderless-img"></img></div><div class="step step-level-1" step="28" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="44800" data-y="0" data-z="0"><h1 id="processes-streams">2. Processes: Streams</h1><pre class="highlight code bash"><span class="c1"># Stdout:
+</span>$ <span class="nb">echo</span> <span class="s2">"AI = Automated If/else"</span> &gt; file
+<span class="c1"># Stdin:
+</span>$ cat &lt; file
+<span class="c1"># Hide Stderr:
+</span>$ melon login <span class="m">2</span>&gt; /dev/null
+<span class="c1"># Merge stdout &amp; stderr:
+</span>$ melon blame
+$ <span class="nb">echo</span> <span class="s2">"ML = More loops"</span> &gt;&gt; file</pre></div><div class="step step-level-1" step="29" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="46400" data-y="0" data-z="0"><h1 id="processes-composition">2. Processes: Composition</h1><pre class="highlight code bash"><span class="nb">true</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s1">'Hey!'</span>
+<span class="nb">false</span> <span class="o">||</span> <span class="nb">echo</span> <span class="s1">'Ho'</span>
+<span class="nb">echo</span> <span class="s1">'Ha!'</span> <span class="p">;</span> <span class="nb">echo</span> <span class="s1">'He!'</span></pre></div><div class="step step-level-1" step="30" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="48000" data-y="0" data-z="0"><h1 id="processes-jobs">2. Processes: Jobs</h1><pre class="highlight code console"><span class="gp">$ </span><span class="o">(</span>sleep <span class="m">15</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s1">'im late!'</span><span class="o">)</span> <span class="p">&amp;</span>
+<span class="gp">$ </span><span class="nb">fg</span>
+<span class="go">&lt;Ctrl-Z&gt;</span></pre></div><div class="step step-level-1" step="31" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="49600" data-y="0" data-z="0"><h1 id="processes-subshell">2. Processes: Subshell</h1><pre class="highlight code console"><span class="gp">$ </span>melon --token <span class="s2">"</span><span class="k">$(</span>melon login<span class="k">)</span><span class="s2">"</span> device list</pre></div><div class="step step-level-1" step="32" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="51200" data-y="0" data-z="0"><h1 id="processes-exercise">2. Processes: Exercise</h1><pre class="highlight code bash"><span class="c1"># Check if a $DEVICE_ID exists and if yes,
+# assign an update to it.</span></pre></div><div class="step step-level-1" step="33" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="52800" data-y="0" data-z="0"><h1 id="control-if">3. Control: if</h1><pre class="highlight code bash"><span class="nv">A</span><span class="o">=</span><span class="m">1</span>
+<span class="k">if</span> <span class="o">[</span> <span class="s2">"</span><span class="si">${</span><span class="nv">A</span><span class="si">}</span><span class="s2">"</span> -gt <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">"Wow."</span>
+<span class="k">else</span>
+    <span class="nb">echo</span> <span class="s2">"I can haz math?"</span>
+<span class="k">fi</span></pre><div class="notes"><p>[ is a command (test)
+true is also a command
+use $? to check the exit code.</p><p>"!" in front negates whatever follows.</p></div></div><div class="step step-level-1" step="34" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="54400" data-y="0" data-z="0"><h1 id="control-while">3. Control: while</h1><pre class="highlight code bash"><span class="k">while</span> ! curl -s www.google.de &gt; /tmp/blah<span class="p">;</span> <span class="k">do</span>
+    <span class="nb">echo</span> <span class="s1">'retrying in 1s'</span>
+    sleep <span class="m">1</span>
+<span class="k">done</span></pre></div><div class="step step-level-1" step="35" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="56000" data-y="0" data-z="0"><h1 id="control-for">3. Control: for</h1><pre class="highlight code bash"><span class="k">for</span> x <span class="k">in</span> <span class="s2">"</span><span class="k">$(</span>seq <span class="m">0</span> <span class="m">10</span><span class="k">)</span><span class="s2">"</span><span class="p">;</span> <span class="k">do</span>
+    <span class="nb">echo</span> <span class="s2">"</span><span class="si">${</span><span class="nv">x</span><span class="si">}</span><span class="s2">"</span>
+<span class="k">done</span></pre></div><div class="step step-level-1" step="36" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="57600" data-y="0" data-z="0"><h1 id="control-case">3. Control: case</h1><pre class="highlight code bash"><span class="nv">space</span><span class="o">=</span><span class="nv">$RANDOM</span>
+<span class="k">case</span> <span class="nv">$space</span> <span class="k">in</span>
+<span class="o">[</span><span class="m">1</span>-6<span class="o">]</span>*<span class="o">)</span>
+  <span class="nb">echo</span> <span class="s2">"All good."</span>
+  <span class="p">;;</span>
+<span class="o">[</span><span class="m">7</span>-8<span class="o">]</span>*<span class="o">)</span>
+  <span class="nb">echo</span> <span class="s2">"Start thinking about cleaning out some stuff."</span>
+  <span class="p">;;</span>
+<span class="m">9</span><span class="o">[</span><span class="m">1</span>-9<span class="o">])</span>
+  <span class="nb">echo</span> <span class="s2">"Better hurry with that new disk..."</span>
+  <span class="p">;;</span>
+*<span class="o">)</span>
+  <span class="nb">echo</span> <span class="s2">"What is this?"</span>
+  <span class="p">;;</span>
+<span class="k">esac</span></pre><div class="notes"><p>More explanation on wildcards and regex follow later on.</p></div></div><div class="step step-level-1" step="37" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="59200" data-y="0" data-z="0"><h1 id="control-functions">3. Control: Functions</h1><pre class="highlight code bash"><span class="ch">#!/bin/bash
+</span>
+greeting<span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> Hello <span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span>
+<span class="o">}</span>
+
+greeting kackvooochel</pre></div><div class="step step-level-1" step="38" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="60800" data-y="0" data-z="0"><h1 id="control-specials">3. Control: Specials</h1><pre class="highlight code bash">$ timeout <span class="m">1</span> ping -c <span class="m">1</span> www.bastelbude.de
+$ melon device list --json <span class="p">|</span> <span class="se">\
+</span>    jq -r <span class="s1">'.[] | .id'</span>      <span class="p">|</span> <span class="se">\
+</span>    xargs <span class="nb">printf</span> <span class="s1">'-d %d'</span>   <span class="p">|</span> <span class="se">\
+</span>    xargs -n1 melon ota assign -v xyz</pre><div class="notes"><p>Interesting part of learning a new language is always
+seeing concepts that no other language has.</p></div></div><div class="step step-level-1" step="39" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="62400" data-y="0" data-z="0"><h1 id="control-exercise">3. Control: Exercise</h1><pre class="highlight code console"><span class="gp"># </span>Go over the device list and print the
+<span class="gp"># </span>mapping of serial to device id.</pre></div><div class="step step-level-1" step="40" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="64000" data-y="0" data-z="0"><h1 id="lines-globbing">4. Lines: Globbing</h1><pre class="highlight code bash">ls /dev/sd?
+ls /dev/sd<span class="o">[</span>a-z<span class="o">][</span><span class="m">1</span>-9<span class="o">]</span>
+cp report_<span class="o">{</span>old,new<span class="o">}</span>.pdf /tmp
+ls *.md
+ls **/README.md</pre><div class="notes"><p>bash feature, often sufficient.</p></div></div><div class="step step-level-1" step="41" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="65600" data-y="0" data-z="0"><h1 id="lines-regex">4. Lines: Regex</h1><pre class="highlight code">.*        - Match everything
+^fred$    - Match only "fred"
+\s        - Whitespace
+[0-9a-z]  - lowercase alphanumeric
+{a,b,c}+  - at least one of a b or c
+\{xxx\}   - matches "{xxx}"</pre><div class="notes"><p>Expression = Characters + Controls</p><p>Mention book.</p><p>Warning: Some tools have slightly different dialects of
+regex, some use different escaping rules.</p></div></div><div class="step step-level-1" step="42" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="67200" data-y="0" data-z="0"><h1 id="lines-grep">4. Lines: grep</h1><pre class="highlight code console"><span class="gp">$ </span>grep <span class="s1">'&lt;pattern&gt;'</span> /some/file
+<span class="gp">$ </span><span class="nb">echo</span> <span class="s2">"something"</span> <span class="p">|</span> grep <span class="s1">'&lt;pattern&gt;'</span></pre><div class="notes"><p>Use grepdata.txt from the curl link below.
+- grep for all phne numbers.</p></div></div><div class="step step-level-1" step="43" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="68800" data-y="0" data-z="0"><h1 id="lines-sed">4. Lines: sed</h1><pre class="highlight code console"><span class="gp">$ </span>sed -i <span class="s1">'s/&lt;pattern&gt;/&lt;replacement&gt;/g'</span> file1 file2 ...
+<span class="gp">$ </span><span class="nb">echo</span> <span class="s1">'veni\nvidi\nvomit'</span> <span class="p">|</span> sed <span class="s1">'/vomit/d'</span>
+<span class="gp">$ </span><span class="nb">echo</span> <span class="s1">'veni\nvidi\nvomit'</span> <span class="p">|</span> sed <span class="s1">'3d'</span></pre><div class="notes"><p>There is a way more powerful tool I called awk,
+but I don't really use it.</p></div><div class="notes"><p>Grep all dates and delete the ones not from september.</p></div></div><div class="step step-level-1" step="44" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="70400" data-y="0" data-z="0"><h1 id="lines-head-tail-cut">4. Lines: head, tail, cut</h1><pre class="highlight code console"><span class="gp">$ </span><span class="nb">echo</span> <span class="s1">'quod\nerat\ndefectum'</span> <span class="p">|</span> head -1
+<span class="go">quod
+</span><span class="gp">$ </span><span class="nb">echo</span> <span class="s1">'quod\nerat\ndefectum'</span> <span class="p">|</span> tail -1
+<span class="go">defectum
+</span><span class="gp">$ </span>tail -f &lt;file&gt;
+<span class="gp">$ </span>tex --version <span class="p">|</span> head -1 <span class="p">|</span> cut -f2 -d<span class="s1">' '</span>
+<span class="go">3.14159265</span></pre></div><div class="step step-level-1" step="45" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="72000" data-y="0" data-z="0"><h1 id="lines-sort-uniq-wc">4. Lines: sort, uniq, wc</h1><pre class="highlight code console"><span class="gp">$ </span>seq <span class="m">10</span> -1 <span class="m">0</span> <span class="p">|</span> sort
+<span class="gp">$ </span>seq <span class="m">10</span> -1 <span class="m">0</span> <span class="p">|</span> sort -n
+<span class="gp">$ </span>seq <span class="m">10</span> -1 <span class="m">0</span> <span class="p">|</span> sort <span class="p">|</span> uniq -c
+<span class="gp">$ </span>seq <span class="m">10</span> -1 <span class="m">0</span> <span class="p">|</span> wc -l</pre></div><div class="step step-level-1" step="46" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="73600" data-y="0" data-z="0"><h1 id="lines-exercise">4. Lines: Exercise</h1><pre class="highlight code bash"><span class="c1"># 1. Name files matched by this glob pattern:
+</span>ls **/k???v<span class="o">[</span>a-z<span class="o">]</span>*<span class="o">[</span><span class="m">0</span>-9<span class="o">]</span></pre><pre class="highlight code bash"><span class="c1"># 2. Grep and sort all phone numbers in this file:
+</span>$ curl http://evc-cit.info/cit052/grepdata.txt &gt; t.txt</pre></div><div class="step step-level-1" step="47" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="75200" data-y="0" data-z="0"><h1 id="files-directories">5. Files: Directories</h1><div class="notes"><p>explain directory structure</p><p>dot and dot-dot</p><p>"./x" means x in the current directory (pwd)</p><p>".x" means it's a hidden directory.</p><p>If a path starts with an / it is an absolute path.</p></div><pre class="highlight code console"><span class="gp">$ </span>basename /some/long/path  <span class="c1"># &#xBB;path&#xAB;
+</span><span class="gp">$ </span>dirname  /some/long/path  <span class="c1"># &#xBB;/some/long&#xAB;</span></pre><pre class="highlight code console"><span class="gp">$ </span><span class="nb">cd</span> <span class="o">[</span>path<span class="o">]</span>
+<span class="gp">$ </span>ls <span class="o">[</span>path<span class="o">]</span>
+<span class="gp">$ </span><span class="nb">pwd</span>
+<span class="gp">$ </span>mkdir &lt;path&gt;
+<span class="gp">$ </span>find <span class="o">[</span>path<span class="o">]</span> -iname <span class="s1">'glob'</span></pre></div><div class="step step-level-1" step="48" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="76800" data-y="0" data-z="0"><h1 id="files-i-o">5. Files: I/O</h1><pre class="highlight code console"><span class="gp">$ </span>cat <span class="o">[</span>path<span class="o">]</span>
+<span class="gp">$ </span>tac <span class="o">[</span>path<span class="o">]</span>
+<span class="gp">$ </span>touch <span class="o">[</span>path<span class="o">]</span>
+<span class="gp">$ </span>cp &lt;source1&gt; <span class="o">[</span>&lt;source2&gt;<span class="o">]</span> &lt;dest&gt;
+<span class="gp">$ </span>mv &lt;source1&gt; &lt;dest&gt;
+<span class="gp">$ </span>ln &lt;source&gt; &lt;link-name&gt;
+<span class="gp">$ </span>ln -s &lt;source&gt; &lt;link-name&gt;
+<span class="gp">$ </span>file <span class="o">[</span>path<span class="o">]</span></pre><div class="notes"><p>chmod, users etc. I leave that out for now.
+Not because it's not important but because it's kinda boring.</p></div></div><div class="step step-level-1" step="49" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="78400" data-y="0" data-z="0"><h1 id="files-exercise">5. Files: Exercise</h1><pre class="highlight code bash"><span class="c1"># Write a function to check if a file exists and is
+# not a dir and then create an symbolic link with
+# absolute path with the suffix ".link" in the
+# current directory, # pointing to the original file.
+</span>link_me_if_you_can<span class="o">()</span> <span class="o">{</span>
+    <span class="c1"># ...
+</span><span class="o">}</span>
+
+link_me_if_you_can /tmp/test-file</pre><div class="notes"><pre class="highlight code bash">link_me_if_you_can<span class="o">()</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">[</span> -f <span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+        <span class="nv">link_name</span><span class="o">=</span><span class="k">$(</span>basename <span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span><span class="k">)</span>.link
+        ln -sf <span class="s2">"</span><span class="k">$(</span>realpath <span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span><span class="k">)</span><span class="s2">"</span> <span class="s2">"./</span><span class="si">${</span><span class="nv">link_name</span><span class="si">}</span><span class="s2">"</span>
+    <span class="k">fi</span>
+<span class="o">}</span></pre></div></div><div class="step step-level-1" step="50" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="80000" data-y="0" data-z="0"><h1 id="misc-bashrc">6. Misc: bashrc</h1><p>Special file that gets sourced on every new session.</p><h2 id="place-those-things-here">Place those things here:</h2><ul><li class="substep">Utils and aliases.</li><li class="substep">Environment variables that you need to persist.</li><li class="substep">Anything setup related.</li></ul></div><div class="step step-level-1" step="51" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="81600" data-y="0" data-z="0"><h1 id="misc-history">6. Misc: History</h1><pre class="highlight code console"><span class="gp">$ </span><span class="nb">history</span> <span class="p">|</span> less</pre><div class="notes"><p>Or what I do: Type the command start and press up.</p><p>Mention pager: more and less (and most)</p></div></div><div class="step step-level-1" step="52" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="83200" data-y="0" data-z="0"><h1 id="misc-math">6. Misc: Math</h1><pre class="highlight code bash">$ <span class="nb">echo</span> <span class="k">$((</span><span class="m">1</span> <span class="o">+</span> <span class="m">1</span><span class="k">))</span>
+<span class="m">2</span></pre></div><div class="step step-level-1" step="53" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="84800" data-y="0" data-z="0"><h1 id="misc-jq">6. Misc: jq</h1><pre class="highlight code bash">melon device list --json <span class="p">|</span> <span class="se">\
+</span>    jq <span class="s1">'.[] | select(.currentVersion|test("330.9.1-.*")) \
+            | [.id, .serialNO, .customerID] \
+            | @tsv \
+            '</span></pre></div><div class="step step-level-1" step="54" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="86400" data-y="0" data-z="0"><h1 id="misc-shortcuts">6. Misc: Shortcuts</h1><pre class="highlight code bash">Ctrl-A <span class="o">=</span> Go to ANFANG
+Ctrl-E <span class="o">=</span> Go to ENDE
+Ctrl-W <span class="o">=</span> Delete WORD
+Ctrl-C <span class="o">=</span> Seng SIGINT to current process
+Ctrl-D <span class="o">=</span> Close stdin <span class="o">(</span>causing EOF<span class="o">)</span>
+Ctrl-Z <span class="o">=</span> Background current process
+Ctrl-L <span class="o">=</span> Clear screen.</pre></div><div class="step step-level-1" step="55" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="88000" data-y="0" data-z="0"><h1 id="misc-strict-mode">6. Misc: Strict mode</h1><pre class="highlight code console"><span class="gp"># </span>Always add this to the top of your scripts:
+<span class="gp">$ </span><span class="nb">set</span> -euo pipefail</pre><div class="notes"><p>Also show set -x to enable debugging.</p></div></div><div class="step step-level-1" step="56" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="89600" data-y="0" data-z="0"><h1 id="misc-useful-stuff">6. Misc: Useful stuff</h1><pre class="highlight code console"><span class="gp">$ </span>sleep 1m30s
+<span class="gp">$ </span>date +%H
+<span class="gp">$ </span>sha1sum &lt;file&gt;
+<span class="gp">$ </span>mktemp
+<span class="gp">$ </span>df -h &lt;path&gt;
+<span class="gp">$ </span>stat <span class="o">[</span>path<span class="o">]</span>
+<span class="gp">$ </span><span class="nb">time</span> &lt;command&gt;</pre></div><div class="step step-level-1" step="57" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="91200" data-y="0" data-z="0"><h1 id="id1">6. Misc: Useful stuff</h1><pre class="highlight code console"><span class="gp">$ </span>rg &lt;pattern&gt; <span class="o">[</span>&lt;path&gt;<span class="o">]</span>
+<span class="gp">$ </span><span class="nb">echo</span> <span class="s1">'fred\nfrodo\nfrater'</span> <span class="p">|</span> fzf
+<span class="gp">$ </span>watch -n1 &lt;command&gt;
+<span class="gp">$ </span>bat &lt;source-file&gt;
+<span class="gp">$ </span>cloc &lt;dir&gt;
+<span class="gp">$ </span>htop
+<span class="gp">$ </span>rmlint
+<span class="gp">$ </span>ranger</pre><div class="notes"><p>Not so much bash but productivity related.</p></div></div><div class="step step-level-1" step="58" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="92800" data-y="0" data-z="0"><h1 id="misc-weird-stuff">6. Misc: Weird stuff</h1><pre class="highlight code console"><span class="gp">$ </span>yes
+<span class="gp">$ </span>tee
+<span class="gp">$ </span>dd <span class="k">if</span><span class="o">=</span>&lt;path&gt; <span class="nv">of</span><span class="o">=</span>&lt;path&gt; <span class="nv">status</span><span class="o">=</span>progress <span class="nv">bs</span><span class="o">=</span>1M <span class="nv">count</span><span class="o">=</span><span class="m">10</span>
+<span class="gp">$ </span>od
+<span class="gp">$ </span>cal</pre></div><div class="step step-level-1" step="59" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="94400" data-y="0" data-z="0"><h1 id="misc-shellcheck">6. Misc: shellcheck</h1><pre class="highlight code console"><span class="gp">$ </span>shellcheck ~/code/platform/backend/build/*.sh</pre><div class="notes"><p>Whenever you push a shell script or work on it
+I <em>expect</em> you to use shellcheck on it.</p></div></div><div class="step step-level-1" step="60" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="96000" data-y="0" data-z="0"><h1 id="misc-exercise">6. Misc: Exercise</h1><pre class="highlight code bash"><span class="c1"># What is this doing?
+</span>:<span class="o">(){</span> :<span class="p">|</span>:<span class="p">&amp;</span> <span class="o">}</span><span class="p">;</span>:</pre></div><div class="step step-level-1" step="61" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="97600" data-y="0" data-z="0"><h1 id="last-words">Last Words &#x1F31C;</h1><p>Things I left out:</p><ul><li>Arrays.</li><li>User and rights.</li><li>Networking commands.</li><li>Argument Parsing.</li><li>Version control related.</li><li>Containers.</li><li>Debugging / Performance.</li><li>Man pages.</li><li>...</li></ul></div><div class="step step-level-1" step="62" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="99200" data-y="0" data-z="0"><h1 id="questions">..Questions? &#x1F92A;</h1><p><em>Congratulations</em>  you made it so far.</p><h2 id="i-trust-you-can-now-read-the-docs">I trust you can now read the docs.</h2><div class="notes"><p>blah</p></div></div><div class="step step-level-1" step="63" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="100800" data-y="0" data-z="0"><h1 id="references">References &#x1F516;</h1><h2 id="bash-bible">Bash Bible:</h2><center>
+    <a class="reflink" href="https://tldp.org/LDP/abs/html/index.html">Advanced Bash Scripting</a>
+</center>
+<p/><h2 id="art-of-unix-programming">Art of Unix Programming</h2><center>
+    <a class="reflink" href="http://www.catb.org/%7Eesr/writings/taoup/html/index.html">Philosophy &amp; History</a>
+</center>
+<p/></div><div class="step step-level-1" step="64" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="102400" data-y="0" data-z="0"><h1 id="practice-round">Practice round &#x1F9E8;</h1><div class="math-block ">$$\begin{align}A = \frac{E[uptime]}{E[uptime] + E[downtime]}\end{align}$$</div><pre class="highlight code">Write a script that measures the availability,
+as defined above, for &#xBB;germanbionic.io&#xAB; and store
+the results daily in this structure:
+
+.
+&#x2514;&#x2500;&#x2500; &lt;year-number&gt;
+ &#xA0;&#xA0; &#x2514;&#x2500;&#x2500; &lt;month-number&gt;
+ &#xA0;&#xA0;     &#x2514;&#x2500;&#x2500; &lt;day-number&gt;
+            &#x251C;&#x2500;&#x2500; uptime.log
+            &#x251C;&#x2500;&#x2500; downtime.log
+    &#xA0;&#xA0;      &#x2514;&#x2500;&#x2500; percent</pre></div></div><script type="text/javascript" src="js/impress.js"></script><script type="text/javascript" src="js/gotoSlide.js"></script><script type="text/javascript" src="js/hovercraft.js"></script></body></html>
