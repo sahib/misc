@@ -131,6 +131,10 @@ History ⏳
 
     Cygwin
 
+    Note that this is a bash workshop but we focus
+    on the part that all Posix shells implement.
+    There are almost no bash specific features in this workshop.
+
 ----
 
 ``bash`` > ``python``? 🤔
@@ -311,6 +315,10 @@ Table of Contents
 
 .. note:: Collection of tips and tricks.
 
+Practice (optional)
+-------------------
+
+.. note:: Actual ticket we can do.
 
 ----
 
@@ -487,6 +495,7 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
 
 .. code-block:: bash
 
+    $PATH
     $RANDOM
     $HOME
     $PWD
@@ -494,6 +503,8 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
     # ...
 
 .. note::
+
+    Explain PATH
 
     There are more, but those are the important ones.
     Also some are not listed here: $? $0 etc.
@@ -877,6 +888,8 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
 
     "./x" means x in the current directory (pwd)
 
+    ".x" means it's a hidden directory.
+
     If a path starts with an / it is an absolute path.
 
 .. code-block:: console
@@ -1155,3 +1168,26 @@ Art of Unix Programming
         <a class="reflink" href="http://www.catb.org/%7Eesr/writings/taoup/html/index.html">Philosophy &amp; History</a>
     </center>
     <p/>
+
+----
+
+Practice round 🧨
+=================
+
+.. math::
+
+    A = \frac{E[uptime]}{E[uptime] + E[downtime]}
+
+.. code-block::
+
+    Write a script that measures the availability,
+    as defined above, for »germanbionic.io« and store
+    the results daily in this structure:
+
+    .
+    └── <year-number>
+        └── <month-number>
+            └── <day-number>
+                ├── uptime.log
+                ├── downtime.log
+                └── percent
