@@ -15,6 +15,6 @@ git checkout master -- shell/slides
 
 git add .
 git commit -am 'updated gh-pages via script' --allow-empty
-git push origin gh-pages
+git push --force origin gh-pages
 
-git checkout master
+git checkout -f master
