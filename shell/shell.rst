@@ -1186,8 +1186,9 @@ Practice round 🧨
 
     .
     └── <year-number>
+        ├── percentage
         └── <month-number>
+            ├── percentage
             └── <day-number>
-                ├── uptime.log
-                ├── downtime.log
-                └── percent
+                ├── percentage
+                └── log
