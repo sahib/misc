@@ -1,0 +1,83 @@
+
+
+\documentclass[a5paper,ngerman]{scrartcl}
+\usepackage{fontspec}
+\setmainfont[Mapping=tex-text]{Vollkorn}
+\setsansfont[Mapping=tex-text]{Vollkorn}
+\setmonofont{Vollkorn}
+\PassOptionsToPackage{normalem}{ulem}
+\usepackage{ulem}
+\usepackage{tikz}
+\usetikzlibrary{positioning,fadings,through}
+\usetikzlibrary{patterns}
+\definecolor{balken}{HTML}{bbbbbb}
+\definecolor{balken_border}{HTML}{888888}
+
+\usepackage{enumitem,amssymb}
+\usepackage{wasysym}
+\usepackage{xcolor}
+\usepackage{eso-pic}
+\usepackage{multicol}
+\pagestyle{empty}
+\usepackage[left=1cm,right=1cm,top=0.5cm,bottom=0.5cm,includeheadfoot]{geometry}
+\renewcommand*{\sectionformat}{}
+
+\usepackage{xunicode}
+\usepackage{polyglossia}
+\setdefaultlanguage[variant=german,spelling=new,babelshorthands=true]{german}
+\vspace{-2cm}
+\begin{document}
+{%
+\Huge
+\begin{center}
+\textbf{Bierschnitzeljagd}
+\end{center}
+}%
+
+\textbf{Regeln:} Jedes Team sammelt möglichst viele Punkte, gemäß der Liste
+unten. Nehmt die Punkte nicht (bier-)ernst. \textbf{Ziel} ist es, möglichst viel von der
+Stadt und (Hefe-)Kultur kennenzulernen.
+
+\begin{enumerate}
+\setlength\itemsep{0em}
+\item Möglichst viele verschiedene Biere von vielen Brauerein einsammeln. (Dokumentation mit Bierbogen, 1$\times$ Punkt pro Bier, pro Rauchbier $+1\times$ Punkt extra)
+\item Bamberger Hörnla essen. (1$\times$ Punkt pro Hörnla; beim Bäcker Seel gibt's 1$\times$ Extrapunkt)
+\item 1$\times$ Paar Bamberger Bratwürste ergattern. (2x Punkte; zählt nur einmal)
+\item 1$\times$ Bamberger Zwiebel verschlungen. (2x Punkte; zählt nur einmal)
+\item »A U« bestellt. (3$\times$ Punkte, zählt nur einmal)
+\item Glühwein auf dem Weihnachtsmarkt trinken
+\item Traditionelle Keller und Brauereien besucht (je 3$\times$ Punkte):
+    \begin{multicols}{2}
+    \begin{itemize}
+    \item Einhornkeller
+    \item Stöhrenkeller
+    \item Spezialkeller
+    \item Bootshaus
+    \item Sternla
+    \item Schlenkerla
+    \item Mahr's Bräu
+    \item Brauerei Fässla
+    \item Brauerei Keesmann
+    \item Brauereigasthof Spezial
+    \item Brauerei Ambräusianum
+    \item Klosterbräu (TODO: offen?)
+    \end{itemize}
+    \end{multicols}
+\item Sehenswürdigkeiten (nur einmal vergebbar, Dokumentation mit Gruppenbild):
+    \begin{multicols}{2}
+    \begin{itemize}
+    \setlength\itemsep{0em}
+    \item Rosengarten (2$\times$ Punkte)
+    \item Altenburg (5$\times$ Punkte)
+    \item Theresienhain (1$\times$ Punkte)
+    \item Dom (1$\times$ Punkt)
+    \item Michelsberg (2$\times$ Punkt)
+    \item Altes Rathaus (1$\times$ Punkt)
+    \item Klein Venedig (1$\times$ Punkt)
+    \item Gabelmoo (1$\times$ Punkt)
+    \end{itemize}
+    \end{multicols}
+\end{enumerate}
+
+
+\end{document}

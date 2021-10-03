@@ -582,6 +582,10 @@ More info `here <https://tldp.org/LDP/abs/html/parameter-substitution.html>`_.
 .. image:: images/pipe.svg
     :class: borderless-img
 
+.. note::
+
+    Demonstrate lolcat.
+
 ----
 
 2. Processes: Streams
@@ -1025,6 +1029,7 @@ Place those things here:
     Ctrl-D = Close stdin (causing EOF)
     Ctrl-Z = Background current process
     Ctrl-L = Clear screen.
+    Alt-.  = Repeat last argument.
 
 ----
 
