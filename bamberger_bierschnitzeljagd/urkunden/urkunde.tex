@@ -1,0 +1,56 @@
+\documentclass[a5paper,ngerman]{scrartcl}
+\usepackage{fontspec}
+\setmainfont[Mapping=tex-text]{Vollkorn}
+\setsansfont[Mapping=tex-text]{Vollkorn}
+\setmonofont{Vollkorn}
+\PassOptionsToPackage{normalem}{ulem}
+\usepackage{ulem}
+\usepackage{tikz}
+\usetikzlibrary{positioning,fadings,through}
+\usetikzlibrary{patterns}
+\definecolor{balken}{HTML}{bbbbbb}
+\definecolor{balken_border}{HTML}{888888}
+
+\usepackage{graphicx}
+\graphicspath{ {../images/} }
+
+
+\usepackage{enumitem,amssymb}
+\newlist{todolist}{itemize}{2}
+\setlist[todolist]{label=$\square$}
+
+\usepackage{wasysym}
+\usepackage{xcolor}
+\usepackage{eso-pic}
+\usepackage{multicol}
+\pagestyle{empty}
+\usepackage[left=2.5cm,right=2.5cm,top=1.0cm,bottom=1.0cm,includeheadfoot]{geometry}
+\renewcommand*{\sectionformat}{}
+
+\usepackage{xunicode}
+\usepackage{polyglossia}
+\setdefaultlanguage[variant=german,spelling=new,babelshorthands=true]{german}
+
+% zur korreten Platzierung der Bilder im Titelblatt
+\usepackage{chngpage}
+\usepackage{calc}
+\usepackage{soul}
+
+\setlength{\parindent}{0pt}
+
+\date{\today}
+
+\begin{document}
+\input{<<PLACEHOLDER>>}
+\begin{minipage}[t]{0.47\textwidth}
+\underline{\hspace{7em}}
+
+{\small gez. Arbeitskreis Wochenende}
+\end{minipage}
+\begin{minipage}[t]{0.47\textwidth}
+\hfill
+\underline{\normalsize\hspace{4em}\emph{4.12.2021}\hspace{0.1em}}
+
+\hfill{\small Bamberg}
+\end{minipage}
+\end{document}
