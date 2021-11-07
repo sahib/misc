@@ -1,7 +1,6 @@
 \begin{center}
     \Huge
-    \setul{0.5ex}{0.3ex}
-    \setulcolor{gray}
+    \setulcolor{red}
     \ul{\textbf{Last-in First-out Negativpreis}}
 \end{center}
 \Large
@@ -13,7 +12,7 @@ dem Team \underline{\hspace{8cm}} 10 Minuspunkte anrechnen.
 
 \vspace{1em}
 \begin{center}
-\includegraphics[scale=0.1]{lifo.pdf}
+\includegraphics[scale=0.09]{lifo.pdf}
 \end{center}
 
 \vspace{2em}

@@ -1,7 +1,6 @@
 \begin{center}
     \Huge
-    \setul{0.5ex}{0.3ex}
-    \setulcolor{gray}
+    \setulcolor{orange}
     \ul{\textbf{Team-Award: Brennender Schuh}}
 \end{center}
 \Large

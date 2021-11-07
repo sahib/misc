@@ -1,12 +1,12 @@
 \begin{center}
     \Huge
-    \setul{0.5ex}{0.3ex}
-    \setulcolor{gray}
+    \setulcolor{magenta}
     \ul{\textbf{Schluckspecht-Preis}}
 \end{center}
 \Large
 
 \vspace{2em}
+\resetul
 Wir attestieren \underline{\hspace{8em} } die höchste
 Anzahl der getrunkenen Biere, die er ordnungsgemäß über
 den Harnleiter entsorgt hat. Glückwunsch\st{, Andi}!

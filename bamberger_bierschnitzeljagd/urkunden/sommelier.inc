@@ -1,7 +1,6 @@
 \begin{center}
     \Huge
-    \setul{0.5ex}{0.3ex}
-    \setulcolor{gray}
+    \setulcolor{green}
     \ul{\textbf{Team-Award: Sommelier}}
 \end{center}
 \Large
@@ -15,7 +14,7 @@ im direkten Vergleich erstplatziert.
 
 \vspace{1em}
 \begin{center}
-\includegraphics[scale=0.45]{sommelier.pdf}
+\includegraphics[scale=0.45]{scotch_hand.pdf}
 \end{center}
 
 \vspace{2em}
