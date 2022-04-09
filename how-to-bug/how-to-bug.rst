@@ -3,6 +3,7 @@
 :css: hovercraft.css
 
 TODO: Use some nice quotes here and there.
+TODO: Use a video for "milchmädchen rechnungen"
 
 
 .. note::
@@ -47,7 +48,7 @@ First step: Accept defeat
 
     - How good you think are we in testing our software?
     - How the f\*\*k do we measure that?
-    - :math:`\frac{loc(test_code)}{loc(app_code)}`
+    - :math:`Q_{pm} = \frac{loc(test\_code)}{loc(app\_code)}`
     - Backend: :math:`0.27`
     - Firmware: :math:`0.21` (feels bad man)
     - SQLite: :math:`640` (what the fuck.)
@@ -65,6 +66,31 @@ First step: Accept defeat
   https://www.sqlite.org/testing.html
 
   if you wonder why the firmware has not so much: ui, most other services are small-ish)
+
+----
+
+Headlines from the Internet
+===========================
+
+TODO: Search articles that suggest that improving software quality is
+      just a list of things you have to check off.
+
+
+https://www.softwaretestinghelp.com/improve-software-quality/
+https://towardsdatascience.com/14-ways-to-improve-software-quality-other-than-testing-a62d14936575
+
+https://dev.to/d_ir/achieving-100-code-coverage-will-make-you-a-better-developer-seriously-30fc
+
+.. note::
+
+    Software engineering is a creative craft, opposed to things like mechanic engineering.
+
+    Good quality cannot be achieved by mindlessly ticking off things on a checklist.
+    Many articles in the internet suggest otherwise and you should not always belive
+    the newest dogmas. Different things make sense for different teams.
+
+    There is no right way to write software, just ways that suck differently.
+    Be a pragmatic engineer, don't believe in dogmas like TDD or Patterns.
 
 ----
 
@@ -100,6 +126,13 @@ Different test types:
 How much quality do we need?
 ============================
 
+.. note::
+
+    How is quality measured?
+
+    Herraiz2010 "Beyond Lines of Code: Do we need more complexity metrics?" -> Probably still Lines of code.
+    https://www.oreilly.com/library/view/making-software/9780596808310/ch08.html
+
 TODO:
 
 * Bastelbude
@@ -134,8 +167,7 @@ The lifecycle of mistakes
 * Integration tests
 * End-to-End tests
 * Smoke tests
-* Performance/Load testing
-* Regression testing
+* Benchmarks/Load testing
 * Pen testing
 
 
@@ -156,6 +188,7 @@ TODO: A good mix.
 =================
 
 * Should be automated (if possible at all -> Matlab, UI, hardware)
+* Should be easy, fast and effortless to run (possible to divide into sets)
 * Happy path is not enough, but the most important one.
 * Unit tests should have no dependencies
 * Don't test things that are not in your software (json.Marshal)
@@ -253,6 +286,7 @@ go test -cover -> statement coverage
 
     TODO: Use Go 1.18 fuzzing
 
+----
 
 2. Prevention
 =============
@@ -261,23 +295,102 @@ Statistics: Average number of bugs per line.
 Still a fact: With enough lines of code, there will be bugs, no matter
 the experience level.
 
+2. Prevention: Out of scope
+===========================
+
+* Software design choices to lower number of bugs (good design result in lower )
+* Software processes that improve communication and therefore lower mistakes.
+  Communication: Many bugs happen when two software systems talk to each other.
+  But not the right language.
+
+2. Prevention: The language
+===========================
+
+choose a language with strict type system:
+
+* Ada
+* Rust
+* Go, Haskell
+* Elm
+* Typescript
+
+Nopes:
+
+* C
+* Python
+* PHP
+* Bash (well, for bigger software)
+
+2. Prevention: Use the tools, Luke!
+===================================
+
 static analyzers
+
+2. Prevention: Complexity
+=========================
 
 special case: software complexity can be measured and acted up on (McCabe, cyclomatic complexity)
 
 feature creep (case of log4j, Software complexity must be measured as the sum of all dependencies)
 
-regression testing
+2. Prevention: Regressions
+==========================
+
+Bug fixes should be considered
+(do we do this? often, but not always)
+
+2. Prevention: Documentation
+============================
+
+Literate programming (jupyter kinda does this)
+(bit too much for us)
+
+Write go examples
+
+Write good docstrings where necessary,
+don't just write doc strings to make the linter shut up
+
+Documentation should stay close
+(that's also why I don't like Confluence for code docs.
+Docs won't change when it's not close to the code)
+
+2. Prevention: Pair Programming
+===============================
+
+2. Prevention: CI/CD Pipelines
+==============================
 
 CI/CD
 
-Reviews
+2. Prevention: Code Reviews
+===========================
+
+Good commit messages
+Assign only when really ready.
+
+2. Prevention: Introspection
+============================
 
 - Design your software inspectable. Built command line tools that help you check what's going on
 
-- Communication: Many bugs happen when two software systems talk to each other.
-  But not the right language.
+2. Prevention: Security
+=======================
 
+https://raw.githubusercontent.com/OWASP/Go-SCP/master/dist/go-webapp-scp.pdf
+
+OWASP Juice Shop
+
+
+2. Prevention: Learn from others
+================================
+
+Read other code bases and see how they handle errors
+or what kind of CI/CD linters etc. they have.
+
+Good code bases:
+
+* Caddy (awesome documentation)
+* Minio (impressive benchmarking)
 
 3. Debugging
 ============
@@ -298,6 +411,8 @@ Reviews
 
     (Brian Kernighan)
 
+- git bisect
+
 4. Profiling
 ============
 
@@ -307,7 +422,23 @@ But it does matter how fast you return a correct result.
 
 Everything correct, but the result never arrive? Ok, great.
 
+pprof the fuck of it
+
+strace (-tT for timestamps, -k for call traces)
+
+https://perf.wiki.kernel.org/index.php/Main_Page
+
+eBPF
+
+Evan's Debugging Tools I like
+
+https://go.dev/doc/diagnostics
+
+Differences: Profiling - Tracing - Debugging - Statistics
+
 5. Takeaways
 ============
 
 -> Implement regression testing.
+-> Better reviews
+-> Don't overuse tools. Simple is better. If you need a bigger tool, you were a bigger fool.

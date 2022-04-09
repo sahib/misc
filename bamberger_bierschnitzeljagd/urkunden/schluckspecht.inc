@@ -8,7 +8,7 @@
 \vspace{2em}
 \resetul
 Wir attestieren \underline{\hspace{8em} } die höchste
-Anzahl der getrunkenen Biere, die er ordnungsgemäß über
+Anzahl der getrunkenen Biere, die er/sie ordnungsgemäß über
 den Harnleiter entsorgt hat. Glückwunsch\st{, Andi}!
 \vspace{1em}
 

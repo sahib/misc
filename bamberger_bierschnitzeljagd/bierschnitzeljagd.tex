@@ -18,7 +18,8 @@
 \usepackage{multicol}
 \usepackage{soul}
 \setul{0.3ex}{0.5ex}
-\setulcolor{magenta}
+\definecolor{darkgreen}{rgb}{0.0,0.3,0.0}
+\setulcolor{darkgreen}
 
 \usepackage{graphicx}
 \graphicspath{ {images/} }
@@ -28,6 +29,12 @@
 \renewcommand*{\sectionformat}{}
 \setlength{\parindent}{0pt}
 
+\newcommand{\veggie}{%
+  \begingroup\normalfont
+  \includegraphics[height=\fontcharht\font`\B]{veggie.pdf}%
+  \endgroup
+}
+
 \usepackage{xunicode}
 \usepackage{polyglossia}
 \setdefaultlanguage[variant=german,spelling=new,babelshorthands=true]{german}
@@ -35,25 +42,26 @@
 {%
 \Huge
 \begin{center}
-\ul{\textbf{Bierschnitzeljagd}}
+    \ul{\textbf{Bierschnitzeljagd}}
 \end{center}
 }%
 
-\vspace{2em}
+\vspace{0.5em}
 
-\noindent\textbf{Regeln:} Jedes Team sammelt möglichst viele Punkte, gemäß der Liste
-unten. Nehmt die Punkte nicht (bier-)ernst. \textbf{Ziel} ist es, möglichst viel von der
+\noindent\textbf{\textcolor{darkgreen}{Regeln:}} Jedes Team sammelt möglichst viele Punkte, gemäß der Liste
+unten. Nehmt die Punkte nicht (bier-)ernst. \textbf{\textcolor{darkgreen}{Ziel}} ist es, möglichst viel von der
 Stadt und (Hefe-)Kultur kennenzulernen.
 
 \begin{enumerate}
 \setlength\itemsep{0.3em}
-\item Möglichst viele verschiedene Biere von vielen Brauerein einsammeln. (Dokumentation mit voll ausgefüllten Bierbogen, 1$\times$ Punkt pro Bier, pro Rauchbier $+1\times$ Punkt extra)
-\item Bamberger Hörnla essen. (1$\times$ Punkt pro Hörnla; die Besten gibt's beim Bäcker Seel, da gibt's jeweils 1$\times$ Extrapunkt)
-\item 1$\times$ Paar Bamberger Bratwürste gegessen. (2x Punkte)
-\item 1$\times$ Bamberger Zwiebel gegessen. (2x Punkte)
-\item 1$\times$ Schäufela gegessen. (2x Punkte)
-\item »A U« oder ein »Spezi« bestellt. (je 3$\times$ Punkte, zählt je nur einmal)
-\item Glühwein auf dem Weihnachtsmarkt trinken (je 1$\times$ Punkt)
+\item Möglichst viele verschiedene Biere von vielen Brauerein konsumieren. Dokumentation mit voll ausgefüllten Bierbogen, 1$\times$ Punkt pro Bier, pro Rauchbier $+1\times$ Punkt extra.
+\item Bamberger Hörnla essen. (\veggie, 1$\times$ Punkt pro Hörnla; die Besten gibt's beim Bäcker Seel, da gibt's jeweils 1$\times$ Extrapunkt)
+\item 1$\times$ Paar Bamberger Bratwürste gegessen. (2$\times$ Punkte)
+\item 1$\times$ Bamberger Zwiebel gegessen. (2$\times$ Punkte)
+\item 1$\times$ Schäufela gegessen. (2$\times$ Punkte)
+\item 1$\times$ Ziebeleskäs gegessen (\veggie, 3$\times$ Punkte)
+\item 1$\times$ Gerupften gegessen (\veggie, 3$\times$ Punkte)
+\item »A U« oder ein »Spezi« bestellt. (\veggie, je 3$\times$ Punkte, zählt je einfach)
 \item Traditionelle Keller und Brauereien besucht (je 3$\times$ Punkte):
     \begin{multicols}{2}
     \begin{itemize}
@@ -75,10 +83,11 @@ Stadt und (Hefe-)Kultur kennenzulernen.
     \end{itemize}
     \end{multicols}
 
-\vspace{1em}
-\begin{center}\footnotesize\emph{(Bitte wenden)}\end{center}
+\vspace{0.5em}
+
+\begin{center}\footnotesize\emph{(Bitte wenden)}\hspace{2cm}\textcolor{white}{x}\end{center}
 \newpage
-\item Sehenswürdigkeiten (nur einmal vergebbar, Dokumentation mit Gruppenbild in der Signalgruppe):
+\item Sehenswürdigkeiten besuchen. Nur einmal vergebbar, Dokumentation mit Gruppenbild in der Signalgruppe:
     \begin{multicols}{2}
     \begin{itemize}
     \setlength\itemsep{0em}
@@ -96,19 +105,19 @@ Stadt und (Hefe-)Kultur kennenzulernen.
     \end{multicols}
 \end{enumerate}
 
-Der Arbeitskreis Wochenende
-(\textbf{\textcolor{red}{A}\textcolor{green}{K}\textcolor{blue}{W}}) wünscht viele
+{\setul{0.2ex}{0.2ex}Der \ul{A}rbeits\ul{k}reis \ul{W}ochenende}
+wünscht viele
 Fußpilse, Erfolg und vor allem Spaß.  Seid dabei bitte vernünftig und trinkt
-nicht mehr als ihr vertragt: Kotzen wird nämlich mit Minuspunkten bestraft.
+nicht mehr als ihr vertragt: Kotzen wird nämlich mit Minuspunkten bestraft. Not good\textsuperscript{TM}.
 
-\vspace{2em}
+\vspace{1.5em}
 
 Coole Teams denken sich übrigens auch einen Namen für sich aus.
 Für das Team mit den meisten Punkten ist zudem \ul{ein Preis} vorgesehen.
+Möglicherweise stehen auch Trostpreise zur Verfügung.
 
-\vspace{2em}
 \begin{center}
-\includegraphics[scale=0.25]{akw.pdf}
+\includegraphics[scale=0.265]{akw.pdf}
 \end{center}
 
 \end{document}
