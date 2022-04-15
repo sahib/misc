@@ -6,7 +6,7 @@
 \Large
 
 \vspace{2em}
-\underline{\hspace{8em} } nahm erfolgreich an der Bierschnitzeljagd am \underline{~~~~\emph{4 Dezember 2021}~~~~} teil.
+\underline{\hspace{8em} } nahm erfolgreich an der Bierschnitzeljagd am \underline{~~~~\emph{21 Dezember 2022}~~~~} teil.
 Wir bestätigen hiermit:
 \vspace{1em}
 \begin{todolist}
