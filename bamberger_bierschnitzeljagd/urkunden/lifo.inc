@@ -6,7 +6,7 @@
 \Large
 
 \vspace{2em}
-Leider mussen wir für diese unökonomische Herangehensweise gegenüber Lebensmitteln
+Leider müssen wir für diese unökonomische Herangehensweise gegenüber Lebensmitteln
 dem Team \underline{\hspace{8cm}} 10 Minuspunkte anrechnen.
 \vspace{1em}
 
