@@ -115,8 +115,9 @@ $ <span class="nb">echo</span> <span class="s2">"ML = More loops"</span> &gt;&gt
 <span class="nb">false</span> <span class="o">||</span> <span class="nb">echo</span> <span class="s1">'Ho!'</span>
 <span class="nb">echo</span> <span class="s1">'Ha!'</span> <span class="p">;</span> <span class="nb">echo</span> <span class="s1">'He!'</span></pre></div><div class="step step-level-1" step="30" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="48000" data-y="0" data-z="0"><h1 id="processes-jobs">2. Processes: Jobs</h1><pre class="highlight code console"><span class="gp">$ </span><span class="o">(</span>sleep <span class="m">15</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s1">'im late!'</span><span class="o">)</span> <span class="p">&amp;</span>
 <span class="gp">$ </span><span class="nb">fg</span>
-<span class="go">&lt;Ctrl-Z&gt;</span></pre></div><div class="step step-level-1" step="31" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="49600" data-y="0" data-z="0"><h1 id="processes-subshell">2. Processes: Subshell</h1><pre class="highlight code console"><span class="gp">$ </span>melon --token <span class="s2">"</span><span class="k">$(</span>melon login<span class="k">)</span><span class="s2">"</span> device list</pre></div><div class="step step-level-1" step="32" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="51200" data-y="0" data-z="0"><h1 id="processes-exercise">2. Processes: Exercise</h1><pre class="highlight code bash"><span class="c1"># Check if a $DEVICE_ID exists and if yes,
-# assign an update to it.</span></pre><div class="notes"><p>TODO: Solution</p></div></div><div class="step step-level-1" step="33" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="52800" data-y="0" data-z="0"><h1 id="control-if">3. Control: if</h1><pre class="highlight code bash"><span class="nv">A</span><span class="o">=</span><span class="m">1</span>
+<span class="go">&lt;Ctrl-Z&gt;
+</span><span class="gp"># </span>alternatively: <span class="nb">wait</span></pre></div><div class="step step-level-1" step="31" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="49600" data-y="0" data-z="0"><h1 id="processes-subshell">2. Processes: Subshell</h1><pre class="highlight code console"><span class="gp">$ </span>melon --token <span class="s2">"</span><span class="k">$(</span>melon login<span class="k">)</span><span class="s2">"</span> device list</pre></div><div class="step step-level-1" step="32" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="51200" data-y="0" data-z="0"><h1 id="processes-exercise">2. Processes: Exercise</h1><pre class="highlight code bash">Output <span class="s2">"Hello World!"</span> after a random amount of <span class="nb">time</span> <span class="o">(</span>&lt;10s<span class="o">)</span>,
+but only <span class="k">if</span> really the amount of <span class="nb">time</span> passed.</pre><div class="notes"><p>sleep $(($RANDOM/10000.0)); echo 'Hello world!'</p></div></div><div class="step step-level-1" step="33" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="52800" data-y="0" data-z="0"><h1 id="control-if">3. Control: if</h1><pre class="highlight code bash"><span class="nv">A</span><span class="o">=</span><span class="m">1</span>
 <span class="k">if</span> <span class="o">[</span> <span class="s2">"</span><span class="si">${</span><span class="nv">A</span><span class="si">}</span><span class="s2">"</span> -gt <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
     <span class="nb">echo</span> <span class="s2">"Wow."</span>
 <span class="k">else</span>
@@ -153,8 +154,17 @@ $ melon device list --json <span class="p">|</span> <span class="se">\
 </span>    jq -r <span class="s1">'.[] | .id'</span>      <span class="p">|</span> <span class="se">\
 </span>    xargs <span class="nb">printf</span> <span class="s1">'-d %d'</span>   <span class="p">|</span> <span class="se">\
 </span>    xargs -n1 melon ota assign -v xyz</pre><div class="notes"><p>Interesting part of learning a new language is always
-seeing concepts that no other language has.</p></div></div><div class="step step-level-1" step="39" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="62400" data-y="0" data-z="0"><h1 id="control-exercise">3. Control: Exercise</h1><pre class="highlight code console"><span class="gp"># </span>Go over the device list and print the
-<span class="gp"># </span>mapping of serial to device id.</pre><div class="notes"><p>TODO: better exercise without melon? Same of ex2</p><p>melon device list --json | jq '...'</p></div></div><div class="step step-level-1" step="40" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="64000" data-y="0" data-z="0"><h1 id="lines-globbing">4. Lines: Globbing</h1><pre class="highlight code bash">ls /dev/sd?
+seeing concepts that no other language has.</p></div></div><div class="step step-level-1" step="39" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="62400" data-y="0" data-z="0"><h1 id="control-exercise">3. Control: Exercise</h1><pre class="highlight code console"><span class="gp"># </span>You have a config.txt file that looks like this:
+<span class="go">key=value
+another_key=another_value
+
+</span><span class="gp"># </span>Comment are also allowed.
+<span class="go">foo=bar
+
+</span><span class="gp"># </span>Empty lines are also allowed everywhere.
+<span class="go">
+</span><span class="gp"># </span>Write a bash <span class="k">function</span> to print only the keys
+<span class="gp"># </span><span class="o">(</span>no comments or empty lines<span class="o">)</span> <span class="k">in</span> a sorted fashion.</pre></div><div class="step step-level-1" step="40" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="64000" data-y="0" data-z="0"><h1 id="lines-globbing">4. Lines: Globbing</h1><pre class="highlight code bash">ls /dev/sd?
 ls /dev/sd<span class="o">[</span>a-z<span class="o">][</span><span class="m">1</span>-9<span class="o">]</span>
 cp report_<span class="o">{</span>old,new<span class="o">}</span>.pdf /tmp
 ls *.md
@@ -244,14 +254,15 @@ I <em>expect</em> you to use shellcheck on it.</p></div></div><div class="step s
 <p/><h2 id="art-of-unix-programming">Art of Unix Programming</h2><center>
     <a class="reflink" href="http://www.catb.org/%7Eesr/writings/taoup/html/index.html">Philosophy &amp; History</a>
 </center>
-<p/></div><div class="step step-level-1" step="64" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="102400" data-y="0" data-z="0"><h1 id="practice-round">Practice round &#x1F9E8;</h1><p>Produce a PDF with a QR code and TAN in it that customers can use to register their devices
-at the customer side.</p><ul><li>QR Code generation? (input: csv)</li></ul><pre class="highlight code bash"><span class="c1"># 1. validate script input and environment
-# 2. create temp working directory
-# 3. fetch token via melon
-# 4. convert token to qr code
-# 5. replace vars in template (sed) (template as HERE doc)
-# 5. render to pdf via pandoc
-# 6. do something with pdf? Print via lpr?</span></pre><div class="notes"><p>Old one:</p><blockquote><div class="math-block ">$$\begin{align}A = \frac{E[uptime]}{E[uptime] + E[downtime]}\end{align}$$</div><pre class="highlight code">Write a script that measures the availability,
+<p/></div><div class="step step-level-1" step="64" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="102400" data-y="0" data-z="0"><h1 id="practice-round">Practice round &#x1F9E8;</h1><p>Produce a PDF displaying a QR code and TAN in it that customers can use to
+register their devices on <tt>germanbionic.io</tt>. The TAN can be generated by
+melon.</p><pre class="highlight code bash"><span class="c1"># 1. Validate script input and environment
+# 2. Create temp working directory
+# 3. Fetch QR-token via melon
+# 4. Convert token to QR code
+# 5. Replace vars in HTML template
+# 5. Render HTML to pdf via pandoc
+# 6. Do someting with PDF (print? store?)</span></pre><div class="notes"><p>Old one:</p><blockquote><div class="math-block ">$$\begin{align}A = \frac{E[uptime]}{E[uptime] + E[downtime]}\end{align}$$</div><pre class="highlight code">Write a script that measures the availability,
 as defined above, for &#xBB;germanbionic.io&#xAB; and store
 the results daily in this structure:
 
