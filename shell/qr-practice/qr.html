@@ -1,0 +1,35 @@
+<html>
+<style>
+@media print {
+    body{
+        width: 21cm;
+        height: 29.7cm;
+        margin: 30mm 45mm 30mm 45mm;
+        /* change the margins as you want them to be. */
+   }
+}
+
+#content {
+    margin-left: auto;
+    margin-right: auto;
+    width: 500px;
+}
+
+#qrcode {
+    margin-left: auto;
+    margin-right: auto;
+    width: 500px;
+}
+
+</style>
+    <body>
+        <div id="content">
+            <center><h1>Provisioning Token</h1></center>
+            <img id="qrcode" src="/home/sahib/code/misc/shell/qr.svg" />
+            <center>
+                <h2><b>TAN:</b> 1234567890</h2>
+                <h2><b>SERIAL:</b> 11-22-33-44</h2>
+            </center>
+        </div>
+    </body>
+</html>

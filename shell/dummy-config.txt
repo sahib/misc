@@ -1,0 +1,11 @@
+# You have a config.txt file that looks like this:
+key=value
+another_key=another_value
+
+# Comment are also allowed.
+foo=bar
+
+# Empty lines are also allowed everywhere.
+
+# Write a bash function to print only the keys
+# (no comments or empty lines) in a sorted fashion.
