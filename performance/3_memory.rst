@@ -132,10 +132,11 @@ The stack & heap #2
 
 **Stack** is...
 
-* ...can be reasoned about during compile time
 * ...cleaned up automatically on return
 * ...bound to a function call
 * ...preferred if possible.
+* ...can be reasoned about during compile time
+* ...good for small amounts of data.
 
 **Heap** is...
 
@@ -143,6 +144,7 @@ The stack & heap #2
 * ...needs to be explititly cleaned up
 * ...can be used until freed.
 * ...should be used when required.
+* ...usually required for a lot of data.
 
 ----
 
@@ -183,6 +185,21 @@ memory bookkeeping and the garbage collector.
    Well, you're lucky enough that your compiler does it for you
    Or you're unlucky enough to use python where all hope is forlorn
 
+----
+
+Detour: What is a StackOverflow?
+================================
+
+Why using the stack only for small data if you can also use it for somewhat dynamic allocations?
+
+Because stack size is limited (on linux about 8MB, but don't rely on that)
+
+How can you hit this limit?
+
+* By recursion - lots of nested stacks.
+* By running over the extents of a buffer (in C)
+
+See example: stackoverflow.
 
 ----
 
@@ -236,20 +253,6 @@ Virtual memory
     The concept how this achieved is called "virtual memory" and it's probably one of
     the more clever things we did in computer science.
 
-
-----
-
-Virtual memory advantages
-=========================
-
-* Pages can be mapped only once it is needed (CoW)
-* Processes can share the same page for shared memory.
-* Pages do not need to be mapped to physical memory: Disk, DMA or even network is possible!
-* Processes are isolated from each other.
-* Processes consume only as much physical ("residual") memory as really needed.
-* Programs get easier because they can just assume that the memory is not fragmented.
-* Pages can be swaped by the OS without the process even noticing (Swapping)
-
 ----
 
 Virtual memory implementation
@@ -264,25 +267,169 @@ Virtual memory implementation
 
 ----
 
+Virtual memory advantages
+=========================
+
+* Pages can be mapped only once it is needed (CoW)
+* Processes can share the same page for shared memory.
+* Pages do not need to be mapped to physical memory: Disk, DMA or even network is possible!
+* Processes are isolated from each other.
+* Processes consume only as much physical ("residual") memory as really needed.
+* Programs get easier to write because they can just assume that the memory is not fragmented.
+* Pages can be swaped by the OS without the process even noticing (Swapping)
+* The kernel can give away more memory than there is on the system (overcommiting)
+* Pages with the same content can be deduplicated
+
+----
+
+Residual vs virtual memory usage
+================================
+
+TODO: look a  htop and free
+
+----
+
+Quick peak memory measurement
+=============================
+
+.. code-block::
+
+   /usr/bin/time -v <command>
+
+----
+
 malloc()
 ========
 
 
+```c
+char *one_kb_buf = malloc(1024 * sizeof(char));
+/* use one_kb_buf somehow */
+free(onone_kb_buf);
+```
 
-* Virtual memory
-  -> SIGSEGV when accessing virtual memory that is not mapped ("page fault").
-  -> Page cache
-  -> Page stealing: seldomly used pages go to swap and only read back on use.
+* ``malloc`` itself is implemented in user space, not by the kernel.
+* Think of it as some sort of memory pool management library (implemente by glibc)
+* When ``malloc`` runs out of space it asks the kernel for more space by using either the ``sbrk`` call (for small allocations)
+  or ``mmap`` (for big allocations). Allocations have as multiple of PAGE_SIZE (4KB)
+* ``sbrk`` is a system call that moves the *program break* of a program upwards (or downwards) by a certain amount.
+* The new space is then managed by ``malloc``. Each allocation gets added a header by ``malloc`` at the start (~10 byte),
+  so many small allocations are wasteful.
+* Memory that is not directly used is kept in a freelist. Only once the freelist is empty, new memory is fetched
+  from the operating system.
+* On ``free`` a memory block is added back to the freelist.
+* ``malloc`` is optimized for the usecase of allocating many (typically) small sized objects with minimal fragmentation.
+  Since every program tends to have different needs it makes sense to do this in userspace.
+* Go uses a similar implementation, but is more sophisticated. Main difference:
+  it keeps pre-allocated arenas for differently sized objects. i.e. 4, 8, 16,
+  32, 64 and so on.
 
+.. note::
 
-* Page faults
-* Residual vs shared memory
-* sbrk()
-* What happes on malloc?
-* Swap
-* Low memory situations (OOM)
-* Stack vs Heap
-* Dynamic memory allocation
-* Measuring allocations in Go
+    What the fuck happens on allocation?
+
+    In C you have to explicitly what ``Go`` does in the background for you:
 
 ----
+
+Swapping
+========
+
+.. code-block:: bash
+
+    $ dd if=/dev/zero of=swapfile count=1024 bs=1M
+    $ swapon ./swapfile
+
+.. code-block:: bash
+
+    $ cat /proc/sys/vm/swappiness
+    (value between 0-100)
+    0 = only swap if OOM would hit otherwise.
+    100 = swap everything not actively used.
+
+.. note::
+
+   Linux can use swap space as second-prio memory if main memory runs low.
+   Swap is already used before memory goes low. Inactive processes and stale IO pages
+   get put to swap so that memory management can make use of that space to provide less
+   fragmented memory regions.
+
+   How aggressive this happens can be set using `vm.swappiness`. A value between
+
+   Rules:
+
+   - If you want to hibernate (i.e. powerless suspend) then you need as much swap as RAM.
+   - Otherwise about half of RAM is a good rule of thumb.
+   - Systems that rely on low latency (i.e. anything that goes in the direction of realtime) should not swap.
+
+----
+
+The OOM Killer
+==============
+
+* Kicks in if sytem almost completely ran out of RAM.
+* Selects a process based on a scoring system and kills it.
+* Processes can be given a priority in advance.
+
+.. note::
+
+    * Last resort mechanism.
+    * Reports in dmesg.
+    * Sometimes comes too late and is not able to operate anymore.
+
+    Alternatives:
+
+    * earlyoom
+    * systemd-oomd
+
+    Userspace-Daemons that monitor memory usage and kill processes
+    in a very configurable way. Well suited for server systems.
+
+----
+
+``mmap()``
+==========
+
+* Can map files (among other things) to a processes' memory.
+* File contents are loaded
+
+
+.. note::
+
+   Maybe one of the most mysterious system features we have on Linux.
+
+   Typical open/read/write/close APIs see files as streams.
+   With mmap() we can handle files as arrays and the memory needed for
+   this can be shared by several processes!
+
+   Great for implementing databases
+   or implementing random access to a big file (ex: reading every tenth byte of a file)
+
+----
+
+``madvise()`` and ``fadvise()``
+===============================
+
+* You can give tips to the kernel.
+* When you know that you need a certain memory page soon,
+  then you can do ``madvise(addr, 4096, MADV_WILLNEED)``.
+* With ``fadvise()`` you can do the same for files.
+
+
+.. note::
+
+   This is greatly notice-able with file I/O!
+
+----
+
+Homework
+========
+
+TODO: Ddecice on what to use here.
+
+
+Write a program that... TODO.
+
+
+Write a program in your favourite language that allocates
+a lot of memory but does not

@@ -4,11 +4,11 @@
 
 ----
 
-.. include:: intro.rst
-.. include:: cpu.rst
-.. include:: concurrent.rst
-.. include:: memory.rst
-.. include:: io.rst
+.. include:: 1_intro.rst
+.. include:: 2_cpu.rst
+.. include:: 3_memory.rst
+.. include:: 4_io.rst
+.. include:: 5_concurrent.rst
 
 ----
 

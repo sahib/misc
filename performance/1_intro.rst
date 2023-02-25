@@ -68,25 +68,34 @@ Expectation management
       In the worst case you get better in buzzword bingo.
 
 
+-----
+
+What is complexity?
+How does it relate to performance?
+Is it cyclomatic complexity? Algorithmic complexity? Design complexity?
+
+-----
 
 Questions to ask:
 
 * How fast does this thing need to be?
 * Are optimizations worth the risk?
 
-What people ask:
+What people tend to ask:
 
 * How fast could this be?
-
-or:
-
-* It works, no need for optimization!
+  (that's a fine question for personal learning though,
+   but not when you get paid for delivering value to a company ;-))
 
 Rule of thumb:
 
-Do the obvious things right away.
-Check if your requirements are met, if not identity the biggest bottleneck(s) (don't optimize right away)
-Then tackle this by going from the big to the small.
+0. Do the obvious things right away. ("obvious" depends a lot on experience)
+1. Check if your requirements are met. If you don't have concrete performance requirements, make some.
+2. Benchmark to find the biggest bottlenecks regarding performance (people are incredible bad at guessing! Never skip this step)
+3. Optimize biggest offender found and repeat from step 1.
+
+Optimize only the biggest things first. Go from big to small. Never the other way around.
+Remember that optimizations usually come at a price (ex: Index in a database)
 
 ----
 
@@ -95,7 +104,7 @@ Not included:
 - Network performance
 - Database performance
 - Any of the thousands of specific fields
-- Long intro to data structures - pick a book.
+- Long intro to data structures - pick a book, watch a video.
 
 That would be several semesters of material.
 The material in this workshop is just one ;)
@@ -105,11 +114,9 @@ The material in this workshop is just one ;)
 
 TOC:
 
-
 * 4 Erkenntnüsse:
 * Jeder der sich dafür interessiert schnelle Programme zu schreiben.
 * Rare knowledge, less common knowledge.
-
 
 Intro:
 

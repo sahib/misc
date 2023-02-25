@@ -1,4 +1,4 @@
-* I/O
+* I/O and syscalls
 
     * Page cache
     * Filesystems (sync / flush cache)
@@ -6,12 +6,27 @@
     * buffered I/O
     * avoiding I/O (rmlint)
     * avoid copies (sendfile, hard/sym/reflinks -> git!)
+    * Sparse files
     * DMA
     * Insane stuff: FIEMAP, fadvise
     * strace it!
     * eBPF for the really hard cases
     * IO scheduler in linux (ionice, how does it work?)
-    * Cost of a syscall / what are syscalls?
+    * Cost of a syscall / what are syscalls? Userspace / Kernelspace
+
+
+============
+
+
+Make an example that shows the cost of a syscall:
+
+- create big file:
+
+    a) read it with many small read()
+    b) read with large buffers
+    c) read it with too large buffers
+
+============
 
 
 IO for a simple key value store:
@@ -52,7 +67,6 @@ LSM (Log structured merge tree): Store keys in sorted order on disk (sorted by k
 
 -> Makes range queries possible
 -> Not all keys need to fit in memory (memory index can be sparse, because we can use binary search)
-
 
 
 

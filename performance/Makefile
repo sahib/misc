@@ -1,2 +1,2 @@
 all:
-	hovercraft toc.rst slides
+	hovercraft 0_toc.rst slides
