@@ -343,6 +343,24 @@ counter example 1-3
 
 ----
 
+(binary) size matters
+=====================
+
+* More debug symbols, functions and instructions make the binary bigger.
+* A process needs *at least* as much memory as the binary size (caveat: only the first one)
+* The bigger the binary, the longer the startup size. Important for shortlived processes (scripts!)
+* CPUs have caches for code instructions. If your program is so fat that that the caches get evicted,
+  you might have created a performance issue. (ex: jumping between two functions in your binary, located across)
+
+.. note::
+
+   Binaries can be compressed with UPX, but that does make start up time faster - contrary to that.
+
+   Also, in the embedded world the binary size is way more important, but 30M binaries seem excessive
+   even on servers. Go is doing a bad job here while Rust produces tiny outputs.
+
+----
+
 Detour: `perf` command
 ======================
 
@@ -501,6 +519,17 @@ We're not alone on a system. Every process get assigned a share of time that it 
 
 ----
 
+Process load
+============
+
+* Load param counts the number of processes in running or waiting state.
+* "0" describes an idle system.
+* If the system has a higher load number than cores it is overloaded.
+* load is averaged over 5, 10, 15 by default.
+* use load5 for graphs, load15 for quick judgmenet.
+
+----
+
 Process niceness
 ================
 
@@ -539,16 +568,27 @@ Rough Rules to take away
 
 0. Only use so much memory as you really need.
 1. Writes modify the cache. Directly use your data or declare it later.
-2. Keep your structs small.
+2. Keep your structs small. (<64 byte)
 3. Avoid nesting of data, if possible.
 4. For small structures (<64 byte) prefer copying over pointers.
-4. Avoid jumpin around in your memory a lot.
+5. Avoid jumpin around in your memory a lot.
+6. Avoid virtual methods and inheritance.
 
 TODO: Revisit those rules.
+
+.. note::
+
+   Go even warns about too structures (if they are used as values):
+
+   gocritic hugeParam: cfg is heavy (240 bytes); consider passing it by pointer
+
 
 ----
 
 Homework
 ========
 
-TODO: Irgendwann hier aufgeben. Vielleicht perf? Oder irgendein Programm benchmarken?
+1. Write benchmark to measure performance of get/set.
+2. Profile your program using a profiler and identify benchmarks.
+3. Try to fix at least one of those bottlenecks.
+4. Run your benchmarks again and see if it improved.

@@ -1,5 +1,7 @@
 ----
 
+TODO: Garbage collection (techniques, how to optimize)
+
 Memory
 ======
 
@@ -35,6 +37,10 @@ DRAM - one bit, please
    * Very simple and cheap to produce.
    * High density (many cells per area)
    * Needs to be refreshed constantly (64ns or so)
+
+   Fun fact: DRAM enables a hardware-based security attack: ROWHAMMER.
+   Changing a row of DRAM cells can, if done very often, switch a nearby row.
+   This can be used to change data like "userIsLoggedIn".
 
 ----
 
@@ -405,6 +411,21 @@ The OOM Killer
    Great for implementing databases
    or implementing random access to a big file (ex: reading every tenth byte of a file)
 
+
+``mmap`` for databases
+======================
+
+Short answer: Don't. Not enough control. Random order + writes hurt mmap.
+
+Long answer: https://db.cs.cmu.edu/mmap-cidr2022
+
+Good mmap use cases:
+
+* Reading large files (+ telling the OS how to read)
+* Sharing the file data with several processes in a very efficient way.
+* Zero copy during reading.
+* Ease-of-use. No buffers, no file handles.
+
 ----
 
 ``madvise()`` and ``fadvise()``
@@ -420,16 +441,15 @@ The OOM Killer
 
    This is greatly notice-able with file I/O!
 
+   Caveat: Complex orders (like tree traversal) cannot be requested
+   by userspace.
+
 ----
 
 Homework
 ========
 
-TODO: Ddecice on what to use here.
-
-
-Write a program that... TODO.
-
-
-Write a program in your favourite language that allocates
-a lot of memory but does not
+1. Measure the amounts of allocation (allocs + amount)
+2. See where the allocations come from and check how to reduce them.
+3. Measure again.
+4. Bonus: Until now all keys need to be held in memory: Is there a way to avoid this?
