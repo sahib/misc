@@ -2,6 +2,8 @@
 
 TODO: Garbage collection (techniques, how to optimize)
 
+TODO: pprof for memory.
+
 Memory
 ======
 

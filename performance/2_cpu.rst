@@ -5,16 +5,63 @@
 CPU
 ===
 
+Quiz:
+
+If two programs A and B execute the same number of instructions
+will they have roughly the same runtime?
+
+.. note::
+
+   Answer no.
+
+   Every instruction can take a different amount of cpu cycles.
+   Every instruction can do a lot of different work (SIMD vs normal)
+
 --------------
+
+Compilers
+=========
+
+.. image:: images/llvm.png
+
+.. note::
+
+   Steps to compile something:
+
+   * Lexer/Tokenizer (break code in tokens)
+   * Parser (build AST from code)
+   * High Level IR (build generic language from it)
+   * Low level IR (optimize and make it suitable for machines)
+   * Convert to actual target machine code
+
+--------------
+
+Fun fact: Supercompilers
+========================
+
+.. image:: images/supercompiler.png
+
+.. note::
+
+    * Compilers do not usually produce the best code and rely heavily on pattern matching, heuristics
+      and just being smart. They can miss room for optimizations although this is rather rare in practice.
+      (except Go, which is just a developing compiler)
+    * Super compilers brute force compilation (sometimes with benchmarks) until they found the best performing
+      piece of code.
+    * Not used in practice, since freaking slow but helpful for developing new compiler optimizations.
+
+
+   STOKE: https://github.com/StanfordPL/stoke
+
+-----
+
 
 How is code executed?
 =====================
 
-* Assembly vs Machine Code
-
-    Assembly: 1:1 human readable interpretation of machine code.
-    Machine code: machine readable instructions (each instruction has an id)
-    Assembler: Program that converts assembly to machine code.
+* Assembly: 1:1 human readable interpretation of machine code.
+* Machine code: machine readable instructions (each instruction has an id)
+* Assembler: Program that converts assembly to machine code.
 
 .. note::
 
@@ -31,9 +78,22 @@ How is code executed?
 Other terminology
 =================
 
-* Instruction Sets (RISC/CISC, x86, arm)
-* Microarchitecture (Implementation of a certain IS - Coffee Lake and so on)
-* Instruction Set Extensions / SIMD (AES, SSE etc.) (not usable in Go by now, except for automatism)
+* Instruction Set Architecture (x86, arm)
+* RISC / CISC
+* Microarchitecture / Microcode (``Pentium``, ``Coffee Lake``...)
+* Instruction Set Extensions / SIMD (MMX, AES, SSE...)
+
+.. note::
+
+    Example of a CISC instruction set: x86
+    Today, most complex operations get translated to RISC code though by the CPU.
+    CISC turned out to be slower, surprisingly.
+
+    RISC: ARM. Usually cheaper to build and also faster.
+
+    Microarchitecture: Implementation of a certain ISA.
+
+    ISE are not directly available in Go, only if the compiler decides to.
 
 --------------
 
@@ -122,6 +182,38 @@ Go assembly = assembler for a fantasy CPU
     * Cache misses (fetching from main memory mean
 
     List of typical cycles per instructions ("latency"): https://www.agner.org/optimize/instruction_tables.pdf
+
+--------------
+
+Detour: Calling conventions
+===========================
+
+.. code-block:: asm
+
+   FuncAddGo:
+      MOVQ 0x8(SP), AX  ; get arg x
+      MOVQ 0x10(SP), CX ; get arg y
+      ADDQ CX, AX       ; %ax <- x + y
+      MOVQ AX, 0x20(SP) ; return x+y-z
+      RET
+
+.. code-block:: asm
+
+   FuncAddC:
+       LEAL  (%rdi,%rsi), %eax
+       ADDL  %edx, %eax
+       RETQ
+
+.. note::
+
+    Go and C have different calling conventions.
+    C passes params and return values over registers
+    Go uses memory addresses (on the stack)
+
+    This makes it impossible to call a C function directly from Go.
+    Some languages like Zig share the same calling convetions and make
+    it therefore possible to directly call C code. For go we need a weird
+    abstraction layer called cgo.
 
 --------------
 
@@ -280,24 +372,6 @@ Fun fact: MOV alone is Turing complete: https://github.com/xoreaxeaxeax/movfusca
 
 ----
 
-Types of memory
-===============
-
-Static memory (SRAM) vs Dynamic memory (DRAM)
-
-SRAM:
-
-* Much much faster
-* Expensive as hell
-
-DRAM:
-
-* Has to be constantly refreshed.
-* Needs complex handling of memory controllers
-* Very cheap
-
-----
-
 The von Neumann Bottleneck
 ==========================
 
@@ -376,23 +450,54 @@ System wide profiling
 
 ----
 
+Detour: ``pprof``
+-----------------
+
+Visualize where the program spends time:
+
+* Call graph is annotated times.
+* Alternatively available as flamegraph.
+
+.. code-block:: bash
+
+    # pprof server under port 3000:
+    $ go tool pprof localhost:3000/debug/pprof/profile
+
+.. note::
+
+   Look at images/dashboard_pprof.svg here.
+
+   Pprof is also available for Python, but not as well integrated:
+   https://github.com/timpalpant/pypprof
+
+----
+
 Detour: Flame graphs
 ====================
 
-TODO:
+.. code-block:: go
 
-Attach to running program with perf record
-Render flamegraph from output
+    // Alternative for shortlived programs:
+    f, err := os.Create("cpu.pprof")
+	if err != nil {
+		panic(perr)
+	}
+	pprof.StartCPUProfile(f)
+	defer pprof.StopCPUProfile()
+    // ... work ...
 
-Perfect to see what time is spend in in what symbol.
-Available for:
 
-* CPU
-* Memory Allocations (although I like pprof more here)
-* Off-CPU (i.e. I/O)
+.. note::
 
-perf works (almost) always though and can be used to profile complete systems,
-for specific programming languages better options might be available though.
+    See images/brig_flamegraph.png
+    See images/brig_flamegraph.html
+
+    Perfect to see what time is spend in in what symbol.
+    Available for:
+
+    * CPU
+    * Memory Allocations (although I like pprof more here)
+    * Off-CPU (i.e. I/O)
 
 ----
 
@@ -423,10 +528,9 @@ True sharing
 This is when the idea of introducing caches between CPU and memory works out.
 Good news: Can be controlled by:
 
-* Limiting struct sizes to 64 byt
+* Limiting struct sizes to 64 bytes
 * Grouping often accessed data together.
   (arrays of data, not array of structs of data)
-*
 
 -> employee example
 
@@ -545,24 +649,6 @@ Exact behaviour depends on scheduler (scheduling frequency vs time slice size)
 
 ----
 
-Fun fact: Supercompilers
-========================
-
-TODO: Relevant?
-
-* Compilers do not usually produce the best code and rely heavily on pattern matching, heuristics
-  and just being smart. They can miss room for optimizations although this is rather rare in practice.
-  (except Go, which is just a developing compiler)
-* Super compilers brute force compilation (sometimes with benchmarks) until they found the best performing
-  piece of code.
-* Not used in practice, since freaking slow but helpful for developing new compiler optimizations.
-
-.. note::
-
-   STOKE: https://github.com/StanfordPL/stoke
-
------
-
 Rough Rules to take away
 ========================
 
@@ -581,7 +667,6 @@ TODO: Revisit those rules.
    Go even warns about too structures (if they are used as values):
 
    gocritic hugeParam: cfg is heavy (240 bytes); consider passing it by pointer
-
 
 ----
 

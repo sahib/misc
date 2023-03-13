@@ -252,9 +252,6 @@ All functions eventuall call functions implemented in C:
 
         return PyUnicode_FromString(s);
     }
-}
-
-
 
 .. note::
 
@@ -302,8 +299,7 @@ Theory: Complexity
     -> Some have better space / time complexity.
     -> Most have tradeoffs, only few are universally useful like arrays / hash tables
     -> Some are probalibisitic: i.e. they save you work or space at the expense of accuracy (bloom filters)
-    -> Difference between O(log n) and O(1) is not important most of the time.
-       (database developers might disagree here though)
+    -> Difference between O(log n) and O(1) is not important most of the time. (database developers might disagree here though)
 
 ----
 
@@ -348,7 +344,7 @@ Tests that measure performance requirements.
 
 What are possible performance metrics?
 
-.. code-block::
+.. note::
 
    Collect possible performance metrics (unit in parans):
 
@@ -394,14 +390,13 @@ Benchmarking and Statistics
 
    $ hyperfine
 
-
 .. note::
 
    * Run several times.
    * If the variance is not big, take the maximum.
    * If the variance is rather large, use min...max.
 
----
+----
 
 Benchmarking and CI/CD
 ======================

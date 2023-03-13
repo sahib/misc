@@ -401,7 +401,13 @@ I/O improving performance
 * Avoid directories with high amount of files (``git``)
 * For modifying big files use mmap.
 * Buy faster hardware.
-* Use a different I/O scheduler.
+
+----
+
+I/O improving performance #2
+============================
+
+* Use a different I/O scheduler (``none``).
 * Use a different filesystem (``tmpfs``)
 * Leverage the page cache and trust the OS
 * Use zero-copy techniques: ``sendfile``, ``splice``
@@ -430,8 +436,7 @@ Re-orders read and write requests for performance.
 ----
 
 ``ionice``
-=========
-
+==========
 
 .. code-block:: c
 

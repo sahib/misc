@@ -65,7 +65,12 @@ What are coroutines?
    get added that enhance (in the best case) the old concepts. I call this toilet paper development:
    If it stinks, put another layer over it.
 
-TODO: Make diagram showing the difference here.
+----
+
+Summary
+=======
+
+.. image:: images/time_sharing_threads.png
 
 ----
 
@@ -128,12 +133,30 @@ Dining Philosopher's problem as intro to synchronisation -> explain deadlock sce
 Primitive: Condition variable
 =============================
 
-* Broadcast or notify a single thread.
+.. code-block::
+
+    c.L.Lock()
+    for !condition() {
+        c.Wait()
+    }
+    // condition changed, do something.
+    c.L.Unlock()
+
+.. code-block::
+
+    c.L.Lock()
+    changeCondition()
+    c.Broadcast() // or c.Signal() for a single go routine.
+    c.L.Unlock()
 
 .. note::
 
-   Seldomly used in Go, but has their use cases.
-   TODO: grep for usage in firmware / backend.
+    * Broadcast or notify a single thread.
+    * Seldomly used in Go, but has their use cases.
+    * Use case: waiting on a condition without busy polling
+      and where the use of channels would be awkward (channels
+      suck if you have to wake up several go routines, as messages
+      are consumed)
 
 ----
 
@@ -191,6 +214,11 @@ Classical producer-consumer problem.
 4. Producer sends jobs over the channel.
 5. Tasks are distributed over the go routines.
 
+.. note::
+
+   Pools often use a queue (i.e. a channel or some other prioq). I.e. you can
+   produce more to some point than you consume. Can be a problem.
+
 ----
 
 Pattern: Limiter
@@ -237,6 +265,32 @@ Several pools connected over channels.
    Talk about the naive implementation where time of finish will
    be influenced by a single long running job.
 
+----
+
+Pattern: Parallel Iterator
+==========================
+
+.. code-block:: go
+
+   func iter() chan Elem {
+        ch := make(chan Elem, 10)
+        go func() {
+            a, b := 1, 1
+            for {
+                ch <- a
+                a, b = b, a + b
+            }
+        }()
+        return ch
+   }
+   for elem := range iter() { ... }
+
+
+.. note::
+
+    Problem: How to stop? Best to use context.Contex
+
+    Note: You should probably buffer a little here.
 
 ----
 
@@ -252,28 +306,190 @@ Problem: Shared state
 Problem: Race conditions
 ========================
 
-TODO: Race condition detection (helgrind, go -race, rust)
+.. code-block:: go
+
+    var counter int
+    func f() {
+        for(idx := 0; idx < 10000; idx++) {
+            counter++
+        }
+    }
+    // ...
+    go f()
+    go f()
+
+---
+
+Solution: Race conditions
+=========================
+
+* Avoid shared state. Limit scope where possible.
+* Prefer copy over references.
+* Use proper synchronisation.
+* Use a race detector. (``helgrind``, ``go test -race``)
+* Write tests that are multithreaded.
+* Use Rust.
 
 ----
 
 Problem: Deadlocks
 ==================
 
-TODO
+.. code-block:: go
+
+   ch := make(chan int)
+
+   // thread1:
+   ch <- 42
+
+   // thread2:
+   if !something {
+       return
+   }
+
+   <-ch
+
+----
+
+Problem Deadlock #2
+===================
+
+.. code-block:: go
+
+    func foo() error {
+        mu.Lock()
+        if err := bar(); err != nil {
+            return err
+        }
+
+        mu.Unlock()
+        return nil
+    }
+
+----
+
+Problem Deadlock #3
+===================
+
+.. code-block:: go
+
+    func foo() error {
+        mu1.Lock()
+        mu2.Lock()
+        // ...
+        defer mu1.Lock()
+        defer mu2.Lock()
+    }
+    func bar() error {
+        mu2.Lock()
+        mu1.Lock()
+        // ...
+        defer mu2.Lock()
+        defer mu1.Lock()
+    }
+
+----
+
+Solution: Deadlocks
+===================
+
+* Obtain a stacktrace if they happen.
+* Debugger (if deadlock is not timing sensitive)
+* Keep critical sections small.
+* Use defer for the ``Unlock``.
+* Respect the lock hierarchy.
+* Double think if an unbuffered channel will work out.
+* Use unidirectional channels and ``select`` in Go.
+* Don't be clever.
+
+.. note::
+
+   Deadlocks happen frequently when working with channels.
+
+   Tip: In Go progamms you can press Ctrl+\ or send SIGABRT or SIGTERM
+   to the program to make it print a stack trace.
+   Or use a debugger.
+
+   Don't be clever: There's a saying:
+
+   If you write the code as cleverly as possible, you are,
+   by definition, not smart enough to debug it.
+   --Brian Kernighan,
+
+   And our mind's horizon is never far away when doing parallel programming.
 
 ----
 
 Problem: Livelock
 =================
 
-TODO
+Example:
+
+* Two persons walking in opposite directions,
+  trying to pass each other in a tight corridor.
+* When both persons move at the same time left and right
+  then hallway is still blocked.
+* If infinitely done, then it's a livelock.
+
+.. note::
+
+   A system that does not make any progress for prolonged times.
+   Relatively seldom, but can happen.
+
+   Usual cause: Too primitive retry mechanism.
+
+----
+
+Solution: Livelock
+==================
+
+* Avoid circular dependencies.
+* Use an arbitrator.
+* Use exponential backoff.
+
+.. note::
+
+    * Arbitrator: In the metaphor above somebody that has an overview of the situation and tells one person to move.
+    * Exponential backoff: Proper retry mechanism with random jitter between retries.
+
+    Real life example: Two processes trying to execute an SQL transaction that depend on each other.
+    SQL server will stop the transaction and make them retry - if the retry mechanism is the same, then
+    it might take a long time to resolve the situation.
 
 ----
 
 Problem: Resource starvation
 ============================
 
-TODO
+»Greedy« threads can block resources used by other threads.
+
+.. note::
+
+   Resource: a database, some webserver, the CPU, the filesystem.
+
+   Can be caused by a deadlock, a livelock or any performance issues
+   or just duplicate work.
+
+   Typical in queuing systems:
+
+   * SlowConsumer
+   * SlowProducer
+
+----
+
+Solution: Resource starvation
+=============================
+
+* Make sure threads can not use resources exclusively.
+* Queuing: Allow a lot of buffering.
+* Benchmark: Are all resources used to full extent?
+
+.. note::
+
+   Buffering is necessary in queuing systems to account for slow producers / slow consumers.
+
+   Resource starvation is hard to fix in general and often goes unnoticed as it's often silent.
+   (i.e. system works, but is not as fast as it could have been)
 
 ----
 
@@ -307,7 +523,7 @@ Goal: no philosopher should starve.
 Homework
 ========
 
-1. Provide an async API for your KV-store.
-2. Do the IO in background
-2. Queue up writes to the database.
-3. Try to fetch keys in parallel.
+* Provide an async API for your KV-store.
+* Do the IO in background.
+* Queue up writes to the database.
+* Try to fetch keys in parallel.
