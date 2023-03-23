@@ -20,3 +20,11 @@ concurrent:
 
 toc:
 	hovercraft 0_toc.rst slides/toc
+
+publish:
+	rm -rf /tmp/slides
+	cp slides /tmp/slides -r
+	git checkout gh-pages
+	rm slides -rf
+	cp /tmp/slides . -r
+	git checkout master
