@@ -27,4 +27,7 @@ publish:
 	git checkout gh-pages
 	rm slides -rf
 	cp /tmp/slides . -r
+	git add slides
+	git commit --allow-empty -m "updated performance workshop"
+	git push origin gh-pages
 	git checkout master
