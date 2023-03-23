@@ -1,50 +1,45 @@
-General idea:
+:title: Performance: I/O
+:data-transition-duration: 1500
+:css: hovercraft.css
 
-* Teaching you about the internals of program execution.
-* Very neglected field - not much teached in studies, during day-to-day work "it worked (once)" is more important.
-* Maybe you heard of Moore's law?
-* Andy and Bill's law: What Andy (Intel ex-CEO) produces in Hardware speed, Bill Gates takes away.
-* Lemur's law: Software engineers get twice as incompentent every decade (only half ironic) - seriously, as an engineering discipline we should be
-  ashamed of how bad we performed over the last decades. We introduced so many layers of bad software and hacks that we depend on that we can't
-  change anymore. It's like building a complete city on sand. Part of this because we don't really do engineerings and focus so much on providing
-  company value that many of us did not even learn how good, performance optimized is supposed to look like. The costs of software engineers
-  is more expensive than hardware these days, but this is short sighted. Investing in quality long term benefits us all.
-  I hope to change your perspective a bit in this talk. We all lost the connection to the machine our programs run on and while the things in this
-  talk were somewhat common knowledge 20 years ago (at least parts of it) it became somehow obscure knowledge over time and universities just focused
-  on disciplines like web development and data science where you're not supposed to have this knowledge. Because you know, numpy and pandas does it for you.
-  Or the browser will just do the right thing.
-* In the 90s we still squeezed every byte of memory out of game consoles and did both amazing and scary optimizations to get basic functionality.
-* And last decade we invented things like Electron, a lazy-ass way to make applications "portable" by just starting a browser for every application - I don't want you guys to invent something like Electron
-* If you think Electron is a good idea, then please stop doing anything related to software engineering.
-* Maybe have a try with gardening, or do waterboarding in Guantanamo. Just do something less hurtful to mankind than Electron
-* Seriously take some pride as software engineerings and try to leave a solid legacy to the next generation of engineers.
+.. note::
 
-Disclaimer:
+    General idea:
 
-* We're working from low level to slightly higher level here. Don't expect tips like "use this data structure to make
-  stuff incredibly fast". I'll won't go over all possible performance tips for your language (there are better
-  lists on the internet). I also won't go over a lot of data structures - what I do show is to show you how to choose
-  a data structure.
-* The talk is loosely tied to the hardware: General intro, cpu, mem, io, parallel programming
-* Most code examples will be in Go and C, as most ideads require a compiled language.
-* Interpreted languages like Python/Typescript might take away a few concepts, but to be honest,
-  your language is fucked up and will never achieve solid performance.
-* For Python you can at least put performance criticals into C libraries, for the blistering cestpool
-  that web technology is... well, I guess your only hope is Webassembly.
-* In this talk you will learn why people invent things Webassembly - even though it's kinda sad.
+    * Teaching you about the internals of program execution.
+    * Very neglected field - not much teached in studies, during day-to-day work "it worked (once)" is more important.
+    * Maybe you heard of Moore's law?
+    * Andy and Bill's law: What Andy (Intel ex-CEO) produces in Hardware speed, Bill Gates takes away.
+    * Lemur's law: Software engineers get twice as incompentent every decade (only half ironic) - seriously, as an engineering discipline we should be
+      ashamed of how bad we performed over the last decades. We introduced so many layers of bad software and hacks that we depend on that we can't
+      change anymore. It's like building a complete city on sand. Part of this because we don't really do engineerings and focus so much on providing
+      company value that many of us did not even learn how good, performance optimized is supposed to look like. The costs of software engineers
+      is more expensive than hardware these days, but this is short sighted. Investing in quality long term benefits us all.
+      I hope to change your perspective a bit in this talk. We all lost the connection to the machine our programs run on and while the things in this
+      talk were somewhat common knowledge 20 years ago (at least parts of it) it became somehow obscure knowledge over time and universities just focused
+      on disciplines like web development and data science where you're not supposed to have this knowledge. Because you know, numpy and pandas does it for you.
+      Or the browser will just do the right thing.
+    * In the 90s we still squeezed every byte of memory out of game consoles and did both amazing and scary optimizations to get basic functionality.
+    * And last decade we invented things like Electron, a lazy-ass way to make applications "portable" by just starting a browser for every application - I don't want you guys to invent something like Electron
+    * If you think Electron is a good idea, then please stop doing anything related to software engineering.
+    * Maybe have a try with gardening, or do waterboarding in Guantanamo. Just do something less hurtful to mankind than Electron
+    * Seriously take some pride as software engineerings and try to leave a solid legacy to the next generation of engineers.
 
-----
+    Disclaimer:
 
-TODO: Write Agenda.
+    * We're working from low level to slightly higher level here. Don't expect tips like "use this data structure to make
+      stuff incredibly fast". I'll won't go over all possible performance tips for your language (there are better
+      lists on the internet). I also won't go over a lot of data structures - what I do show is to show you how to choose
+      a data structure.
+    * The talk is loosely tied to the hardware: General intro, cpu, mem, io, parallel programming
+    * Most code examples will be in Go and C, as most ideads require a compiled language.
+    * Interpreted languages like Python/Typescript might take away a few concepts, but to be honest,
+      your language is fucked up and will never achieve solid performance.
+    * For Python you can at least put performance criticals into C libraries, for the blistering cestpool
+      that web technology is... well, I guess your only hope is Webassembly.
+    * In this talk you will learn why people invent things Webassembly - even though it's kinda sad.
 
-
-Workshop is divided in 5 parts:
-
-- Intro
-- I/O and syscalls
-- CPU
-- Memory
-- Concurrency
+TODO: Write Agenda for each part.
 
 ----
 
@@ -181,7 +176,7 @@ Remember: It does not matter you fast you compute a wrong result.
 How do I measure?
 =================
 
-Via automated benchmarkings.
+Via automated benchmarks.
 
 .. note::
 
@@ -205,6 +200,8 @@ And that is: **You have to understand what your program is doing to optimize it.
 
 In a nutshell: Go from big to small
 ===================================
+
+Algorithm for optimizing a **correct** program:
 
 0. Do the obvious things right away. ("obvious" depends a lot on experience)
 1. Check if your requirements are met. If you don't have concrete performance requirements, make some.
@@ -282,7 +279,20 @@ Theory: Complexity
 
 * Data structures and algorithms can be divided in performance classes.
 * General types are space and time complexity.
-* Often also divided in worst case, best case, average case
+* Often also divided in worst case, best case, average case and specific operations.
+* Complexity classes are given in Big-O notation.
+
+----
+
+Theory: Big-O Notation
+======================
+
+.. image:: images/bigo.svg
+
+
+www.bigocheatsheet.com
+
+.. note::
 
     O(1) -> constant
     O(n) -> linear
@@ -291,8 +301,6 @@ Theory: Complexity
     O(n ** x) -> polynomial
     O(x ** n) -> exponential
     O(n!) -> fucktorial (oops, typo)
-
-.. note::
 
     Data structures and algorithms:
 
@@ -315,8 +323,6 @@ Complexity examples
 
 .. note::
 
-   TODO: worst case / best case example
-
    n**2
    log2 n
    n vs 1
@@ -331,6 +337,21 @@ Complexity examples
    * collisions can happen, making things inefficient.
    * range queries and sorting are impossible.
    * self balancing trees have O(log n) for get/set but are stable.
+
+----
+
+Data structures in this workshop
+================================
+
+This was it all. Go pick a book or course.
+
+.. note::
+
+   Data structures and algorithms is something you gonna have to learn yourself.
+   Would totally go over the scope of this workshop and does not work as frontal lecture.
+
+   Do not ignore primitive algorithms like bubble sort.
+   Remember: Fancy algorithms are slow when n is small, and n is usually small.
 
 ----
 
@@ -419,48 +440,203 @@ https://github.com/dandavison/chronologer
 
 ----
 
-IO for a simple key value store:
+Workshop Project
+================
 
-0. You could use a bigh in-memory hash table and sync that to disk
-   periodically. This is what Redis does, but it sucks if you have more
-   keys/values than memory. But very efficient.
-   Also, not very fail-safe in case of powerloss.
+“What I cannot create, I do not understand”.
 
-1. simple append only write, get reads only the last value
-   (terribly slow because get needs to scan the whole db)
-
-   Can be implemented in two lines of bash.
-
-2. Index needed!
-   Store an in-memory hash table mapping keys to offsets
-   Store data as log structured, append only file.
-   When loading the database, the hash table gets reconstructed.
-   When values get read, we can seek to the right position.
-
-   This is already a DB on the market: Bitcask
-
-3. This log file would grow a lot, making performance not optimal. Split it up
-   in segments afer certain size! Compact old segment files. i.e. deduplicate
-   keys or join several segments even. Can be easily done in the background.
-
-4. How do we delete stuff? We write tombstones.
+-- Richard Feynman
 
 
-Advantage:
+.. note::
 
-* Nice performance actually
-* Very simple design an easy to debug.
+   Words don't cut it. To understand something you have to lay your hands on something
+   and start exploring. Workshop is about tacit knowledge, you have to connect the little dots
+   on my slides by working on this small slide project. I can only show you things, not understand and
+   learn it for you.
 
-Disadvantages:
-
-* No range queries possible.
-* All hash keys must fit in memory.
-
+   tacit = unausgeprochen
 
 
-LSM (Log structured merge tree): Store keys in sorted order on disk (sorted by key)
+----
 
--> Makes range queries possible
--> Not all keys need to fit in memory (memory index can be sparse, because we can use binary search)
+KV Store: Memory only
+=====================
 
-Databases like Postgres use parts of this concept by using a WAL (write ahead log)
+.. code-block:: go
+
+    type KV map[string][]byte
+
+    func (kv *KV) sync() {
+        var b bytes.Buffer{}
+        for k, v := range kv {
+            b.WriteString(fmt.Sprintf("%s=%s\n", k, v))
+        }
+
+        return ioutil.WriteFile("/blah", 0644, b.Bytes())
+    }
+
+.. note::
+
+    You could use a bigh in-memory hash table and sync that to disk sometimes.
+
+    When do you call sync()? After every write? Inefficient.
+    Less often? Then you will suffer data loss on power loss or crash.
+
+    Sounds impractical, but surprise: Redis actually works this way.
+    They do not use a hash map internally though, but a tree structure as index.
+    Oh, and they perform most work in a single thread. Still fast.
+
+----
+
+KV Store: Append only
+=====================
+
+.. code-block:: bash
+
+    set() {
+        printf "%s=%s\n" "$1" "$2" >> ./db
+    }
+
+    get() {
+        grep "^$1=" ./db | tail -1 | cut -d= -f2-
+    }
+
+
+.. note::
+
+    Simple append only write, get reads only the last value.
+    Every update of an existing key writes it again.
+
+    Terribly slow because get needs to scan the whole db, but
+    very easy to implement and set is pretty fast. If you hardly
+    ever call get then this might be a viable solution.
+
+----
+
+KV Store: Indexed
+=================
+
+.. code-block:: go
+
+    type KV map[string]int64
+
+    func (kv *KV) Get(key string) []byte {
+        // 1. Get & seek to offset
+        // 2. Read value from db file.
+    }
+
+    func (kv *KV) Set(key string, val []byte) {
+        // 1. Check size of db file.
+        // 2. Append value to file with offset equal to db size
+        // 3. Update kv index with new offset.
+    }
+
+.. note::
+
+    This is actually already quite nice!
+
+    This approach is called "log structured", because values are handled
+    like a stream of logs, just timestamped (or offset stamped) data.
+
+    We can handle any number of values as long as we do not run out of memory.
+    If we throw in a little caching, we could probably get decent performance.
+    This would also be a decent usage for something called `mmap` which we will
+    look into later in this series.
+
+    When loading the db file, we can reconstruct the index map easily.
+
+    Problems:
+
+    * There will be many duplicates if we update the same keys over and over.
+    * The database file will grow without bound. Might turn out problematic.
+    * There may only be one writer at a point (race condition between size of db
+      and actual write).
+
+----
+
+KV Store: Segments
+==================
+
+Solution:
+
+1. If the db file gets too big (> 32M), start a new one.
+2. Old one gets compacted in background (i.e. duplicates get removed)
+3. Index structure remembers what file we need to read.
+
+TODO: Find good diagram.
+
+.. note::
+
+    The compaction step can be easily done in the background.
+
+    Open issues:
+
+    * We still need to have all keys in memory.
+    * Range queries are kinda impossible.
+    * We can't delete stuff.
+
+----
+
+KV Store: Deletion
+==================
+
+.. image:: images/tombstones.png
+
+.. note::
+
+   When we want to delete something, we just write a special value
+   that denotes that this key was deleted. If a tombstone is the last
+   value then the key is gone. Compaction can use it to clean up old
+   traces of that value.
+
+   At this point we already build a key value store that is used out there: Bitcask.
+
+----
+
+KV Store: Range queries
+=======================
+
+TODO: good diagram
+
+Change approach quite a bit:
+
+1. Keep a batch of key-value pairs in memory, but sorted by key.
+2. If batch gets too big, then swap to disk.
+3. Keep every 100th key in the offset index.
+4. If key not in index, go to file and scan the range.
+
+.. note::
+
+   This technique is called a Log-Structured-Merge tree (LSM).
+
+   "tree" because usually a tree is used instead of a hash table for easy handling,
+   but this is not strictly necessary and the main point of the concept.
+
+   Since the index can be "sparse" (not all keys need to be stored), we have very
+   fine grained control over memory usage. Worst thing is a bit of extra scanning
+   in the file.
+
+   Open problems:
+
+   * Get on non-existing keys.
+   * Crash safety
+
+----
+
+KV Store: WAL
+=============
+
+What if a crash occurs before things get written to disk?
+
+We have to use a WAL like above! On a crash we can reconstruct everything from it.
+Postgres and many other databases make use of this technique too.
+
+----
+
+KV Store: Fin
+=============
+
+.. note::
+
+   I left quite some details out, but that's something you should be able to figure out.

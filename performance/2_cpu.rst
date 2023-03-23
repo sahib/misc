@@ -1,3 +1,12 @@
+:title: Performance: CPU
+:data-transition-duration: 1500
+:css: hovercraft.css
+
+Agenda
+======
+
+TODO: Agenda
+
 -----
 
 :class: chapter-class
@@ -7,8 +16,8 @@ CPU
 
 Quiz:
 
-If two programs A and B execute the same number of instructions
-will they have roughly the same runtime?
+* If two programs A and B execute the same number of instructions will they have roughly the same runtime?
+* If two CPUs have the same frequency, can we make assumptions based on their speed?
 
 .. note::
 
@@ -23,6 +32,7 @@ Compilers
 =========
 
 .. image:: images/llvm.png
+   :width: 100%
 
 .. note::
 
@@ -126,9 +136,8 @@ ELF (Executable and linkable format)
 Go Assembler #1
 ===============
 
-TODO: enable line numbers
-
 .. code-block:: go
+   :number-lines: 1
 
     package main
 
@@ -283,6 +292,8 @@ Branch prediction in real life
         }
     }
 
+.. code-block:: go
+
     for(int i = 0; i < N; i++) {
         if (sorted[i] < X) {
             sum += sorted[i];
@@ -322,13 +333,27 @@ Idea:
 Branchless programming
 ======================
 
-... helps to reduce pipelining issues.
+.. code-block:: c
 
-* Branchless: https://dev.to/jobinrjohnson/branchless-programming-does-it-really-matter-20j4
+    int32_t max(int32_t a, int32_t b) {
+        if(a > b) {
+            return a;
+        }
+        return b;
+    }
+
+.. code-block:: c
+
+    return (a > b) * a + (a <= b) * b;
+
+.. code-block:: c
+
+    return a - ((a - b) & ((a - b) >> 31)
 
 .. note::
 
-   Probably not relevant in most cases, but can be a life saver in really hot loops.
+   Probably not relevant in most cases, as compiler are usually smart, but CAN
+   be a life saver in really hot loops.
 
 ----
 
@@ -342,7 +367,6 @@ Loop unrolling
 TODO: Example
 
 ----
-
 
 Reduce number of instructions
 =============================
@@ -417,8 +441,52 @@ counter example 1-3
 
 ----
 
-(binary) size matters
-=====================
+Struct size matters
+===================
+
+.. code-block:: go
+
+    // How big is this struct?
+    type XXX struct {
+        A int64
+        B uint32
+        C byte
+        D bool
+        E string
+        F []byte
+        G map[string]int64
+        H interface{}
+        I int
+    }
+
+----
+
+Padding can happen
+==================
+
+.. code-block:: go
+
+	x := XXX{}  // measured with Go 1.20!
+	fmt.Println("A", unsafe.Sizeof(x.A))  // 8
+	fmt.Println("B", unsafe.Sizeof(x.B))  // 4
+	fmt.Println("C", unsafe.Sizeof(x.C))  // 1
+	fmt.Println("D", unsafe.Sizeof(x.D))  // 1 (<-- +2 padding)
+	fmt.Println("E", unsafe.Sizeof(x.E))  // 16
+	fmt.Println("F", unsafe.Sizeof(x.F))  // 24
+	fmt.Println("G", unsafe.Sizeof(x.G))  // 8
+	fmt.Println("H", unsafe.Sizeof(x.H))  // 16
+	fmt.Println("I", unsafe.Sizeof(x.I))  // 8
+	fmt.Println("x", unsafe.Sizeof(x))    // 88 (not 86!)
+
+.. note::
+
+    If a struct is bigger than a cache line, then accessing .A and .I would
+    cause the CPU to always require to get a new cache line!
+
+----
+
+Binary size matters
+===================
 
 * More debug symbols, functions and instructions make the binary bigger.
 * A process needs *at least* as much memory as the binary size (caveat: only the first one)
@@ -477,14 +545,13 @@ Detour: Flame graphs
 
 .. code-block:: go
 
-    // Alternative for shortlived programs:
-    f, err := os.Create("cpu.pprof")
-	if err != nil {
-		panic(perr)
-	}
-	pprof.StartCPUProfile(f)
-	defer pprof.StopCPUProfile()
-    // ... work ...
+    // Alternative for shortlived programs.
+    // Paste this in main():
+    f, _ := os.Create("cpu.pprof")
+    pprof.StartCPUProfile(f)
+    defer pprof.StopCPUProfile()
+
+    // ... do your work here ...
 
 
 .. note::
@@ -667,13 +734,3 @@ TODO: Revisit those rules.
    Go even warns about too structures (if they are used as values):
 
    gocritic hugeParam: cfg is heavy (240 bytes); consider passing it by pointer
-
-----
-
-Homework
-========
-
-1. Write benchmark to measure performance of get/set.
-2. Profile your program using a profiler and identify benchmarks.
-3. Try to fix at least one of those bottlenecks.
-4. Run your benchmarks again and see if it improved.

@@ -1,12 +1,28 @@
+:title: Performance: I/O
+:data-transition-duration: 1500
+:css: hovercraft.css
+
+TODO: epoll / select and sorts. Maybe later in parallel programming?
+TODO: closing files
+
+Agenda
+======
+
+TODO: Agenda
+
+----
+
 Latency and Throughput
 ======================
 
-Metaphor: a water pipe.
+.. image:: images/waterpipe.png
+   :width: 50%
 
-Latency = time until the first drop of water arrives
-Throughput = How many liters of water we can pipe through
+* Latency = Time until the first drop of water arrives
+* Throughput = Current volume of water per time
+* Bandwidth = Maximum throughput
 
-Examples:
+**Examples:**
 
 * SSDs: Low latency, high throughput.
 * HDDs: Medium latency, high throughput.
@@ -19,6 +35,7 @@ Hardware: HDDs
 ==============
 
 .. image:: images/hdd.jpg
+   :width: 70%
 
 * Rotational, stacked disks.
 * Reading head needs to seek to the right position.
@@ -37,6 +54,7 @@ Hardware: SDDs
 ==============
 
 .. image:: images/ssd.jpg
+   :width: 100%
 
 * Flash technology
 * No expensive seek necessary.
@@ -51,10 +69,35 @@ Hardware: SDDs
 
 ----
 
+Hardware: Write amplification
+=============================
+
+.. image:: images/ssd_write_amplification.png
+   :width: 100%
+
+.. note::
+
+   Source: http://databasearchitects.blogspot.com/2021/06/what-every-programmer-should-know-about.html?m=1
+
+   SSDs are divided into blocks (seveal MB), which are divided into pages (often 4K).
+   Pages cannot be erased, only blocks can be. Updates of a pages are written to new blocks.
+   If space runs out, old blocks with many stale pages are erased and can be re-used.
+   The number of physical writes is therefore higher than the number of logical writes.
+   The more space is used, the higher the write amplication factor though.
+
+   What we can do about it: Buy bigger SSDs than you need. Also avoid rewriting pages if possible.
+   Secret: SSD have some spare space to keep working they don't tell you about.
+
+   Also enable TRIM support if your OS did not yet, but nowadways always enabled.
+   This makes it possible for the OS to tell the SSD additional blocks that are not needed anymore.
+
+----
+
 Virtual File System
 ====================
 
 .. image:: images/vfs.webp
+   :width: 100%
 
 .. note::
 
@@ -196,6 +239,9 @@ For I/O benchmarks always clear all caches:
 
 .. code-block:: bash
 
+    # 1: Clear page cache only.
+    # 2: Clear inodes/direntries cache.
+    # 3: Clear both.
     sync; echo 3 | sudo tee /proc/sys/vm/drop_caches
 
 .. note::
@@ -347,8 +393,13 @@ Performance depends a little on filesystem:
 * XFS: good with big files.
 * btrfs: feature-rich, can do CoW & snapshots.
 * ZFS: highly scalable and very complex.
+* sshfs: remote access over FUSE
 
 .. note::
+
+    Actual implementation of read/write/etc. for a single
+    filesystem like FAT, ext4, btrfs. There are different ways
+    to layout and maintain data on disk, depending on your use case.
 
     Syscalls all work the same, but some filesystems have
     better performance regarding writes/reads/syncs or
@@ -377,6 +428,7 @@ Detour: FUSE
 ============
 
 .. image:: images/fuse.png
+   :width: 100%
 
 ----
 
@@ -440,13 +492,45 @@ Re-orders read and write requests for performance.
 
 .. code-block:: c
 
-   $ ionice -c 2 -n 0 <some-pid>
+    # Default level is 4. Lower is higher.
+    $ ionice -c 2 -n 0 <some-pid>
 
-* Default level is 4. Lower is higher.
 
 .. note::
 
     Well, you can probably guess what it does.
+
+
+----
+
+Why is `cp` faster?
+===================
+
+.. code-block:: go
+
+    package main
+
+    import(
+        "os"
+        "io"
+    )
+
+    func main() {
+        src, _ := os.Open(os.Args[1])
+        dst, _ := os.Create(os.Args[2])
+        io.Copy(dst, src)
+    }
+
+.. note::
+
+    `cp` is not faster because it copies data faster, but
+    because it avoids copies to user space by using specialized calls like:
+
+    * ioctl(5, BTRFS_IOC_CLONE or FICLONE, 4) = 0 (on btrfs)
+    * copy_file_range() - performs in-kernel copy, sometimes even using DMA
+
+    Find out using `strace cp src dst`.
+    If no trick is possible it falls back to normal buffered read/write.
 
 ----
 
@@ -459,23 +543,3 @@ Reduce number of copies
 * Use CoW reflinks if possible.
 * ``sendfile()`` to copy files to Network.
 * ``copy_file_range()`` to copy between files.
-
-----
-
-Homework
-========
-
-* Write a file copy utility in your favourite language and benchmark
-  it against ``cp`` (the bash command). ``cp`` is probably faster.
-  Why? How can you find out?
-
-Basic store with get/set using append-only log,
-plus segments compression and offset-table in memory.
-Pay attention to efficient I/O and avoiding syscalls.
-
-Optional: Implement delete using tombstones.
-
-Use a programming language of your choice.
-
-- Try to measure the amount of data (total and gets/sets) that your KV can store in a minute.
-- Is there anything you can optimize here?

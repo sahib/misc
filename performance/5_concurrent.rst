@@ -1,3 +1,17 @@
+:title: Performance: Concurrency
+:data-transition-duration: 1500
+:css: hovercraft.css
+
+Agenda
+======
+
+* Intro
+* Parallel primitives
+* Parallel problems
+* Parallel patterns
+* A hard problem
+
+----
 
 Parallel programming
 ====================
@@ -517,13 +531,3 @@ Goal: no philosopher should starve.
    * Hard & correct: Use global mutex pluse "hungry" state with semaphor per philosopher.
    * Easier: Give philosophers invdividual rights and priorities.
    * Weird: philosopher talk to each other if they need a fork (i.e. channels)
-
-----
-
-Homework
-========
-
-* Provide an async API for your KV-store.
-* Do the IO in background.
-* Queue up writes to the database.
-* Try to fetch keys in parallel.

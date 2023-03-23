@@ -1,7 +1,15 @@
+:title: Performance: Memory
+:data-transition-duration: 1500
+:css: hovercraft.css
+
+Agenda
+======
+
+TODO: Agenda
+
 ----
 
-TODO: Garbage collection (techniques, how to optimize)
-
+TODO: sync.Pool
 TODO: pprof for memory.
 
 Memory
@@ -445,13 +453,3 @@ Good mmap use cases:
 
    Caveat: Complex orders (like tree traversal) cannot be requested
    by userspace.
-
-----
-
-Homework
-========
-
-1. Measure the amounts of allocation (allocs + amount)
-2. See where the allocations come from and check how to reduce them.
-3. Measure again.
-4. Bonus: Until now all keys need to be held in memory: Is there a way to avoid this?
