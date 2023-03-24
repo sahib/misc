@@ -59,6 +59,7 @@ What this workshop is not
 - An exhausting list of tricks
 - A lecture on algorithm and data structures - pick a book.
 - Something you just listen and it clicks
+- Language specific (includes C, Go, Python, Bash though)
 - Application specific performance tips (Networking, SQL, ...)
 
 ----
@@ -71,8 +72,6 @@ We will write our own little databases in this workshop.
 * You can group up or do it on our own if you must.
 * You can also use your favourite programming language.
 * You can always ask me outside the workshop when writing it.
-
-TODO: Move the explanation of LSM dbs to intro and re-order io and cpu?
 
 ----
 

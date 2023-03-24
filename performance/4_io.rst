@@ -29,6 +29,10 @@ Latency and Throughput
 * Network: Often high latency, any kind of throughput.
 * USB Stick over carrier pigeon: High latency, high throughput.
 
+.. note::
+
+   Last point was even standardized (jokingly): https://en.wikipedia.org/wiki/IP_over_Avian_Carriers
+
 ----
 
 Hardware: HDDs
@@ -112,12 +116,12 @@ How do syscalls work?
 =====================
 
 Only method of userspace to talk to kernel.
-How to call is interrupt specific.
+How to call is ISA specific.
 
 .. code-block:: asm
 
-    movl $4, %eax   ; use the `write` system call
-    movl $1, %ebx   ; write to stdout
+    movl $4, %eax   ; use the `write` system call (4)
+    movl $1, %ebx   ; write to stdout (1)
     movl "Hello World!\n", %ecx ; use string "Hello World"
     movl $12, %edx  ; write 12 characters
     syscall         ; make system call via special instruction
@@ -175,6 +179,9 @@ Syscalls are expensive
 Good buffer sizes: 1K - 32k
 
 .. note::
+
+    Each syscall needs to store away the state of all registers in the CPU
+    and restore it after it finished. This is called "context switch".
 
     Many syscalls vs a few big ones.
 

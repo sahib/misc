@@ -138,6 +138,7 @@ The stack & heap #1
 
         // Two for the heap:
         // c=0xc0000b2000 d=0xc0000b2008
+        // difference: ~92 KB
         c, d := f(), f()
     }
 
@@ -186,9 +187,13 @@ Go is clever and hides this from you via
 The more you allocate on the heap, the more pressure you put on the
 memory bookkeeping and the garbage collector.
 
-**Performance tip:** Avoid variables escaping to the heap:
+----
 
-*
+Performance tip
+===============
+
+Avoid variables escaping to the heap:
+
 * Avoid using pointers if unnecessary
 * Prefer return by value if value is small (< 128 byte) (small copy is faster than GC)
 * Don't overreact here though. Don't make your APIs ugly just because you know this little fact. Use this in hot loops. AFTER measurement.
@@ -244,7 +249,8 @@ over:
     noptr  577.7 ns/op	 336 B/op	      2 allocs/op
     ptr    761.4 ns/op	 384 B/op	     10 allocs/op
 
-    (The 10 will increase with input! Longer runs will cause more GC for the ptr case)
+    (The 10 will increase with input!
+     Longer runs will cause more GC for the ptr case)
 
 ----
 
@@ -252,6 +258,7 @@ Virtual memory
 ==============
 
 .. image:: images/virtual_memory.svg.png
+   :width: 100%
 
 * The physical memory of a system is splitted up into 4k pages.
 * Each process maintains a virtual memory mapping table, mapping
@@ -318,11 +325,11 @@ malloc()
 ========
 
 
-```c
-char *one_kb_buf = malloc(1024 * sizeof(char));
-/* use one_kb_buf somehow */
-free(onone_kb_buf);
-```
+.. code-block:: c
+
+    char *one_kb_buf = malloc(1024 * sizeof(char));
+    /* use one_kb_buf somehow */
+    free(onone_kb_buf);
 
 * ``malloc`` itself is implemented in user space, not by the kernel.
 * Think of it as some sort of memory pool management library (implemente by glibc)
@@ -407,7 +414,7 @@ The OOM Killer
 ==========
 
 * Can map files (among other things) to a processes' memory.
-* File contents are loaded
+* File contents are loaded TODO
 
 
 .. note::
@@ -421,15 +428,16 @@ The OOM Killer
    Great for implementing databases
    or implementing random access to a big file (ex: reading every tenth byte of a file)
 
+---
 
-``mmap`` for databases
-======================
+``mmap()`` for databases
+========================
 
 Short answer: Don't. Not enough control. Random order + writes hurt mmap.
 
 Long answer: https://db.cs.cmu.edu/mmap-cidr2022
 
-Good mmap use cases:
+**Good mmap use cases:**
 
 * Reading large files (+ telling the OS how to read)
 * Sharing the file data with several processes in a very efficient way.

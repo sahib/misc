@@ -370,3 +370,58 @@ Good code bases:
     (Brian Kernighan)
 
 - git bisect
+
+// TODO: Mention http://thomasburette.com/blog/2014/05/25/so-you-want-to-write-your-own-CSV-code/
+// TODO: Insert that into the debugging section: https://i.redd.it/6jswgg07hij81.jpg
+// TODO: Explain flamegraph (as alternative representation)
+// TODO: Steal pyramid from here: https://blog.alexellis.io/golang-e2e-testing-case-study/
+// TODO: Integration vs Unit Tests: https://youtu.be/mC3KO47tuG0
+
+// Fuzzing:
+// TODO: https://jayconrod.com/posts/123/internals-of-go-s-new-fuzzing-system
+
+// TODO: Test examples:
+// Test all inputs:
+// - easy for functions with limited inputs (bool, uint64)
+// - the more inputs the worse it gets
+// - strings are terrible (-> fuzzing!)
+//
+// -> Wie wählt man also interessante Test cases aus?
+// -> Manual Testing vs Fuzzing
+// -> Black-Box Tests (requirements prüfen) vs White-Box Tests (implementations details prüfen)
+//    (Beispiel: Programmierer weiß dass das mit den migrations tricky zu implementieren war,
+//     also schreibt er dafür viel tests. Andersrum: Wenn 20% des Codes 90% der Requirements
+//     umsetzt, dann werden auch präferiert diese 20% getestet. Da die restlichen 80% Code
+//     meist für Fehlerfälle und Edge-Cases ist fehlt dann hier oft was. Andererseits verliert
+//     man sich als Programmierer auch oft in details und vergisst auch schon mal Requirements).
+// -> Ziel: Möglichst viel Abdeckung mit möglichst wenig Testcases
+//    (-> go coverage tool zeigen)
+// -> Tipp: Tests möglichst so schreiben, dass man den gleichen Test code
+//    für mehrere Implementierungen des gleichen Interfaces schreiben kann.
+//    (Beispiel: Telemetry Queue).
+// -> Tipp: Mehr Test Code = Mehr Maintenance. Kopiert man einen Test sehr oft,
+//    dann muss man ihn auch sehr oft ändern wenn sich die anforderungen ändern.
+//    DRY auch bei Tests
+// -> Tipp: Tests möglichst parametrisieren. Table Driven Tests.
+
+// special case: functions with side effects:
+// - readUpdateMarker() (string, error)
+//   -> Treat every environment mutation as
+// - Tipp: State machines: State-übergänge aufzeichnen.
+// - Tipp: Wenn ein Bug entdeckt wird, sollte man einen Regression-Test anfertigen,
+//   um sicherzugehen dass dieser Bug nicht wieder kommt. Nichts ist peinlicher als den
+//   gleichen Bug mehrfach in Production fixen zu müssen (Grüße an Subu!)
+//
+//
+// Bisher: Fokus auf das Testen einzelner Komponenten: Unit-Test.
+// Integration-Tests:
+// End-To-End Tests:
+// Smoke Tests:
+// Regression Tests:
+//
+// Performance Lecture: splice() (or the cost of syscalls)
+
+// Auf Systeme wie Ada eingehen:
+// -> Anreicherung des Quellcodes mit Spezifikationen
+// -> Compiler testet automatisch ob das Programm die Spezifikation einhält.
+// -> Warum wir das nicht verwenden?

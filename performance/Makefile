@@ -1,4 +1,7 @@
-all: intro cpu memory io concurrent toc
+all: intro cpu memory io concurrent toc homework
+
+homework:
+	typst homework.typ
 
 onepage:
 	hovercraft onepage.rst slides/onepage
