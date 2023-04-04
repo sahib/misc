@@ -16,3 +16,4 @@ Peformance Workshop
     Sources:
 
     * Drepper: What every programmer should know about memory: https://people.freebsd.org/~lstewart/articles/cpumemory.pdf
+    * https://media.ccc.de/v/clt23-255-die-mikroarchitektur-moderner-prozessoren-ein-crashkurs#t=623

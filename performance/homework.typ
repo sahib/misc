@@ -79,5 +79,5 @@ Try to see if you can incorparate some knowledge from the slides into your imple
 + Make sure #go("Get()") performs well if the key does _not_ exist.
 + Implement »#go("Snapshot(w io.Writer) error")«, which streams a _consistent
   copy_ of the database to `w` (which might be stdout or a file or a socket...). This can be used as backup.
-+ Implement efficient range queries `O(log n)` that can list all keys with a certain prefix
++ Implement efficient range queries ($O(log n)$) that can list all keys with a certain prefix
   (i.e. _Pat_ matches _Patrick_, _Patricia_, _Pathological_, ...)

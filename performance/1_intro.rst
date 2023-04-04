@@ -2,13 +2,26 @@
 :data-transition-duration: 1500
 :css: hovercraft.css
 
+----
+
+What's that?
+============
+
+TODO: Image of moore's law without the name.
+
+----
+
+Who's that?
+===========
+
+.. image:: images/bill_taketh.jpg
+   :width: 100%
+
 .. note::
 
     General idea:
 
-    * Teaching you about the internals of program execution.
-    * Very neglected field - not much teached in studies, during day-to-day work "it worked (once)" is more important.
-    * Maybe you heard of Moore's law?
+    * Maybe you heard of Moore's law? Computing power doubles every two years
     * Andy and Bill's law: What Andy (Intel ex-CEO) produces in Hardware speed, Bill Gates takes away.
     * Lemur's law: Software engineers get twice as incompentent every decade (only half ironic) - seriously, as an engineering discipline we should be
       ashamed of how bad we performed over the last decades. We introduced so many layers of bad software and hacks that we depend on that we can't
@@ -20,10 +33,14 @@
       on disciplines like web development and data science where you're not supposed to have this knowledge. Because you know, numpy and pandas does it for you.
       Or the browser will just do the right thing.
     * In the 90s we still squeezed every byte of memory out of game consoles and did both amazing and scary optimizations to get basic functionality.
-    * And last decade we invented things like Electron, a lazy-ass way to make applications "portable" by just starting a browser for every application - I don't want you guys to invent something like Electron
+    * And last decade we invented things like Electron, a lazy-ass way to make
+      applications "portable" by just starting a browser for every application
+      - I don't want you guys to invent something like Electron
     * If you think Electron is a good idea, then please stop doing anything related to software engineering.
-    * Maybe have a try with gardening, or do waterboarding in Guantanamo. Just do something less hurtful to mankind than Electron
+    * Maybe try gardening, or do waterboarding in Guantanamo. Just do something less hurtful to mankind than Electron
     * Seriously take some pride as software engineerings and try to leave a solid legacy to the next generation of engineers.
+    * Teaching you about the internals of program execution.
+    * Very neglected field - not much teached in studies, during day-to-day work "it worked (once)" is more important.
 
     Disclaimer:
 
@@ -39,123 +56,148 @@
       that web technology is... well, I guess your only hope is Webassembly.
     * In this talk you will learn why people invent things Webassembly - even though it's kinda sad.
 
-TODO: Write Agenda for each part.
-
 ----
 
-What this workshop is
-=====================
-
-- An intro into Performance thinking
-- An attempt at understanding the machine we program on
-- Some lesser know tricks
-- A workshop. You gonna have to work for it.
-
-----
-
-What this workshop is not
-=========================
-
-- An exhausting list of tricks
-- A lecture on algorithm and data structures - pick a book.
-- Something you just listen and it clicks
-- Language specific (includes C, Go, Python, Bash though)
-- Application specific performance tips (Networking, SQL, ...)
-
-----
-
-You need to experiment yourself
-===============================
-
-We will write our own little databases in this workshop.
-
-* You can group up or do it on our own if you must.
-* You can also use your favourite programming language.
-* You can always ask me outside the workshop when writing it.
-
-----
-
-What is performance optimization?
-=================================
-
-TODO: Wikipedia.
-
-Optimizing different metrics that
-
-----
-
-When to apply it?
+Workshop contents
 =================
 
-* Probably more often than you do now.
-* Whenever your performance requirements are not fulfilled.
+- Why is performance important?
+- How does the machine we program on work?
+- Are there ways to exploit this machine?
 
-Wait, there are requirements?
-
-----
-
-How to figure out performance criteria?
-=======================================
-
-Well, that's your job mostly. Your PM won't tell you most of the time.
-But they will help you to get the requirements.
-
-Ask those questions:
-
-* On what kind of system the software will run on?
-* How many users will there be in parallel?
-* What kind of latency is the user willing to accept? (games, websites, ATMs)
-* How much scaling is expected in the next time?
-* Will my technology choice be a bottleneck? (Electron)
-* Do edge cases need to perform well?
-* Are the optimizations worth the risk/effort?
-* ...
-
-Do some basic calculations based on these and add X to your goals.
+*Remember:* **Work** shop.
 
 .. note::
 
-   Do not ask: How fast could this be?
-   (that's a fine question for personal learning though,
-   but not when you get paid for delivering value to a company ;-))
+    If you can answer these questions to your own
+    liking, then you succeeded. I can't yet.
 
-   After this workshop you should be able to onvert the answers to those questions
-   to measurable numbers.
+----
 
-   Edgecases are a good point: Sometimes performance is only bad in certain cases.
-   Ask your PM if those are important for your business.
-   If it's a open source library, probably fix those edge cases too.
+What's missing?
+===============
+
+- An exhausting list of tricks. Google 'em yourself.
+- A full lecture on algorithm and data structures.
+- A lecture you just have to listen to make it click.
+- Language specific optimization techniques.
+- Application specific performance tips (*Networking, SQL, Data* ...)
+
+.. note::
+
+   Google: I mean that. After the workshop you know what to google for. Hopefully.
+
+   Book recommendation: TODO
+
+   Languages: includes C, Go, Python and a bit of Bash though.
+   Most code examples are written with compiled languages in mind.
+   Users of interpreted languages may find some things unintuitive.
+
+   Check that "interpreted" and "compiled" is a known distinction.
+
+
+
+----
+
+Experiments alternativlos!
+==========================
+
+You'll write your own *cute* database:
+
+* You can group up or do it on our own if you must.
+* You can also use your favourite language.
+* You can always ask me outside or in the workshop about your progress and problems.
+
+----
+
+What is optimization?
+=====================
+
+Please define it in your words.
+
+.. note::
+
+   In computer science, optimization is the process of modifying
+   a software system to make some aspect of it work more efficiently
+   or use fewer resources. -- Wikipedia
+
+   The "fewer resources" is the more important bit. See yourself as tenant
+   of resources like CPU, Mem, disk, network, dbs, ... that you share with
+   other tenants of the same system. Be nice to other tenants, don't just
+   make your own life pleasant.
+
+----
+
+When to apply optimization?
+===========================
+
+If **performance requirements** are not met **and** when it does not hurt other requirements.
+
+.. note::
+
+    Wait, there are such requirements?
+
+    Most of us do implicit requirements: Does it feel fast enough?
+    So probably more often than you do now.
+
+    Other requirements: Maintenability and readability e.g.
+    or correctness.
+
+----
+
+Questions to ask:
+=================
+
+* On what kind of system the software will run on?
+* How many requests will there be in parallel?
+* What kind of latency is the user willing to accept? (*Games, Websites, ATMs*, ...)
+* How much scaling is expected in the next time?
+* How long can we do without? Do we need it now?
+* Will my technology choice be a bottleneck? (*Python, React, Electron, ...*)
+* Does *EdgeCaseX* need to perform well?
+* Are the optimizations worth the risk/effort?
+* ...
+
+.. note::
+
+   It's your job to figure out the performance requirements. Your PM will likely not be
+   technical enough to set realisitc goals, so you need to discuss with him what kind
+   of use cases you have and what kind of performance is acceptable for them (the latter is your part)
+   Figure out possible edge cases together (i.e. pathological use cases bringing down your requirement)
+   The engineer is the driver of the conversation, as he know's where the problems are.
+
+   Do some basic calculations based on these questions and add X to your goals. Those are your
+   requirements.
 
 ----
 
 When not to apply it?
 =====================
 
-
-| "Programmers waste enormous amounts of time thinking about, or worrying
-| about, the speed of noncritical parts of their programs, and these attempts at
-| efficiency actually have a strong negative impact when debugging and
-| maintenance are considered. We should forget about small efficiencies, say
-| about 97% of the time: premature optimization is the root of all evil. Yet we
-| should not pass up our opportunities in that critical 3%."
-
--- Donald Knuth
+| "Programmers waste enormous amounts of time thinking about, or worrying about, the speed of noncritical parts of their programs, and these attempts at efficiency actually have a strong negative impact when debugging and maintenance are considered. We should forget about small efficiencies, say about 97% of the time: premature optimization is the root of all evil. Yet we should not pass up our opportunities in that critical 3%."
+|
+| - Donald Knuth
 
 .. note::
 
+   Many programmers just asked "how fast can it be?" and not "how fast should it be?"
+   That's a fine question for personal learning but not for an actual product where time is a resource.
+
    If you don't have a problem you really should not do anything.
    It is difficult to define what a "problem" is.
+
    Electron apparently defined that it's not a problem if low-memory devices
    can't use their framework.
 
 ----
 
-How do I know if it's premature?
-================================
+Huh, premature?
+===============
 
 .. image:: images/premature_optimization_flowchart.png
+   :width: 35%
 
-Remember: It does not matter you fast you compute a wrong result.
+**Reminder:** *It does not matter how fast you compute a wrong result.*
 
 .. note::
 
@@ -171,48 +213,55 @@ Remember: It does not matter you fast you compute a wrong result.
 
 ----
 
-
 How do I measure?
 =================
 
-Via automated benchmarks.
+TODO: Insert d2 diagram that explains what benchmarks are
+
+----
+
+How to optimize?
+================
+
+Requires a strong understanding of your program and experience.
+
+* No way around measurements.
+* A certain level of experience helps.
+* The model of your program in your head
+  is different to what gets actually executed.
 
 .. note::
 
-    The how will be shown
+    No short answer and no shortcuts to this.
+    It will be a long journey and this is workshop will be only a step on the journey.
+    Very many different languages, OS (Python, Go) and many different applications
+    (SQL - 90%: just add an index) that cannot all be covered.
 
 ----
 
-How do I know how to optimize?
-==============================
+A rule of thumb
+===============
 
-No short answer and no shortcuts to this.
-It will be a long journey and this is workshop will be only a step on the journey.
+**Go from big to small**:
 
-Very many different languages, OS (Python, Go) and many different applications
-(SQL - 90%: just add an index) that cannot all be covered.
+1. Do the obvious things right away.
+2. Check if your requirements are met.
+3. Find the biggest bottleneck.
+4. Optimize it and repeat from step 2.
 
-But there are some common basics and more importantly a commone thinking behind all of it.
-And that is: **You have to understand what your program is doing to optimize it.**
+.. note::
 
-----
-
-In a nutshell: Go from big to small
-===================================
-
-Algorithm for optimizing a **correct** program:
-
-0. Do the obvious things right away. ("obvious" depends a lot on experience)
-1. Check if your requirements are met. If you don't have concrete performance requirements, make some.
-2. Benchmark to find the biggest bottlenecks regarding performance (we are incredible bad at guessing! Never skip this step)
-3. Optimize biggest offender found and repeat from step 1.
-
-Never mix up this order.
+    1. "obvious" depends a lot on experience. Example: Open a CSV file 10k times
+       to extract a single row because you have a convenience function.
+       Do not use this as excuse for bad software.
+    2. If you don't have concrete performance requirements, make some.
+    3. We are incredible bad at guessing! Never ever skip this step!
+    4. Never mix up this order.
 
 ----
 
-What is this program doing?
-===========================
+Simplicity can be complex
+=========================
 
 .. code-block:: python
 
@@ -234,22 +283,22 @@ What is this program doing?
 Inside Python
 =============
 
-All functions eventuall call functions implemented in C:
-
-.. code-block:: python
+.. code-block:: c
 
     static PyObject *
-    strip(PyObject *self, PyObject *args)
-    {
+    strip(PyObject *self, PyObject *args) {
         char *s = NULL;
         if (!PyArg_ParseTuple(args, "s", &s)) {
             return NULL;
         }
 
+        /* ... actual "strip" logic here ... */
         return PyUnicode_FromString(s);
     }
 
 .. note::
+
+   All functions eventuall call functions implemented in C:
 
    And that happens for every function call in Python. Very often.
    All those objects are allocated on the heap. Python is easy, but the price you pay for it
@@ -260,26 +309,23 @@ All functions eventuall call functions implemented in C:
 
 ----
 
-A word on interpreted languages
-===============================
-
-TODO: needed?
-
-- Many things in this workshop do not apply to you 1:1.
-- If you follow this workshop, a compiled language helps.
-- TODO
-
-Maybe some day you have to extend your language with a C module?
-
-----
-
 Theory: Complexity
 ==================
 
-* Data structures and algorithms can be divided in performance classes.
-* General types are space and time complexity.
-* Often also divided in worst case, best case, average case and specific operations.
+* Algorithms/Structures can be divided in classes.
+* General types are **time** and **space** complexity.
+* Each divided in **worst, best & average case**.
+* For datastructures specific operations are scored.
 * Complexity classes are given in Big-O notation.
+
+.. note::
+
+   It's a bit like Pokemon for algorithms.
+   "Merge sort, use worst case on quick sort!"
+   "It's very effective!"
+
+   Good example (thanks Alex): https://sortvisualizer.com
+   (compare quick sort and merge sort)
 
 ----
 
@@ -287,9 +333,9 @@ Theory: Big-O Notation
 ======================
 
 .. image:: images/bigo.svg
+    :width: 100%
 
-
-www.bigocheatsheet.com
+https://www.bigocheatsheet.com
 
 .. note::
 
@@ -310,24 +356,24 @@ www.bigocheatsheet.com
 
 ----
 
-Complexity examples
-===================
+Complexity exercises:
+=====================
 
-* Time complexity of bubble sort?
-* Time complexity of binary search (worst + best)?
-* Space complexity of merge sort vs quick sort?
-* Removing an element from an array vs from a linked list?
-* Best case / Worst case time complexity of get and set of a hash table?
-* Space complexity of a hash map?
+1. *Time* complexity of *Bubble Sort*?
+2. *Time* complexity of *Binary Search* (*worst* & *best*)?
+3. *Space* complexity of *Merge Sort* versus *Quick Sort*?
+4. *Removing* an element from an *Array* vs from a *Linked List*?
+5. *Best/Worst* case time complexity of *Get/Set* of a *Hash Map*?
+6. *Space complexity* of a *Hash Map*?
 
 .. note::
 
-   n**2
-   log2 n
-   n vs 1
-   n vs 1
-   1 and 1 (but much more expensive than an array index)
-   n
+   1. O(n**2)
+   2. O(log2 n) (both)
+   3. O(n) vs O(1)
+   4. O(n) vs O(1)
+   5. O(1) and O(n) (but much more expensive than an array index)
+   6. O(n)
 
    Makes you wonder why you don't use hash maps all the time?
    Indeed they are a wonderful invention, but:
@@ -339,10 +385,15 @@ Complexity examples
 
 ----
 
-Data structures in this workshop
-================================
+</Data structures lecture>
+==========================
 
-This was it all. Go pick a book or course.
+That's all. Go and remember a list of:
+
+* Sorting algorithms.
+* Common data structures.
+* Typical algorithms like binary search.
+* ...whatever is of interest to you.
 
 .. note::
 
@@ -354,15 +405,15 @@ This was it all. Go pick a book or course.
 
 ----
 
-Benchmarking
-============
+Performance metrics
+===================
 
-Tests that measure performance requirements.
+Automated tests that assert the *performance requirements* of a piece of code
+by computing **performance metrics** and...
 
-* Heavily tied to hardware.
-* Requires
-
-What are possible performance metrics?
+* ...either plot them for human consumption.
+* ...compare against old versions.
+* ...compare against constant thresholds.
 
 .. note::
 
@@ -373,57 +424,11 @@ What are possible performance metrics?
    * Throughput (IO, bytes/sec)
    * Memory (allocations, peak, total bytes)
 
-----
+   NOTE: Execution is heavily tied to hardware.
 
-Humans are bad at magnitudes
-============================
+   For CI/CD tools you can use something like this:
 
-https://colin-scott.github.io/personal_website/research/interactive_latency.html
-
-In general:
-
-* CPU < Memory < Files < Network.
-
-Optimize in that order.
-
-----
-
-Profiling
-=========
-
-Profiling is like benchmarking, but just once.
-
-.. note::
-
-   Profiling is usually used for finding a bottleneck,
-   but you benchmark a program as part of it.
-
-   So most of the time the terms can be used interchangeably.
-
-----
-
-
-Benchmarking and Statistics
-===========================
-
-.. code-block:: bash
-
-   $ hyperfine
-
-.. note::
-
-   * Run several times.
-   * If the variance is not big, take the maximum.
-   * If the variance is rather large, use min...max.
-
-----
-
-Benchmarking and CI/CD
-======================
-
-https://github.com/dandavison/chronologer
-
-.. note::
+   https://github.com/dandavison/chronologer
 
    In an ideal world, performance requirements are tested just like
    normal functional requirements.
@@ -439,12 +444,49 @@ https://github.com/dandavison/chronologer
 
 ----
 
+Humans vs Magnitudes
+====================
+
+TODO: figure out link syntax.
+
+Interactive Latency <https://colin-scott.github.io/personal_website/research/interactive_latency.html>_
+
+Optimize in this order:
+
+.. math::
+
+    Network > Files > Memory > CPU
+
+----
+
+
+Profiling
+=========
+
+.. code-block:: bash
+
+   # Profiling is throwaway-benchmarking:
+   $ hyperfine <some-command>
+
+.. note::
+
+   Profiling is usually used for finding a bottleneck.
+   Basically a throw away benchmark, like a non-automated, manual test.
+
+   So most of the time the terms can be used interchangeably.
+
+   * Run several times.
+   * If the variance is not big, take the maximum.
+   * If the variance is rather large, use min...max.
+
+----
+
 Workshop Project
 ================
 
-“What I cannot create, I do not understand”.
-
--- Richard Feynman
+| “What I cannot create, I do not understand”.
+|
+| - Richard Feynman
 
 
 .. note::
@@ -459,7 +501,7 @@ Workshop Project
 
 ----
 
-KV Store: Memory only
+TheStore: Memory only
 =====================
 
 .. code-block:: go
@@ -488,7 +530,7 @@ KV Store: Memory only
 
 ----
 
-KV Store: Append only
+TheStore: Append only
 =====================
 
 .. code-block:: bash
@@ -513,7 +555,7 @@ KV Store: Append only
 
 ----
 
-KV Store: Indexed
+TheStore: Indexed
 =================
 
 .. code-block:: go
@@ -521,8 +563,8 @@ KV Store: Indexed
     type KV map[string]int64
 
     func (kv *KV) Get(key string) []byte {
-        // 1. Get & seek to offset
-        // 2. Read value from db file.
+        // 1. Get offset & seek to it.
+        // 2. Read value from db file at offset.
     }
 
     func (kv *KV) Set(key string, val []byte) {
@@ -554,7 +596,7 @@ KV Store: Indexed
 
 ----
 
-KV Store: Segments
+TheStore: Segments
 ==================
 
 Solution:
@@ -577,10 +619,11 @@ TODO: Find good diagram.
 
 ----
 
-KV Store: Deletion
+TheStore: Deletion
 ==================
 
 .. image:: images/tombstones.png
+   :width: 50%
 
 .. note::
 
@@ -593,7 +636,7 @@ KV Store: Deletion
 
 ----
 
-KV Store: Range queries
+TheStore: Range queries
 =======================
 
 TODO: good diagram
@@ -623,7 +666,7 @@ Change approach quite a bit:
 
 ----
 
-KV Store: WAL
+TheStore: WAL
 =============
 
 What if a crash occurs before things get written to disk?
@@ -633,8 +676,8 @@ Postgres and many other databases make use of this technique too.
 
 ----
 
-KV Store: Fin
-=============
+Fin!
+====
 
 .. note::
 

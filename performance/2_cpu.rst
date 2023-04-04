@@ -5,8 +5,13 @@
 Agenda
 ======
 
-TODO: Agenda
+* From source code to machine code
+* Hardware executing machine code
+* Performance effects
+* Profiling & Benchmarking
+
 TODO: Link any code experiments to respective slides.
+TODO: General slide about von Neumann Arch, re-order slides.
 
 -----
 
@@ -193,67 +198,72 @@ Go assembly = assembler for a fantasy CPU
 
     List of typical cycles per instructions ("latency"): https://www.agner.org/optimize/instruction_tables.pdf
 
---------------
+----
 
-Detour: Calling conventions
-===========================
+Von Neumann Architecture
+========================
 
-.. code-block:: asm
-
-   FuncAddGo:
-      MOVQ 0x8(SP), AX  ; get arg x
-      MOVQ 0x10(SP), CX ; get arg y
-      ADDQ CX, AX       ; %ax <- x + y
-      MOVQ AX, 0x20(SP) ; return x+y-z
-      RET
-
-.. code-block:: asm
-
-   FuncAddC:
-       LEAL  (%rdi,%rsi), %eax
-       ADDL  %edx, %eax
-       RETQ
+.. image:: images/vn_cpu.png
+   :width: 100%
 
 .. note::
 
-    Go and C have different calling conventions.
-    C passes params and return values over registers
-    Go uses memory addresses (on the stack)
+    Greatly simplified.
 
-    This makes it impossible to call a C function directly from Go.
-    Some languages like Zig share the same calling convetions and make
-    it therefore possible to directly call C code. For go we need a weird
-    abstraction layer called cgo.
+    * Clocked with a certain frequency.
+    * A cycle is the basic work synchronization.
+    * Registers for internal usage. (CPUs have more than x86 says)
+    * Peripherals look to the CPU like memory.
 
---------------
+    Intel 8086 kinda worked this way.
 
-Inlining functions
-==================
-
-Inlining functions can speed up things at the cost of increased ELF size.
-
-Advantage: Parameters do not need to get copied, but CPU can re-use whatever
-is in the registers alreadys. Also return values do not need to be copied.
-
-Only done for small functions and only in hot paths.
 
 ----
 
-Pipelining
-==========
+Execution in the CPU
+====================
 
-https://de.wikipedia.org/wiki/Pipeline_(Prozessor)
+What does it take to execute a single instruction?
 
-LOAD: Load the instruction from memory, increment instruction counter.
-DECODE: Data for the command is loaded.
-EXEC: Instruction is executed.
-WRITEBACK: Result is written back to a register.
+* Load: Instruction gets loaded (0x012345)
+* Decode: Check type of instruction and arguments.
+* Memory: Load indirect data from memory (if necessary)
+* Execute: Actually execute (e.g. add numbers in the ALU)
+* Write back: Save the computed result in some register.
 
-* Every instruction needs to do this
-* Modern CPUs can work on many instructions at the same time
-* They can be also re-ordered by the CPU!
-* This can lead to issues when an instruction depends on results of another instructions! (branches!)
-* It can even happen that we do unncessary work! See SPECTRE and MELTDOWN security issues!
+This would need 5 cycles per instruction.
+
+----
+
+Pipelining, OOO, Superscalar
+============================
+
+* Pipelining: All steps above can be done in parallel.
+* Out-of-Order (OOO): Instructions can get re-ordered.
+* Superscalar: several instructions per cycle (~5)
+
+.. note::
+
+    * Every instruction needs to do this
+    * Modern CPUs can work on many instructions at the same time
+    * They can be also re-ordered by the CPU!
+    * This can lead to issues when an instruction depends on results of another instructions! (branches!)
+    * It can even happen that we do unncessary work! See SPECTRE and MELTDOWN security issues!
+    * CPUs can also execute more than one instruction per cycle (e.g. one MOV, ADD, CMP, as they all use different parts of the CPU)
+
+    https://de.wikipedia.org/wiki/Pipeline_(Prozessor)
+
+----
+
+Disclaimer: CPU effects
+=======================
+
+* Modern CPUs are insanely complex.
+* Modern compilers are insanely smart.
+
+*Disclaimer:* This tandem is probably smarter than you.
+The following slides are mostly for educational purpose.
+Trust the compiler in 99% of the time.
 
 ----
 
@@ -272,13 +282,17 @@ Branch prediction
         // ...
     }
 
+.. note::
 
-No likely() in Go, compiler tries to insert those hints automayically.
-Not much of an important optimization nowadays though as CPUs get a lot better:
+    Modern cpus guess what branch is taken due to pipelining. The accuracy is done to 96%,
+    they even use neural networks for that.
 
-https://de.wikipedia.org/wiki/Sprungvorhersage
+    No likely() in Go, compiler tries to insert those hints automayically.
+    Not much of an important optimization nowadays though as CPUs get a lot better:
 
-(but can be relevant for very hot paths on cheap ARM cpus)
+    https://de.wikipedia.org/wiki/Sprungvorhersage
+
+    (but can be relevant for very hot paths on cheap ARM cpus)
 
 ----
 
@@ -396,6 +410,51 @@ I want to MOV, MOV it
 Fun fact: MOV alone is Turing complete: https://github.com/xoreaxeaxeax/movfuscator
 
 ----
+
+Detour: Calling conventions
+===========================
+
+.. code-block:: asm
+
+   FuncAddGo:
+      MOVQ 0x8(SP), AX  ; get arg x
+      MOVQ 0x10(SP), CX ; get arg y
+      ADDQ CX, AX       ; %ax <- x + y
+      MOVQ AX, 0x20(SP) ; return x+y-z
+      RET
+
+.. code-block:: asm
+
+   FuncAddC:
+       LEAL  (%rdi,%rsi), %eax
+       ADDL  %edx, %eax
+       RETQ
+
+.. note::
+
+    Go and C have different calling conventions.
+    C passes params and return values over registers
+    Go uses memory addresses (on the stack)
+
+    This makes it impossible to call a C function directly from Go.
+    Some languages like Zig share the same calling convetions and make
+    it therefore possible to directly call C code. For go we need a weird
+    abstraction layer called cgo.
+
+--------------
+
+Inlining functions
+==================
+
+Inlining functions can speed up things at the cost of increased ELF size.
+
+Advantage: Parameters do not need to get copied, but CPU can re-use whatever
+is in the registers alreadys. Also return values do not need to be copied.
+
+Only done for small functions and only in hot paths.
+
+--------------
+
 
 The von Neumann Bottleneck
 ==========================

@@ -9,7 +9,12 @@ body {
 }
 
 a {
-    color: #aaaaee;
+    color: #000;
+}
+
+.line-block {
+	font-family: fira code;
+	font-size: 30px;
 }
 
 ul {
