@@ -7,7 +7,8 @@
 What's that?
 ============
 
-TODO: Image of moore's law without the name.
+.. image:: images/moores_law.png
+   :width: 100%
 
 ----
 
@@ -22,7 +23,7 @@ Who's that?
     General idea:
 
     * Maybe you heard of Moore's law? Computing power doubles every two years
-    * Andy and Bill's law: What Andy (Intel ex-CEO) produces in Hardware speed, Bill Gates takes away.
+    * Andy and Bill's law: What Andy Grove (Intel ex-CEO) produces in Hardware speed, Bill Gates takes away.
     * Lemur's law: Software engineers get twice as incompentent every decade (only half ironic) - seriously, as an engineering discipline we should be
       ashamed of how bad we performed over the last decades. We introduced so many layers of bad software and hacks that we depend on that we can't
       change anymore. It's like building a complete city on sand. Part of this because we don't really do engineerings and focus so much on providing
@@ -58,6 +59,70 @@ Who's that?
 
 ----
 
+Simple can be complex
+=====================
+
+.. code-block:: python
+
+    import sys
+    print(sys.stdin.readline().strip())
+
+
+.. note::
+
+   The prior rules assume that we're able to understand what's going on
+   in our program. After all we have to judge what gets executed ultimately.
+   Turns out, in interpreted language this is very hard.
+
+   Interpreted -> compiled to byte code.
+   sys.stdin.readline are two dict lookups.
+   memory allocations
+   file I/O from stdin to stdout
+   calling a c function (strip)
+   unicode conversion!
+
+----
+
+Inside Python 🐍
+================
+
+.. code-block:: c
+
+    static PyObject *
+    strip(PyObject *self, PyObject *args) {
+        char *s = NULL;
+        if (!PyArg_ParseTuple(args, "s", &s)) {
+            return NULL;
+        }
+
+        /* ... actual "strip" logic here ... */
+        return PyUnicode_FromString(s);
+    }
+
+.. note::
+
+   All functions eventuall call functions implemented in C:
+
+   And that happens for every function call in Python. Very often.
+   All those objects are allocated on the heap. Python is easy, but the price you pay for it
+   is high. This might give you a first feeling on how much stuff happens in a simple program.
+
+   Printing to stdout and drawing something on the screen is insanely complex too and beyond
+   this workshop.
+
+   This slides could be also a talk about "Why interpreted languages suck"
+
+   Most optimizations will not work with python.
+   As a language it's really disconnected from the HW - every single statement
+   will cause 100s or 1000s of assembly instructions. Also there are no almost
+   no guarantees how big e.g. arrays or other data structures will be and how
+   they are layout in memory. You have to rely on your interpreter (and I count
+   Java's JIT as one!) to be fast on modern hardware - most are not and that's
+   why there's so much C libraries in python, making the whole packaging system
+   a bloody mess.
+
+----
+
 Workshop contents
 =================
 
@@ -77,7 +142,7 @@ Workshop contents
 What's missing?
 ===============
 
-- An exhausting list of tricks. Google 'em yourself.
+- An exhausting list of tips. You'd forget them.
 - A full lecture on algorithm and data structures.
 - A lecture you just have to listen to make it click.
 - Language specific optimization techniques.
@@ -87,15 +152,14 @@ What's missing?
 
    Google: I mean that. After the workshop you know what to google for. Hopefully.
 
-   Book recommendation: TODO
+   There are plenty free online courses and many books. I can't really recommend one,
+   as my lecture in university is also already 10 years ago now.
 
    Languages: includes C, Go, Python and a bit of Bash though.
    Most code examples are written with compiled languages in mind.
    Users of interpreted languages may find some things unintuitive.
 
    Check that "interpreted" and "compiled" is a known distinction.
-
-
 
 ----
 
@@ -104,9 +168,13 @@ Experiments alternativlos!
 
 You'll write your own *cute* database:
 
-* You can group up or do it on our own if you must.
-* You can also use your favourite language.
+* You can group up or do it on our own.
+* You can use your favourite language.
 * You can always ask me outside or in the workshop about your progress and problems.
+
+.. note::
+
+   But do the database for yourself, not for me.
 
 ----
 
@@ -128,10 +196,10 @@ Please define it in your words.
 
 ----
 
-When to apply optimization?
-===========================
+When to optimize?
+=================
 
-If **performance requirements** are not met **and** when it does not hurt other requirements.
+If **performance requirements** are not met **and** when doing so does not hurt other requirements.
 
 .. note::
 
@@ -171,14 +239,16 @@ Questions to ask:
 
 ----
 
-When not to apply it?
+When not to optimize?
 =====================
 
 | "Programmers waste enormous amounts of time thinking about, or worrying about, the speed of noncritical parts of their programs, and these attempts at efficiency actually have a strong negative impact when debugging and maintenance are considered. We should forget about small efficiencies, say about 97% of the time: premature optimization is the root of all evil. Yet we should not pass up our opportunities in that critical 3%."
-|
 | - Donald Knuth
 
 .. note::
+
+   I used the full quote here, since it's often abbreviated as "premature optimization is the root of all evil" which
+   has a totally different meaning.
 
    Many programmers just asked "how fast can it be?" and not "how fast should it be?"
    That's a fine question for personal learning but not for an actual product where time is a resource.
@@ -201,6 +271,8 @@ Huh, premature?
 
 .. note::
 
+   Proof: There's a xkcd for everything.
+
    The main point is: Take your time to do things the right away. Don't drop the pen
    when it worked for the first time and didn't feel slow, really take some to measure.
 
@@ -216,7 +288,26 @@ Huh, premature?
 How do I measure?
 =================
 
-TODO: Insert d2 diagram that explains what benchmarks are
+In a reproducible environment.
+
+(`Best practices <https://gernot-heiser.org/benchmarking-crimes.html>`_)
+
+.. image:: diagrams/1_how_do_i_measure.svg
+   :width: 100%
+
+.. note::
+
+   Only ever compare apples with apples. Don't compare numbers
+   between:
+
+   * Different machines.
+   * Different runs with different load on the same machine.
+   * Different inputs.
+   * Different implementations if they do not produce the same results.
+
+   Use benchmarks primarily to compare numbers of older benchmarks.
+   And if you have to compare different implementations: Stay fair.
+
 
 ----
 
@@ -247,7 +338,7 @@ A rule of thumb
 1. Do the obvious things right away.
 2. Check if your requirements are met.
 3. Find the biggest bottleneck.
-4. Optimize it and repeat from step 2.
+4. Optimize it and repeat from step 1.
 
 .. note::
 
@@ -257,55 +348,6 @@ A rule of thumb
     2. If you don't have concrete performance requirements, make some.
     3. We are incredible bad at guessing! Never ever skip this step!
     4. Never mix up this order.
-
-----
-
-Simplicity can be complex
-=========================
-
-.. code-block:: python
-
-    import sys
-    print(sys.stdin.readline().strip())
-
-
-.. note::
-
-   Interpreted -> compiled to byte code.
-   sys.stdin.readline are two dict lookups.
-   memory allocations
-   file I/O from stdin to stdout
-   calling a c function (strip)
-   unicode conversion!
-
-----
-
-Inside Python
-=============
-
-.. code-block:: c
-
-    static PyObject *
-    strip(PyObject *self, PyObject *args) {
-        char *s = NULL;
-        if (!PyArg_ParseTuple(args, "s", &s)) {
-            return NULL;
-        }
-
-        /* ... actual "strip" logic here ... */
-        return PyUnicode_FromString(s);
-    }
-
-.. note::
-
-   All functions eventuall call functions implemented in C:
-
-   And that happens for every function call in Python. Very often.
-   All those objects are allocated on the heap. Python is easy, but the price you pay for it
-   is high. This might give you a first feeling on how much stuff happens in a simple program.
-
-   Printing to stdout and drawing something on the screen is insanely complex too and beyond
-   this workshop.
 
 ----
 
@@ -390,9 +432,10 @@ Complexity exercises:
 
 That's all. Go and remember a list of:
 
-* Sorting algorithms.
-* Common data structures.
+* Sorting algorithms (+ external sorting)
+* Common & some specialized data structures.
 * Typical algorithms like binary search.
+* Levenshtein, Graphs, Backtracking, ...
 * ...whatever is of interest to you.
 
 .. note::
@@ -447,11 +490,9 @@ by computing **performance metrics** and...
 Humans vs Magnitudes
 ====================
 
-TODO: figure out link syntax.
+`Interactive Latency Visualization <https://colin-scott.github.io/personal_website/research/interactive_latency.html>`_
 
-Interactive Latency <https://colin-scott.github.io/personal_website/research/interactive_latency.html>_
-
-Optimize in this order:
+**Optimize in this order:**
 
 .. math::
 
@@ -485,9 +526,7 @@ Workshop Project
 ================
 
 | “What I cannot create, I do not understand”.
-|
 | - Richard Feynman
-
 
 .. note::
 
@@ -497,7 +536,6 @@ Workshop Project
    learn it for you.
 
    tacit = unausgeprochen
-
 
 ----
 
@@ -509,12 +547,12 @@ TheStore: Memory only
     type KV map[string][]byte
 
     func (kv *KV) sync() {
-        var b bytes.Buffer{}
+        var b bytes.Buffer
         for k, v := range kv {
             b.WriteString(fmt.Sprintf("%s=%s\n", k, v))
         }
 
-        return ioutil.WriteFile("/blah", 0644, b.Bytes())
+        ioutil.WriteFile("/blah", b.Bytes(), 0644)
     }
 
 .. note::
@@ -562,15 +600,15 @@ TheStore: Indexed
 
     type KV map[string]int64
 
+    func (kv *KV) Set(key string, val []byte) {
+        // 1. Build entry with key and value
+        // 2. Append entry to end of db file
+        // 3. Update kv index with new offset.
+    }
+
     func (kv *KV) Get(key string) []byte {
         // 1. Get offset & seek to it.
         // 2. Read value from db file at offset.
-    }
-
-    func (kv *KV) Set(key string, val []byte) {
-        // 1. Check size of db file.
-        // 2. Append value to file with offset equal to db size
-        // 3. Update kv index with new offset.
     }
 
 .. note::
@@ -599,15 +637,16 @@ TheStore: Indexed
 TheStore: Segments
 ==================
 
-Solution:
-
-1. If the db file gets too big (> 32M), start a new one.
-2. Old one gets compacted in background (i.e. duplicates get removed)
-3. Index structure remembers what file we need to read.
-
-TODO: Find good diagram.
+.. image:: diagrams/1_segments.svg
+   :width: 100%
 
 .. note::
+
+    Solution:
+
+    1. If the db file gets too big (> 32M), start a new one.
+    2. Old one gets compacted in background (i.e. duplicates get removed)
+    3. Index structure remembers what file we need to read.
 
     The compaction step can be easily done in the background.
 
@@ -639,16 +678,17 @@ TheStore: Deletion
 TheStore: Range queries
 =======================
 
-TODO: good diagram
-
-Change approach quite a bit:
-
-1. Keep a batch of key-value pairs in memory, but sorted by key.
-2. If batch gets too big, then swap to disk.
-3. Keep every 100th key in the offset index.
-4. If key not in index, go to file and scan the range.
+.. image:: diagrams/1_lsm.svg
+   :width: 100%
 
 .. note::
+
+    Change approach quite a bit:
+
+    1. Keep a batch of key-value pairs in memory, but sorted by key.
+    2. If batch gets too big, then swap to disk.
+    3. Keep every 100th key in the offset index.
+    4. If key not in index, go to file and scan the range.
 
    This technique is called a Log-Structured-Merge tree (LSM).
 
@@ -666,18 +706,23 @@ Change approach quite a bit:
 
 ----
 
-TheStore: WAL
-=============
+TheStore: WAL 🐋
+================
 
-What if a crash occurs before things get written to disk?
+.. image:: diagrams/1_wal.svg
+   :width: 100%
 
-We have to use a WAL like above! On a crash we can reconstruct everything from it.
-Postgres and many other databases make use of this technique too.
+.. note::
+
+    What if a crash occurs before things get written to disk?
+
+    We have to use a WAL like above! On a crash we can reconstruct the memory index from it.
+    Postgres and many other databases make use of this technique too.
 
 ----
 
-Fin!
-====
+Fynn!
+=====
 
 .. note::
 

@@ -1,0 +1,14 @@
+m: Measurement
+b: Benchmarks
+p: Profiling
+
+m -> b: Automated
+m -> p: Onetime
+
+b -> "go test -bench"
+b -> "bash scripts"
+b -> "http load test"
+
+p -> "time"
+p -> "pprof"
+p -> "perf"

@@ -1,0 +1,30 @@
+direction: right
+
+frontend {
+  clang
+  rustc
+  gollvm
+}
+
+C/C++ -> frontend.clang
+Rust  -> frontend.rustc
+Go    -> frontend.gollvm
+
+middle-end {
+  optimizer
+}
+
+frontend -> middle-end: HL-IR
+
+backend {
+  machine code compiler
+}
+
+middle-end -> backend: LL-IR
+
+backend -> x86
+backend -> ARM
+backend -> RISC-V
+backend -> MIPS
+backend -> PowerPC
+backend -> "..."

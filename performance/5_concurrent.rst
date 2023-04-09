@@ -259,6 +259,8 @@ Pattern: Limiter
 
 ----
 
+TODO: Pattern: async / await
+
 Pattern: Pipeline
 =================
 

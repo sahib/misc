@@ -32,7 +32,7 @@ to extend or improve your implementation.
 Try to see if you can incorparate some knowledge from the slides into your implementation:
 
 #align(center)[
-    https://sahib.github.io/misc/performance/slides/toc/index.html
+    https://sahib.github.io/misc/performance/slides/0_toc/index.html
 ]
 
 == Required minimal feature set
@@ -77,6 +77,7 @@ Try to see if you can incorparate some knowledge from the slides into your imple
 + Implement segment compression
 + Implement »#go("Delete(key) error")« using tombstones.
 + Make sure #go("Get()") performs well if the key does _not_ exist.
++ Implement transactions (write several values or none at all).
 + Implement »#go("Snapshot(w io.Writer) error")«, which streams a _consistent
   copy_ of the database to `w` (which might be stdout or a file or a socket...). This can be used as backup.
 + Implement efficient range queries ($O(log n)$) that can list all keys with a certain prefix

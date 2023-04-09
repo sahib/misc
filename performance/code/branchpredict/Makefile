@@ -1,2 +1,6 @@
 all:
-	go test -bench=.  -gcflags '-N -l'
+	# WITHOUT optimizations.
+	go test -bench=.  -gcflags '-N'
+
+	# WITH optimizations.
+	go test -bench=.

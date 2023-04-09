@@ -5,40 +5,42 @@
 Agenda
 ======
 
-* From source code to machine code
-* Hardware executing machine code
-* Performance effects
-* Profiling & Benchmarking
+* How to get from source to machine code?
+* How does the CPU execute machine code?
+* What performance effects does this have?
+* Profiling & Benchmarking thoughts & tips
 
-TODO: Link any code experiments to respective slides.
-TODO: General slide about von Neumann Arch, re-order slides.
+.. image:: images/cpu.jpg
+   :width: 50%
 
 -----
 
-:class: chapter-class
+Quiz
+====
 
-CPU
-===
-
-Quiz:
-
-* If two programs A and B execute the same number of instructions will they have roughly the same runtime?
-* If two CPUs have the same frequency, can we make assumptions based on their speed?
+1. If two programs A and B execute the same number of machine instructions will they have roughly the same runtime?
+2. If two CPUs have the same frequency, can we make assumptions on their speed?
 
 .. note::
 
-   Answer no.
+   Those are the questions we will be looking into in detail today.
+   Here's the TL;DR:
 
-   Every instruction can take a different amount of cpu cycles.
-   Every instruction can do a lot of different work (SIMD vs normal)
+   1. Answer no.
+      Every instruction can take a different amount of cpu cycles.
+      Every instruction can do a lot of different work (SIMD vs normal)
+   2. Also no.
+      Speed of a CPU largely relies on many many factors (#core, cache size, ...)
+      The frequency also did not increase much over the years since CPUs get
+      manufactured much smaller, causing heat issues with higher freqs.
 
 --------------
 
 Compilers
 =========
 
-.. image:: images/llvm.png
-   :width: 100%
+.. image:: diagrams/2_compilers.svg
+   :width: 140%
 
 .. note::
 
@@ -75,29 +77,26 @@ Fun fact: Supercompilers
 How is code executed?
 =====================
 
-* Assembly: 1:1 human readable interpretation of machine code.
-* Machine code: machine readable instructions (each instruction has an id)
-* Assembler: Program that converts assembly to machine code.
+.. image:: diagrams/2_assembler.svg
+   :width: 120%
 
 .. note::
 
-    * This slides could be also a talk about "Why interpreted languages suck"
-
-        Most optimizations will not work with python.
-        As a language it's really disconnected from the HW - every single statement will cause 100s or 1000s of assembly instructions.
-        Also there are no almost no guarantees how big e.g. arrays or other data structures will be and how they are layout in memory.
-        You have to rely on your interpreter (and I count Java's JIT as one!) to be fast on modern hardware - most are not and that's why
-        there's so much C libraries in python, making the whole packaging system a bloody mess.
+    * Assembly: 1:1 human readable interpretation of machine code.
+    * Machine code: machine readable instructions (each instruction has an id)
+    * Assembler: Program that converts assembly to machine code.
 
 --------------
 
 Other terminology
 =================
 
-* Instruction Set Architecture (x86, arm)
-* RISC / CISC
-* Microarchitecture / Microcode (``Pentium``, ``Coffee Lake``...)
-* Instruction Set Extensions / SIMD (MMX, AES, SSE...)
+* **ISA:** Instruction Set Architecture (``x86``, ``arm``, ...)
+* **CISC** Complex Instruction Set Computer (``x86``)
+* **RISC:** Reduced Instruction Set Computer (``arm``)
+* **SIMD:** Single Instruction, Multiple Data
+* **ISE:** Instruction Set Extensions (``AVX``, ``AES``, ``SSE``...)
+* Micro{architecture,code} (``Pentium3``, ``Alder Lake``, ``Zen``...)
 
 .. note::
 
@@ -109,22 +108,22 @@ Other terminology
 
     Microarchitecture: Implementation of a certain ISA.
 
-    ISE are not directly available in Go, only if the compiler decides to.
+    ISE (Instruction Set Extensions) are not directly available in Go, only if the compiler decides to use them.
 
 --------------
 
-How is machine code stored? ELF!
-================================
+How is machine code stored?
+===========================
 
-ELF (Executable and linkable format)
+As ELF (Executable and Linkable Format)
 
 .. code-block:: bash
 
     $ readelf --sections /usr/bin/ls
     [...]
-    [12] .text             PROGBITS         0000000000008020  00008020
+    [12] .text             PROGBITS
     [...]
-    [22] .data             PROGBITS         0000000000059000  00058000
+    [22] .data             PROGBITS
     $ objdump --disassemble /usr/bin/ls
 
 .. note::
@@ -156,26 +155,36 @@ Go Assembler #1
         add(2, 3)
     }
 
+.. note::
+
+   The official Go compiler is not based on LLVM or GCC.
+   However, it also uses a IR which it calls "Go assembler".
+   It's basically an assembler like dialect for a fantasy CPU.
+   After it was optimized, it gets translated to actual target machine code.
 
 -----
 
 Go Assembler #2
 ===============
 
-Go assembly = assembler for a fantasy CPU
-
 .. code-block:: bash
 
-  main.add STEXT nosplit size=4 args=0x10 locals=0x0 funcid=0x0 align=0x0
-  	(test.go:4)	TEXT	main.add(SB), NOSPLIT|ABIInternal, $0-16
-  	(test.go:4)	FUNCDATA	$0, gclocals·g2BeySu+wFnoycgXfElmcg==(SB)
-  	(test.go:4)	FUNCDATA	$1, gclocals·g2BeySu+wFnoycgXfElmcg==(SB)
-  	(test.go:4)	FUNCDATA	$5, main.add.arginfo1(SB)
-  	(test.go:4)	FUNCDATA	$6, main.add.argliveinfo(SB)
-  	(test.go:4)	PCDATA	$3, $1
-  	(test.go:5)	ADDQ	BX, AX
-  	(test.go:5)	RET
+  $ go build -gcflags="-S" add.go
   (...)
+  main.add STEXT nosplit size=4 [...]
+    (test.go:4) TEXT   main.add(SB), (...)
+    (test.go:4) PCDATA $3, $1
+    (test.go:5) ADDQ   BX, AX
+    (test.go:5) RET
+  (...)
+  main.main STEXT size=121 [...]
+  (...)
+    (test.go:9) MOVL $2, AX
+    (test.go:9) MOVL $3, BX
+    (test.go:9) CALL main.add(SB)
+    # result is in AX
+
+https://go.dev/doc/asm
 
 .. note::
 
@@ -194,19 +203,23 @@ Go assembly = assembler for a fantasy CPU
     * Superscalar Execution
     * Branch prediction / Cache prefetching
     * Out-of-order execution
-    * Cache misses (fetching from main memory mean
+    * Cache misses (fetching from main memory)
 
     List of typical cycles per instructions ("latency"): https://www.agner.org/optimize/instruction_tables.pdf
 
 ----
 
-Von Neumann Architecture
+Von-Neumann Architecture
 ========================
 
 .. image:: images/vn_cpu.png
    :width: 100%
 
 .. note::
+
+    Von Neumann Computer: Memory contains data and code.
+    CPU adresses memory as whole and can address I/O device the same way
+    over a bus system.
 
     Greatly simplified.
 
@@ -217,39 +230,52 @@ Von Neumann Architecture
 
     Intel 8086 kinda worked this way.
 
-
 ----
 
 Execution in the CPU
 ====================
 
-What does it take to execute a single instruction?
+.. image:: images/pipeline.png
+   :width: 70%
 
-* Load: Instruction gets loaded (0x012345)
-* Decode: Check type of instruction and arguments.
-* Memory: Load indirect data from memory (if necessary)
-* Execute: Actually execute (e.g. add numbers in the ALU)
-* Write back: Save the computed result in some register.
-
-This would need 5 cycles per instruction.
-
-----
-
-Pipelining, OOO, Superscalar
-============================
-
-* Pipelining: All steps above can be done in parallel.
-* Out-of-Order (OOO): Instructions can get re-ordered.
-* Superscalar: several instructions per cycle (~5)
+1. **Load:** Instruction gets loaded (``0x012345``)
+2. **Decode:** Check type/args of instruction.
+3. **Memory:** Load data from memory (if necessary)
+4. **Execute:** Calculate (e.g. add 2+3 in the ALU)
+5. **Write back:** Save result in some register.
 
 .. note::
 
-    * Every instruction needs to do this
+    This would need 5 cycles per instruction.
+    You kinda assumed, that one cycle is one instruction, did you?
+
+----
+
+Pipelining, OoO, Superscalar, WTF?
+==================================
+
+* **Pipelining:** The 5 steps get done in parallel.
+* **Out-of-Order:**  Instructions get re-ordered.
+* **Superscalar:** Several instructions per cycle (~5x)
+
+*Ergo:*
+
+* 1 Cycle ≠ 1 instruction.
+* CPU might do unnecessary work!
+* Reducing instructions alone does not get us far.
+
+.. note::
+
+    * Every instruction needs to do all 5 steps
     * Modern CPUs can work on many instructions at the same time
     * They can be also re-ordered by the CPU!
     * This can lead to issues when an instruction depends on results of another instructions! (branches!)
-    * It can even happen that we do unncessary work! See SPECTRE and MELTDOWN security issues!
+    * It can even happen that we do unncessary work!
+      This made the SPECTRE and MELTDOWN security issues possible that made cloud computing 20% slower over night.
     * CPUs can also execute more than one instruction per cycle (e.g. one MOV, ADD, CMP, as they all use different parts of the CPU)
+      (Superscalar CPUs)
+    * This is the reason why focussing on reducing the number of instructions alone is not
+      too helpful when optimizing.
 
     https://de.wikipedia.org/wiki/Pipeline_(Prozessor)
 
@@ -260,24 +286,25 @@ Disclaimer: CPU effects
 
 * Modern CPUs are insanely complex.
 * Modern compilers are insanely smart.
-
-*Disclaimer:* This tandem is probably smarter than you.
-The following slides are mostly for educational purpose.
-Trust the compiler in 99% of the time.
+* This tandem is probably smarter than you and me.
+  The following slides are mostly for educational purpose.
+  Trust the compiler in 99.9% of the time.
+* Still helpful to know what happens.
 
 ----
 
 Branch prediction
 =================
 
-... you can give hints to your CPU!
-
 .. code-block:: c
 
+    // NOTE: works only in C/C++
     if(likely(a > 1)) {
         // ...
     }
 
+    // Branch mis-prediction are very costly!
+    // ~20 - ~35 cycles can be lost per miss.
     if(unlikely(err > 0)) {
         // ...
     }
@@ -294,26 +321,30 @@ Branch prediction
 
     (but can be relevant for very hot paths on cheap ARM cpus)
 
+    Penalty Source: https://users.elis.ugent.be/~leeckhou/papers/ispass06-eyerman.pdf
+
 ----
 
-Branch prediction in real life
-==============================
+Can we observe it?
+==================
 
 .. code-block:: go
 
+    // Which loop runs faster?
     for(int i = 0; i < N; i++) {
         if (unsorted[i] < X) {
             sum += unsorted[i];
         }
     }
-
-.. code-block:: go
-
     for(int i = 0; i < N; i++) {
         if (sorted[i] < X) {
             sum += sorted[i];
         }
     }
+
+.. class:: example
+
+   Example: code/branchpredict
 
 .. note::
 
@@ -323,19 +354,22 @@ Branch prediction in real life
 
 ----
 
-
-Go 1.20: Profile Guided Optimization
-====================================
-
-Idea:
-
-* Let program run in analysis mode.
-* Capture data about what branches were hit how often.
-* Use this data on the next compile to decide which branch is likely!
+Profile Guided Optimization (PGO)
+==================================
 
 .. image:: images/pgo.png
+   :width: 80%
 
 .. note::
+
+   Idea:
+
+   * Let program run in analysis mode.
+   * Capture data about what branches were hit how often.
+   * Use this data on the next compile to decide which branch is likely!
+
+   Feature is available as part of Go 1.20
+   and since around 20 years as part of GCC/clang
 
    Also decides on where to inline functions.
 
@@ -350,7 +384,8 @@ Branchless programming
 
 .. code-block:: c
 
-    int32_t max(int32_t a, int32_t b) {
+    // Don't optimize this at home, kids:
+    uint32_t max(uint32_t a, uint32_t b) {
         if(a > b) {
             return a;
         }
@@ -359,72 +394,155 @@ Branchless programming
 
 .. code-block:: c
 
-    return (a > b) * a + (a <= b) * b;
+    // variant 1; not possible in Go:
+    return (a > b) * a + !(a > b) * b;
 
 .. code-block:: c
 
-    return a - ((a - b) & ((a - b) >> 31)
+    // variant 2; possible in Go:
+    return a - (a - b)
 
 .. note::
 
-   Probably not relevant in most cases, as compiler are usually smart, but CAN
-   be a life saver in really hot loops.
+   Not relevant, as the compiler will optimize this for you in most cases
+   by using branchless code.
+
+   It can be however a life safer in hot loops if the compiler does not know.
+   Always check the assembly output if unsure.
+
+   https://gcc.godbolt.org/#%7B%22version%22%3A3%2C%22filterAsm%22%3A%7B%22labels%22%3Atrue%2C%22directives%22%3Atrue%2C%22commentOnly%22%3Atrue%2C%22intel%22%3Atrue%2C%22colouriseAsm%22%3Atrue%7D%2C%22compilers%22%3A%5B%7B%22source%22%3A%22%23include%20%3Calgorithm%3E%5Cnint%20max%28int%20x%2C%20int%20y%29%20%7B%5Cn%20%20return%20std%3A%3Amax%28x%2Cy%29%3B%5Cn%7D%5Cn%22%2C%22compiler%22%3A%22%2Fusr%2Fbin%2Fg%2B%2B-4.7%22%2C%22options%22%3A%22-O2%20-m32%20-march%3Dnative%22%7D%5D%7D
 
 ----
 
 Loop unrolling
 ==============
 
-* A for loop is just a repeated branch condition.
-* Compilers unroll simple loops.
-* If they don't hand unrolling can be useful (very seldom!)
+.. code-block:: go
 
-TODO: Example
+    // a loop is just a repeated if condition:
+    for idx := 0; idx < 3; idx++ {
+        sum += sin(idx)
+    }
+
+    // same, but no "idx < 3" needed:
+    // (can be computed in parallel!)
+    sum += sin(0)
+    sum += sin(1)
+    sum += sin(2)
+
+.. note::
+
+    * A for loop is just a repeated branch condition.
+    * Compilers unroll simple loops.
+    * If they don't hand unrolling can be useful (very seldom!)
 
 ----
 
-Reduce number of instructions
-=============================
+Just use less instructions?
+============================
 
-memcpy example
+.. code-block:: c
 
-TODO: Instrinsic
+    // How to reduce the number of instructions?
+    char *memcpy_basic(char *dst, char *src, size_t n) {
+        for(size_t i = 0; i < n; i++) {
+            dst[i] = src[i];
+        }
+        return dst;
+    }
+
+.. class:: example
+
+   Example: code/memcpy
+
+.. note::
+
+    -> Problem: von-Neumann-Bottleneck.
+    -> CPU can work on data faster than typical RAM can deliver it.
+    -> Workaround: Caches in the CPU, Prefetching.
+    -> Actual solution: Data oriented design.
+    -> Sequential access, tight packing of data, SIMD (and if you're crazy: DMA)
+    -> Still best way to speed up copies: don't copy.
+
+    Object oriented design tends to fuck this up and many Games (at their core)
+    do not use OOP. You can use both at the same time though!
 
 ----
 
-I want to MOV, MOV it
+SIMD
+====
+
+.. image:: images/simd.png
+   :width: 100%
+
+https://github.com/mmcloughlin/avo
+
+.. note::
+
+   SISD = Single Instruction / Single Data
+   SIMD = Single Instruction / Multiple Data
+
+   Can be really worth the effort, since compilers can't figure out
+   all cases where SIMD can be used.
+
+   Example use cases:
+
+   * Image computation (i.e. changing brightness of several pixels at once)
+   * Math operations like vector / matrix multiplications.
+   * Audio/DSP processing.
+
+   Disadvantage: Code gets ugly, hard to maintain and has additional obstacles
+   to solve like memory alignment. Also freaking complicated, which is why
+   we won't go into detail. Read up more here if you really want to:
+
+   https://en.wikipedia.org/wiki/Single_instruction,_multiple_data
+
+----
+
+I like to MOV, MOV it
 =====================
-
-.. code-block::
-
-  MOV <dst> <src>
-
-.. code-block::
-
-  MOV <reg> <reg>
-  MOV <mem> <reg>
-  MOV <reg> <mem>
-
--> Access to main memory is 125ns, L1 cache is ~1ns
-
-Fun fact: MOV alone is Turing complete: https://github.com/xoreaxeaxeax/movfuscator
-
-----
-
-Detour: Calling conventions
-===========================
 
 .. code-block:: asm
 
+  # General syntax:
+  # MOV <dst>,<src>
+
+  # Possible:
+  MOV reg1, 1234
+  MOV reg1, reg2
+  MOV reg1, [1234]
+  MOV [1234], reg1
+  MOV [reg2], reg1
+
+  # Not possible:
+  MOV [1234], [4321]
+
+.. note::
+
+    How does access to main memory work? By
+
+    Access to main memory is 125ns, L1 cache is ~1ns
+
+    Fun fact: MOV alone is Turing complete: https://github.com/xoreaxeaxeax/movfuscator
+
+----
+
+Calling functions()
+===================
+
+.. code-block:: asm
+
+   # arguments/returns go over heap memory
    FuncAddGo:
-      MOVQ 0x8(SP), AX  ; get arg x
-      MOVQ 0x10(SP), CX ; get arg y
+      MOVQ 0x8(SP), AX  ; get arg x -> ax
+      MOVQ 0x10(SP), CX ; get arg y -> cx
       ADDQ CX, AX       ; %ax <- x + y
       MOVQ AX, 0x20(SP) ; return x+y-z
       RET
 
 .. code-block:: asm
 
+   # arguments/returns go over registers
    FuncAddC:
        LEAL  (%rdi,%rsi), %eax
        ADDL  %edx, %eax
@@ -434,7 +552,9 @@ Detour: Calling conventions
 
     Go and C have different calling conventions.
     C passes params and return values over registers
-    Go uses memory addresses (on the stack)
+    Go uses memory addresses (on the stack).
+
+    In both cases, there is a certain overhead in calling functions.
 
     This makes it impossible to call a C function directly from Go.
     Some languages like Zig share the same calling convetions and make
@@ -443,70 +563,106 @@ Detour: Calling conventions
 
 --------------
 
-Inlining functions
-==================
+Optimization: Inlining
+======================
 
-Inlining functions can speed up things at the cost of increased ELF size.
+.. image:: diagrams/2_inlining.svg
+   :width: 130%
 
-Advantage: Parameters do not need to get copied, but CPU can re-use whatever
-is in the registers alreadys. Also return values do not need to be copied.
+.. note::
 
-Only done for small functions and only in hot paths.
+    Inlining functions can speed up things at the cost of increased ELF size.
+
+    Advantage: Parameters do not need to get copied, but CPU can re-use whatever
+    is in the registers alreadys. Also return values do not need to be copied.
+
+    Only done for small functions and only in hot paths.
 
 --------------
 
-
-The von Neumann Bottleneck
+von Neumann Bottleneck
 ==========================
 
-von Neumann Architektur:
+.. image:: diagrams/2_bottleneck.svg
+   :width: 100%
 
-* Computer Architecture where there is common memory accessible by all cores
-* Memory contains Data as well as code instructions
-* All data/code goes over a common bus
-* Pretty much all computer nowadays are build this way
+.. note::
 
-Bottleneck: Memory acess is much slower than CPUs can process the data.
+    von Neumann Architektur:
+
+    * Computer Architecture where there is common memory accessible by all cores
+    * Memory contains Data as well as code instructions
+    * All data/code goes over a common bus
+    * Pretty much all computer nowadays are build this way
+
+    Bottleneck: Memory acess is much slower than CPUs can process the data.
+
+----
+
+Just add some caches!
+=====================
+
+.. image:: images/whatcouldgowrong.jpeg
+
+.. note::
+
+   Good example of our industry really.
+
+   Instead of fixing an issue we wrap layers aorund it
+   until we just don't see the problem. But we never fix it.
 
 ----
 
 L1, L2, L3
 ==========
 
-Just add caches!
-
-.. image:: images/whatcouldgowrong.jpeg
-
-TODO: Add picture of cache architecture.
+.. image:: images/l1l2l3.png
+   :width: 70%
 
 ----
 
-Cache lines
-===========
+Cache lines (64B)
+=================
 
-typicall 64 byte
-Read an written in one go!
+.. image:: diagrams/2_cache_line.svg
+   :width: 100%
+
+
+.. note::
+
+    Minimal line size is 64 byte!
+    It can only be written and evicted as one.
+    No partial reads or writes possible.
+
+    (Reason: adress space would be too big otherwise)
 
 ----
 
 Caches misses
 =============
 
-Unsure if you have cache misses? Use the `perf stat -p <PID>` command!
+.. class:: example
 
-https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/monitoring_and_managing_system_status_and_performance/getting-started-with-perf_monitoring-and-managing-system-status-and-performance
-https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/monitoring_and_managing_system_status_and_performance/overview-of-performance-monitoring-options_monitoring-and-managing-system-status-and-performance
+   Example: code/counter (1-3)
 
-counter example 1-3
+.. code-block:: bash
+
+   # Use this to check your cache miss count:
+   $ perf stat -p <PID>
+
+.. note::
+
+    https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/monitoring_and_managing_system_status_and_performance/getting-started-with-perf_monitoring-and-managing-system-status-and-performance
+    https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/monitoring_and_managing_system_status_and_performance/overview-of-performance-monitoring-options_monitoring-and-managing-system-status-and-performance
 
 ----
 
-Struct size matters
-===================
+(Struct) size matters!
+======================
 
 .. code-block:: go
 
-    // How big is this struct?
+    // Quiz: How big is this struct?
     type XXX struct {
         A int64
         B uint32
@@ -521,38 +677,42 @@ Struct size matters
 
 ----
 
-Padding can happen
-==================
+What's padding?
+===============
 
 .. code-block:: go
 
-	x := XXX{}  // measured with Go 1.20!
-	fmt.Println("A", unsafe.Sizeof(x.A))  // 8
-	fmt.Println("B", unsafe.Sizeof(x.B))  // 4
-	fmt.Println("C", unsafe.Sizeof(x.C))  // 1
-	fmt.Println("D", unsafe.Sizeof(x.D))  // 1 (<-- +2 padding)
-	fmt.Println("E", unsafe.Sizeof(x.E))  // 16
-	fmt.Println("F", unsafe.Sizeof(x.F))  // 24
-	fmt.Println("G", unsafe.Sizeof(x.G))  // 8
-	fmt.Println("H", unsafe.Sizeof(x.H))  // 16
-	fmt.Println("I", unsafe.Sizeof(x.I))  // 8
-	fmt.Println("x", unsafe.Sizeof(x))    // 88 (not 86!)
+    x := XXX{}         // measured with Go 1.20!
+    s := unsafe.Sizeof //
+    println(s(x.A))    // 8 int64
+    println(s(x.B))    // 4 uint32
+    println(s(x.C))    // 1 byte
+    println(s(x.D))    // 1 bool
+                       // +2 padding
+    println(s(x.E))    // 16 string (ptr+len)
+    println(s(x.F))    // 24 slice (ptr+len+cap)
+    println(s(x.G))    // 8 map (ptr)
+    println(s(x.H))    // 16 iface (ptr+typ)
+    println(s(x.I))    // 8 int
+    println(s(x))      // 88 (not 86!)
 
 .. note::
 
-    If a struct is bigger than a cache line, then accessing .A and .I would
-    cause the CPU to always require to get a new cache line!
+    If a struct is bigger than a cache line, then accessing .A and .I
+    would cause the CPU to always require to get a new cache line!
 
 ----
 
-Binary size matters
-===================
+(Binary) size matters!
+=======================
 
-* More debug symbols, functions and instructions make the binary bigger.
-* A process needs *at least* as much memory as the binary size (caveat: only the first one)
-* The bigger the binary, the longer the startup size. Important for shortlived processes (scripts!)
-* CPUs have caches for code instructions. If your program is so fat that that the caches get evicted,
-  you might have created a performance issue. (ex: jumping between two functions in your binary, located across)
+* More debug symbols, functions, lookup tables and instructions make the binary bigger.
+* A process needs *at least* as much memory as the binary size (*Caveat:* only the first one)
+* The bigger the binary, the longer the startup time. Important for shortlived processes (scripts!)
+* CPUs have separate caches for code instructions. If your program is so fat that that the caches get evicted while jumping
+  between two functions, then you pay with performance.
+
+*Yo binary is so fat, you see it on Google Earth!* 🌍
 
 .. note::
 
@@ -563,17 +723,38 @@ Binary size matters
 
 ----
 
+Binary sizes per language
+=========================
+
+(for a »*Hello world!*«)
+
+.. image:: images/binary_sizes.png
+   :width: 100%
+
+.. note::
+
+   Source: https://drewdevault.com/2020/01/04/Slow.html
+
+----
+
 Detour: `perf` command
 ======================
 
-System wide profiling
-
 .. code-block:: bash
 
-   perf stat -a <command>   # Like `time` but much better.
-   perf stat -a -p <PID>    # Attach to existin process.
-   perf mem                 # Detailed report about memory access / misses
-   perf c2c                 # Can find false sharing (see next chapter)
+    # Like `time` but much better.
+    $ perf stat -a <command>
+    $ perf stat -a -p <PID>
+
+    # See where the system spends time now:
+    $ perf top
+
+    # Detailed report about memory access / misses
+    $ perf mem record -a ./counter atomic
+    $ perf mem -t load report --sort=mem
+
+    # Can find false sharing (see next chapter)
+    $ perf c2c
 
 
 ----
@@ -581,15 +762,18 @@ System wide profiling
 Detour: ``pprof``
 -----------------
 
-Visualize where the program spends time:
+.. image:: images/dashboard_pprof_preview.png
+   :width: 100%
 
-* Call graph is annotated times.
-* Alternatively available as flamegraph.
+.. code-block:: go
+
+    import _ "net/http/pprof"
+    go http.ListenAndServe("localhost:3000", nil)
 
 .. code-block:: bash
 
-    # pprof server under port 3000:
     $ go tool pprof localhost:3000/debug/pprof/profile
+    $ go tool pprof localhost:3000/debug/pprof/heap
 
 .. note::
 
@@ -603,18 +787,23 @@ Visualize where the program spends time:
 Detour: Flame graphs
 ====================
 
+.. image:: images/brig_flamegraph.png
+    :width: 80%
+
 .. code-block:: go
 
-    // Alternative for shortlived programs.
-    // Paste this in main():
-    f, _ := os.Create("cpu.pprof")
+    f, _ := os.Create("/tmp/cpu.pprof")
     pprof.StartCPUProfile(f)
     defer pprof.StopCPUProfile()
 
-    // ... do your work here ...
+.. code-block:: bash
 
+    $ go tool pprof -http=":8000" <binary> /tmp/cpu.prof
 
 .. note::
+
+    Alternative for short lived programs:
+    make pprof record a profile.
 
     See images/brig_flamegraph.png
     See images/brig_flamegraph.html
@@ -628,38 +817,53 @@ Detour: Flame graphs
 
 ----
 
-Cache coherency
-===============
-
-In multithreaded programs, a cache gets evicted
-
-----
-
 False sharing
 =============
 
-Counter4 example.
+* **Problem:** Unrelated data in the same cache line gets modified and thus cache line gets evicted.
+* **Solution:** Add some padding!
 
-Multiple threads use the same memory
+.. class:: example
 
-Can be fixed by introducing padding!
+   Example code/counter (4)
 
-* False sharing / True sharing (i.e. when to pad your data structures
-  https://alic.dev/blog/false-sharing.html )
+.. note::
+
+    If a program modifies data, the responding cache line needs
+    to be evicted (unless the modification resulted from the currently
+    running program). This is called "cache eviction" in short.
+
+    If it happens because the data in the cache line was actually
+    changed, then all is good. Data needs to be fetched again from memory
+    which costs a bit of time.
+
+    But what if two data points just happen to be in the same cache line?
+    Imagine two int64 counters that get incremented by two separate threads.
+    They do not talk to each other and should be influenced by each other.
+    However, each increment evicts the cache line and causes a slowdown.
+    We can use padding to force each counter into a separate cache line.
 
 ----
 
 True sharing
 ============
 
-This is when the idea of introducing caches between CPU and memory works out.
-Good news: Can be controlled by:
+* **Situation:** Closely related data lands in the same cache line.
+* **Effect:** Less jumping, less memory loads, higher throughput.
+* **Trick:** Structs < 64 byte and being cache friendly.
 
-* Limiting struct sizes to 64 bytes
-* Grouping often accessed data together.
-  (arrays of data, not array of structs of data)
+.. class:: example
 
--> employee example
+   Example: code/employee
+
+.. note::
+
+    This is when the idea of introducing caches between CPU and memory works out.
+    Good news: Can be controlled by:
+
+    * Limiting struct sizes to 64 bytes
+    * Grouping often accessed data together.
+      (arrays of data, not array of structs of data)
 
 ----
 
@@ -667,6 +871,9 @@ Data oriented programming
 =========================
 
 The science of designing programs in a CPU friendly way.
+
+.. image:: images/dop_book.png
+   :width: 50%
 
 .. note::
 
@@ -682,66 +889,52 @@ The science of designing programs in a CPU friendly way.
 
 -----
 
-Matrix Traversal
-================
-
-* Why is column traversal so much slower?
+Quiz: Matrix Traversal
+======================
 
 
-Good picture source: https://medium.com/mirum-budapest/introduction-to-data-oriented-programming-85b51b99572d
+.. code-block:: c
 
------
+    int *m = malloc(N_ROWS * N_COLS * sizeof(int));
 
-Employees
-=========
 
-* Why is the variant with two arrays faster?
-* What happens if we make the name array longer/shorter?
+.. image:: images/matrix_traversal.png
+   :width: 100%
 
-Array-of-Structures vs Structures-of-Arrays
+.. class:: example
 
-https://www.dataorienteddesign.com/dodmain/
+    Example: code/matrix
 
------
-
-``memcpy``
-==========
-
-* Why is the single-byte memcpy so much slower?
-* What evil trick is the system memcpy doing?
-* Can we do even faster?
 
 .. note::
 
-    -> Problem: von-Neumann-Bottleneck.
-    -> CPU can work on data faster than typical RAM can deliver it.
-    -> Workaround: Caches in the CPU, Prefetching.
-    -> Actual solution: Data oriented design.
-    -> Sequential access, tight packing of data, SIMD (and if you're crazy: DMA)
-    -> Still best way to speed up copies: don't copy.
+    What is faster? Traversing ``m``...
 
-.. note::
+    1. ...row by row?
+    2. ...column by column?
 
-    Object oriented design tends to fuck this up and many Games (at their core)
-    do not use OOP. You can use both at the same time though!
+    Good picture source: https://medium.com/mirum-budapest/introduction-to-data-oriented-programming-85b51b99572d
 
 ----
 
 Process scheduler
 =================
 
-We're not alone on a system. Every process get assigned a share of time that it may execute.
+**Context switch:**
 
-* After execution: Store state in RAM.
-* Before execution: Load state from RAM.
-
-.. image:: images/process_states.jpg
+* *Before execution:* Load register state from RAM.
+* *After execution:* Store register state in RAM.
 
 .. image:: images/process_states.webp
-
--> Expensive. Switching too often is expensive.
+   :width: 50%
 
 .. note::
+
+    We're not alone on a system. Every process get assigned a share of time that it may execute.
+
+
+    -> Expensive. Switching too often is expensive.
+
 
     * scheduler types (O(n), O(1), CFS, BFS)
     * scheduler is determined at compile time.
@@ -753,41 +946,57 @@ We're not alone on a system. Every process get assigned a share of time that it 
 Process load
 ============
 
-* Load param counts the number of processes in running or waiting state.
-* "0" describes an idle system.
-* If the system has a higher load number than cores it is overloaded.
-* load is averaged over 5, 10, 15 by default.
-* use load5 for graphs, load15 for quick judgmenet.
+**Load:** Count of processes currently in running or waiting state.
+
+:math:`load_{now} = \begin{cases}N_{count} = 0\:\:\:\:\:\:\:\:\:\iff\textrm{Idle}\\N_{count} < N_{cores}\iff\textrm{Normal}\\N_{count}\ge N_{cores}\iff\textrm{Overload}\end{cases}`
+
+.. note::
+
+   The load metric makes most sense if averaged over some time.
+
+   Those are the load5/load10/load15 params.
+   Use load5 for graphs, load15 for quick judgmenet.
+
+   You can use the "uptime" command to check the load.
 
 ----
 
 Process niceness
 ================
 
-Niceness is the "weight" for a certain process during scheduling:
+*Niceness* is the scheduling priority.
 
-* Ranges from -20 to +19.
-* -20 gives the process more time to execute.
-* 0 is the default.
-* +19 gives the process way less to execute.
+* Ranges from :math:`-20` to :math:`+19`; :math:`0` is default.
+* :math:`-20` gives the process more time to execute.
+* :math:`+19` gives the process way less to execute.
 
-Can be set via `nice` (new commands), `renice` (running programs)
-Exact behaviour depends on scheduler (scheduling frequency vs time slice size)
+.. code-block:: bash
+
+   # for new processes: sleep with high prio
+   $ nice -n -20 sleep 5s
+
+   # for running processes: change to unimportant
+   $ renice -n +19 $(pgrep docker)
+
+.. note::
+
+    Disclaimer: Exact behaviour depends on scheduler (scheduling frequency vs
+    time slice size)
 
 ----
 
 Rough Rules to take away
 ========================
 
-0. Only use so much memory as you really need.
-1. Writes modify the cache. Directly use your data or declare it later.
-2. Keep your structs small. (<64 byte)
-3. Avoid nesting of data, if possible.
-4. For small structures (<64 byte) prefer copying over pointers.
-5. Avoid jumpin around in your memory a lot.
+1. Watch out for cache misses.
+2. Keep your structs small (< 64B).
+3. Check if you need padding (false sharing).
+4. Place often accessed data close (true sharing).
+5. Design your access patterns cache friendly.
 6. Avoid virtual methods and inheritance.
-
-TODO: Revisit those rules.
+7. Do not overuse pointers over values.
+8. Trust your compiler, but check what it did.
+9. Use SIMD if you have to; or leave it to others.
 
 .. note::
 

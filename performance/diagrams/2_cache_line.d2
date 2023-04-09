@@ -1,0 +1,66 @@
+direction: right
+
+l1: L1 {
+  style.fill: white
+  1: Line 1
+  2: Line 2
+  3: Line 3
+  4: Line 4
+}
+
+l2: L2 {
+  style.fill: white
+  1: Line 1
+  2: Line 2
+  3: Line 3
+  4: Line 4
+  5: Line 5
+}
+
+l3: L3 {
+  style.fill: white
+  1: Line 1
+  2: Line 2
+  3: Line 3
+  4: Line 4
+  5: Line 5
+  6: Line 6
+}
+
+m: Main Memory {
+  style.fill: white
+  1: 64 Byte
+  2: 64 Byte
+  3: 64 Byte
+  4: 64 Byte
+  5: 64 Byte
+  6: 64 Byte
+  7: 64 Byte
+}
+
+cpu {
+  style.font-size: 40
+}
+
+cpu -> l1.1 -> l2.1 -> l3.1: miss {
+  style.stroke: red
+}
+cpu -> l1.2 -> l2.2: miss {
+  style.stroke: red
+}
+cpu -> l1.3: miss {
+  style.stroke: red
+}
+
+l3.1 -> m.1: hit {
+  style.stroke: green
+}
+l2.2 -> l3.2: hit {
+  style.stroke: green
+}
+l1.3 -> l2.3: hit {
+  style.stroke: green
+}
+cpu -> l1.4: hit {
+  style.stroke: green
+}

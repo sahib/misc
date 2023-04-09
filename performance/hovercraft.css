@@ -1,19 +1,64 @@
 @import url(http://fonts.googleapis.com/css?family=vollkorn);
 
 body {
-    /*
-    background-image: url(images/noise.png);
-    background-color: #0094d0;
-    color: #eee;
-    */
+    font-family: vollkorn;
 }
 
 a {
     color: #000;
 }
 
+a:hover {
+    color: #906;
+}
+
+a:before {
+    font-size: 30px;
+    font-family: "Open Moji";
+    display: inline-block;
+    text-decoration: none;
+    content: "🔗 ";
+}
+
+.example {
+    font-family: JetBrainsMono Nerd Font;
+    font-size: 30px;
+    font-weight: 500;
+
+    background-color: #000;
+    color: #fff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+    border-style: solid;
+    border-radius: 5px;
+    border-color: #000;
+}
+
+.example:before {
+    background-image: url('images/lemur_icon.png');
+    background-size: 75px 75px;
+    background-repeat: no-repeat;
+    background-position: top;
+
+    display: flex;
+    align-items: center;
+    justify-content: left;
+
+    width: 100px;
+    height: 75px;
+    content: "";
+}
+
 .line-block {
-	font-family: fira code;
+    font-family: JetBrainsMono Nerd Font;
 	font-size: 30px;
 }
 
@@ -30,9 +75,13 @@ ul {
     width: fit-content;
 }
 
+.math-block {
+	font-size: 35px;
+}
+
 ol {
 	font-family: vollkorn;
-	font-size: 30px;
+	font-size: 35px;
 	font-style: normal;
 	font-variant: normal;
 	font-weight: 400;
@@ -115,7 +164,7 @@ blockquote {
 }
 
 pre {
-	font-family: fira code;
+    font-family: JetBrainsMono Nerd Font;
 	font-size: 35px;
 	font-style:normal;
 	font-weight: 400;
@@ -125,11 +174,10 @@ pre {
 /* special roles */
 
 .slide-number {
-	;font-family: vollkorn;
-	font-style: italic;
+	font-family: vollkorn;
 	font-size: 100px;
-	font-weight: 700;
-    opacity: 0.3;
+	font-weight: 400;
+    opacity: 0.15;
 }
 
 .title-logo {

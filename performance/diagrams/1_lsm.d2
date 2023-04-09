@@ -1,0 +1,27 @@
+data {
+  segments: sorted segments {
+    segment_1 {
+      a -> b: <
+      b -> c: <
+    }
+    segment_2 {
+      x -> y: <
+      y -> z: <
+    }
+  }
+
+  memdex: memory segment {
+    4 -> 2: <
+    2 -> 3: >=
+    2 -> 1: <
+    4 -> 6: >=
+    6 -> 5: <
+    6 -> 7: >=
+  }
+}
+
+sparse offset table {
+  b @ offset 123 -> _.data.segments.segment_1
+  y @ offset 321 -> _.data.segments.segment_2
+  5 @ memory     -> _.data.memdex
+}
