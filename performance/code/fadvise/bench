@@ -1,0 +1,15 @@
+advice_normal	read_seq	1.23s
+advice_normal	read_random	2.90s
+advice_normal	read_backwards	6.08s
+advice_seq	read_seq	1.16s
+advice_seq	read_random	3.15s
+advice_seq	read_backwards	5.94s
+advice_random	read_seq	1.12s
+advice_random	read_random	2.92s
+advice_random	read_backwards	7.40s
+advice_willneed	read_seq	1.34s
+advice_willneed	read_random	3.68s
+advice_willneed	read_backwards	6.41s
+advice_dontneed	read_seq	1.29s
+advice_dontneed	read_random	3.34s
+advice_dontneed	read_backwards	6.59s

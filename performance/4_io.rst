@@ -197,7 +197,6 @@ Making syscalls visible
 
     $ strace ls /tmp
 
-
 .. note::
 
    Insanely useful tool to debug hanging tools

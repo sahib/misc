@@ -1,4 +1,4 @@
-:title: Performance: I/O
+:title: Performance: Intro
 :data-transition-duration: 1500
 :css: hovercraft.css
 
@@ -55,6 +55,8 @@ Who's that?
       your language is fucked up and will never achieve solid performance.
     * For Python you can at least put performance criticals into C libraries, for the blistering cestpool
       that web technology is... well, I guess your only hope is Webassembly.
+    * If you are unsure how a specific concept translates to your language: just ask. I might have no idea,
+      but often there is only a limited choice of design decisions language designers can make.
     * In this talk you will learn why people invent things Webassembly - even though it's kinda sad.
 
 ----
@@ -146,6 +148,7 @@ What's missing?
 - A full lecture on algorithm and data structures.
 - A lecture you just have to listen to make it click.
 - Language specific optimization techniques.
+- Performance in distributed systems.
 - Application specific performance tips (*Networking, SQL, Data* ...)
 
 .. note::
@@ -163,8 +166,8 @@ What's missing?
 
 ----
 
-Experiments alternativlos!
-==========================
+Experiments mandatory 🥼
+========================
 
 You'll write your own *cute* database:
 
@@ -429,6 +432,9 @@ Complexity exercises:
 
 </Data structures lecture>
 ==========================
+
+.. image:: images/book_algorithm.png
+   :width: 50%
 
 That's all. Go and remember a list of:
 

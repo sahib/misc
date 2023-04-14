@@ -2,6 +2,11 @@
 :data-transition-duration: 1500
 :css: hovercraft.css
 
+TODO: go routine profiling
+TODO: show executing tracer
+
+Maybe steal some things here: https://livebook.manning.com/book/100-go-mistakes-and-how-to-avoid-them/chapter-8/16
+
 Agenda
 ======
 

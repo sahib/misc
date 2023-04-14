@@ -5,26 +5,29 @@
 Agenda
 ======
 
-TODO: Agenda
+* How does memory work as hardware?
+* How does Linux manage memory?
+* How can we measure & profile memory usage?
+* How can we allocate less and faser?
+
+.. image:: images/ram.png
+   :width: 50%
 
 ----
 
-TODO: sync.Pool
-TODO: pprof for memory.
 
-Memory
-======
-
-----
-
-RAM
-===
+RAMa Lama Ding Dong 🎺
+======================
 
 * **RAM** = Random Access Memory
-* Huge, sequential line of individual memory cells
-* Usually can only be addressed in pages
-* Memory controller that handles the actual interaction.
-* Two major types: Static RAM (SRAM) vs Dynamic RAM (DRAM)
+* Huge, sequential line of individual memory cells.
+* Usually can only be addressed in 4K pages.
+* Memory controller that handles the actual interaction between Bus and CPU.
+
+Two major types in use today:
+
+* *Static RAM* (SRAM)
+* *Dynamic RAM* (DRAM)
 
 .. note::
 
@@ -42,15 +45,19 @@ DRAM - one bit, please
 
 .. note::
 
-   Dynamic sounds good, doesn't it?
+   Dynamic sounds good, doesn't it? Well, it isn't...
+
+   Pros:
 
    * Very simple and cheap to produce.
    * High density (many cells per area)
-   * Needs to be refreshed constantly (64ns or so)
 
-   Fun fact: DRAM enables a hardware-based security attack: ROWHAMMER.
-   Changing a row of DRAM cells can, if done very often, switch a nearby row.
-   This can be used to change data like "userIsLoggedIn".
+   Cons:
+
+   * Needs to be refreshed constantly (64ns or so)
+   * Makes logic in controller way more complicated.
+   * Relatively slow.
+   * Enables security issues like ROWHAMMER.
 
 ----
 
@@ -73,10 +80,10 @@ SRAM - one bit, please
 Why use DRAM at all?
 ====================
 
-* Because it's cheap,  and we need tons of it.
+* Because it's cheap, and we need tons of it.
 * Main memory is all DRAM.
 * Caches (L1-L3) are SRAM.
-* A lightbulb is maybe OSRAM (Sorry.)
+* A lightbulb is maybe OSRAM (Sorry.) 💡
 
 .. note::
 
@@ -88,8 +95,41 @@ Why use DRAM at all?
 
 ----
 
-NUMA
-====
+ROWHAMMER 🔨
+============
+
+.. image:: images/rowhamer.webp
+   :width: 100%
+
+.. note::
+
+   Fun fact: DRAM enables a hardware-based security attack: ROWHAMMER.
+   Changing a row of DRAM cells can, if done very often, switch a
+   nearby row. This can be used to change data like "userIsLoggedIn".
+
+----
+
+TODO: Memory bus?
+
+----
+
+ECC Memory
+==========
+
+* Radiation or damage can flip bits
+* ECC RAM protects against such errors.
+* Use of parity bits or Hamming code.
+* Slightly slower than normal RAM.
+
+.. image:: images/ecc.png
+   :width: 100%
+
+----
+
+NUMA - multiple CPUs
+====================
+
+NUMA = Non Uniform Memory Architecture
 
 Is the access to all memory offsets equally fast?
 
@@ -100,28 +140,128 @@ Is the access to all memory offsets equally fast?
 
 .. note::
 
-   NUMA - non uniform memory access
+   TODO: is that slide really important?
 
-   Linux is NUMA very well capable and that's why it's such a popular server operating system.
-   Or one of the reasons at least.
-
-----
-
-How the heck does this stuff relate to me?
-==========================================
-
-Not so much on a daily basis, to be fair. But:
-
-* Memory allocations are expensive.
-* Strategies to make less/smaller allocations help performance
-* Requires sadly an understanding how the OS handles memory.
+   Linux is NUMA capable and that's why it's such a popular server and
+   superomputer operating system. Or one of the reasons at least.
 
 ----
 
-TODO: Maybe use graphics from here: https://medium.com/eureka-engineering/understanding-allocations-in-go-stack-heap-memory-9a2631b5035d
+How is memory managed?
+======================
 
-The stack & heap #1
+.. image:: diagrams/3_os_allocations.svg
+   :width: 100%
+
+.. note::
+
+    The large sequential slab of memory needs to be
+    distributed to all programs that require it.
+
+    - Usage is not known in advance.
+    - programs need to allocate based on their need.
+    - OS needs to make memory allocations inexpensive
+
+    Understandin how the kernel and processes manage their memory
+    makes it possible to use less of it and make more efficient use of it.
+
+    For this we need to start at the basics...
+
+----
+
+Inside a process
+================
+
+Each process gets allocated a certain amount of memory.
+
+Memory inside the process can be managed in two ways:
+
+* Stack: For short-lived memory.
+* Heap: For long-lived memory.
+
+----
+
+The stack: Growth
+=================
+
+.. code-block:: go
+
+    func recursive(depth int) {
+        if depth <= 0 { return }
+
+        var a int
+        fmt.Printf("%p\n", &a)
+        recursive(depth - 1)
+    }
+    // ...
+    recursive(10)
+
+    // Output:
+    0xc000070e70 -> diff: 80 bytes
+    0xc000070e20 -> stack pointer, frame pointer
+    0xc000070dd0 -> registers, params
+    ...
+
+.. note::
+
+    Stack grows downwards.
+
+    More details on calling a function:
+
+    https://eli.thegreenplace.net/2011/09/06/stack-frame-layout-on-x86-64
+
+----
+
+The stack: Layout
+=================
+
+.. image:: images/stack_layout.svg
+    :width: 80%
+
+.. note::
+
+   https://en.wikipedia.org/wiki/Stack-based_memory_allocation
+
+----
+
+The stack: Summary
+==================
+
+* ...cleaned up automatically on return.
+* ...bound to a function call.
+* ...low overhead and should be preferred.
+* ...can be reasoned about during compile time.
+* ...good for small amounts of data.
+
+----
+
+The stack: Overflow
 ===================
+
+Why not use the Stack for everything?
+
+1. Stack size is limited to 8MB (default on Linux).
+2. Memory is bound to your call hierarchy.
+3. Stack is per-thread, sharing requires heap.
+
+.. note::
+
+    1: Reason for this are security mostly. Recursion happens on the stack,
+       so endless recursive programs cannot break everything. Also running
+       over the extents of a buffer in C will overwrite parts of the stack,
+       so limiting it makes sense.
+    2. Stack is a LIFO. You cannot free objects down in the stack without
+       freeing everything in between.
+    3. Every thread (and in Go every goroutine) has their own stack.
+
+.. class:: example
+
+   Example: code/stackoverflow
+
+----
+
+The Heap: Allocations
+=====================
 
 .. code-block:: go
 
@@ -138,134 +278,321 @@ The stack & heap #1
 
         // Two for the heap:
         // c=0xc0000b2000 d=0xc0000b2008
-        // difference: ~92 KB
         c, d := f(), f()
     }
 
+.. note::
+
+
+   Contrary to the stack, the memory is not bound to the function
+   and therefore will survive the return of a function. The downside
+   is that the memory needs to be freed
+
+   Languages like Go allocate automatically on the heap if they
+   have to - they do this either when the compiler cannot prove that
+   the value does not escape the function stack or when the allocation
+   is too big for the stack. More on this later. Thanks to the GC
+   memory is freed automatically after it's used. Having a GC is often
+   understood as "I don't need to think about memory" though, which is not
+   the case. You can help the GC to run faster and avoid memory leaks
+   that can arise through edge cases.
+
+   Languages like Python allocate everything on the heap. They almost
+   never use stack based memory for anything. Most interpreted languages
+   use a combination of reference counting and garbage collection.
+   Very convenient but also the slowest way to go.
+
+   Languages like C (and partly Rust) pass the duty of memory management
+   to the programmer. While this make it possible to be clever, it also
+   opens up ways to fuck up tremendously by creating memory leaks, double
+   frees, forgotten allocations or use-after-free scenarios.
+
+   Heap memory must be cleaned up after use. Go does
+
+   Heap grows upwards.
+
+
+    TODO: Maybe use graphics from here: https://medium.com/eureka-engineering/understanding-allocations-in-go-stack-heap-memory-9a2631b5035d
+
 ----
 
-The stack & heap #2
-===================
+The Heap: ``malloc()``
+======================
 
-**Stack** is...
+.. code-block:: c
 
-* ...cleaned up automatically on return
-* ...bound to a function call
-* ...preferred if possible.
-* ...can be reasoned about during compile time
-* ...good for small amounts of data.
+    int ptrs[100];
+    for(int i = 0; i < 100; i++) {
+        ptrs[i] = malloc(i * sizeof(int));
+    }
+    // ... use memory ...
+    for(int i = 0; i < 100; i++) {
+        free(ptrs[i]);
+    }
 
-**Heap** is...
+.. note::
 
-* ...needs to be explicitly requested
-* ...needs to be explititly cleaned up
-* ...can be used until freed.
-* ...should be used when required.
-* ...usually required for a lot of data.
+   malloc() is a function that returns N bytes of memory, if available.
+   It is a syscall of the kernel, but implemented as library in userspace.
+
+   malloc() manages internally a pool of memory internally, from which it
+   slices of the requested portions. Whenever the pool runs out of fresh
+   memory, the malloc implementation will ask the kernel for a new chunk
+   of memory. The exact mechanism is either over sbrk(2) or mmap()
+   (we will see mmap later)
+
+   As malloc() needs to cater objects of many different sizes (as seen in the
+   example above) it is prone to fragmentation.
 
 ----
 
-The stack & heap #3
-===================
+The Heap: Freelist
+==================
 
-Go is clever and hides this from you via
-**escape analysis**:
+.. image:: images/heap_freelist.png
+   :width: 70%
+
+.. note::
+
+   As mentioned above, the memory allocated from the pool
+   needs to be freed, so it can be re-used. This is done by the free() call.
+
+   malloc() needs to track which parts of its pool are in-use and which can
+   be issued on the next call. It does by the use of free-lists. Each block
+   returned by malloc() has a small header (violet) that points to the next block.
+   If allocated, a free block is taken out of the list and added to the allocated
+   list. This means that every allocation has a small space and time overhead.
+
+   (i.e. an allocation is O(log n), instead of O(1) as with the stack)
+
+----
+
+The Heap: Leaks
+===============
+
+TODO: memory leaks (valgrind? leaks in Go?)
+
+----
+
+The Heap: Summary
+=================
+
+**Heap**
+
+* ...needs to be explicitly requested.
+* ...needs to be explititly cleaned up.
+* ...can be used until freed. Will crash otherwise.
+* ...required for big chunks of data or long-lived data.
+* ...has a small, but noticeable, overhead.
+
+.. note::
+
+   Heap requires some implementation of malloc(). There are many different implementations
+   of it in C, using different strategies to perform well under certain load.
+   Choosing the right kind of allocator is a science in itself. More info can be obtained here:
+
+   https://en.wikipedia.org/wiki/Memory_management#Implementations
+
+   In languages like Go you don't have a choice which memory allocator you get. The Go runtime
+   provides one for you. This makes sense as it is coupled very tightly with the garbage collector.
+   Go uses a similar implementation, but is more sophisticated. Main difference:
+   it keeps pre-allocated arenas for differently sized objects. i.e. 4, 8, 16,
+   32, 64 and so on.
+
+   The grow direction of the heap and stack is not really important and you
+   should keep in mind that every thread/goroutine has their own stack and
+   there might be even more than one heap area, possibly backed by different
+   malloc() implementations.
+
+----
+
+Garbage collector (GC)
+======================
+
+.. image:: images/gc.png
+   :width: 100%
+
+.. note::
+
+    GC is a utility that remembers allocation and scans the memory used by the program
+    for referenes to the allocations. If no references are found it automatically cleans
+    up the associated memory.
+
+    This is very ergonomic for the programmer, but comes with a peformance impact. The
+    GC needs to run regularly and has, at least for a very small amount of time, stop
+    the execution of the program.
+
+    Good reference for the Go GC: https://tip.golang.org/doc/gc-guide
+
+----
+
+GC: Pressure
+=============
 
 .. code-block:: go
 
-   func f() { v := 3; return &v }
-   func main() {
-       fmt.Println(f())
-   }
+   // Prefer this...
+   m := make(map[string]someStruct)
+
+   // ...over this:
+   m := make(map[string]*someStruct)
+
+.. class:: example
+
+   Example: code/allocs
+
+.. code-block:: bash
+
+    # counting words with a map:
+    $ go test -v -bench=. -benchmem
+    noptr  577.7 ns/op	 336 B/op   2 allocs/op
+    ptr    761.4 ns/op	 384 B/op  10 allocs/op
+
+.. note::
+
+    "GC Pressure" describes the amount of load a garbage collector currently has.
+    The more small objects it has to track, the higher the load. You can help it
+    by reducing the amount of different objects and making use of sync.Pools (see later)
+
+    One way to less use memory is to use less pointers:
+
+    * Way less memory in total (one cell less for the pointer)
+    * Data is packed together (good for the CPU cache!)
+    * Less work for the GC and the allocator to do
+    * Pointers give you more potential to fuck up (they can be nil...)
+
+    The "10" will increase with input size!
+    Longer runs will cause more GC for the ptr case.
+
+----
+
+GC: Escape Analysis
+===================
+
+.. image:: images/escape_analysis.jpg
+   :width: 100%
 
 .. code-block:: bash
 
    $ go build -gcflags="-m" .
-   ./main.go:3:2: moved to heap: v
-
-
-The more you allocate on the heap, the more pressure you put on the
-memory bookkeeping and the garbage collector.
-
-----
-
-Performance tip
-===============
-
-Avoid variables escaping to the heap:
-
-* Avoid using pointers if unnecessary
-* Prefer return by value if value is small (< 128 byte) (small copy is faster than GC)
-* Don't overreact here though. Don't make your APIs ugly just because you know this little fact. Use this in hot loops. AFTER measurement.
+   ./main.go:5:2: moved to heap: x
 
 .. note::
 
-   Never heard of this stuff, why should I care?
+    The more you allocate on the heap, the more pressure you put on the
+    memory bookkeeping and the garbage collector.
 
-   Difference is important in C
-   Well, you're lucky enough that your compiler does it for you
-   Or you're unlucky enough to use python where all hope is forlorn
+    * Avoid using pointers and refactor to make it allocate-able on the stack.
+    * Prefer pass & return by value if value is small (< 64 byte ~= cache line)
+    * Use sync.Pool to save allocations.
 
-----
+    Good guide for the details: https://tip.golang.org/doc/gc-guide#Eliminating_heap_allocations
 
-Detour: What is a StackOverflow?
-================================
-
-Why using the stack only for small data if you can also use it for somewhat dynamic allocations?
-
-Because stack size is limited (on linux about 8MB, but don't rely on that)
-
-How can you hit this limit?
-
-* By recursion - lots of nested stacks.
-* By running over the extents of a buffer (in C)
-
-See example: stackoverflow.
+    Picture source: https://dev.to/karankumarshreds/memory-allocations-in-go-1bpa
 
 ----
 
-GC pressure, locality and memory management
-===========================================
-
-Prefer this:
+GC: Pre-Allocate
+================
 
 .. code-block:: go
 
-   m := make(map[string]someStruct)
+    s := make([]int, 0, len(input))
+    m := make(map[string]int, 20)
 
-over:
+----
+
+GC: Pooling
+===========
 
 .. code-block:: go
 
-   m := make(map[string]*someStruct)
+    // avoid expensive allocations by pooling:
+    var writerGzipPool = sync.Pool{
+        // other good candidates: bytes.Buffer{},
+        // big slices, empty objects used for unmarshal
+        New: func() any {
+            return gzip.NewWriter(ioutil.Discard)
+        },
+    }
 
-* Way less memory in total
-* Data is packed together (good for caching!)
-* Less work for the GC and the allocator to do
-* Pointers give you more potential to fuck up.
+    w := writerGzipPool.Get().(*gzip.Writer)
+    // ... use w ...
+    writerGzipPool.Put(w)
+
+.. class:: example
+
+   Example: code/mempool
+
+.. note::
+
+    Pooling is the general technique of keeping a set of objects that are expensive object,
+    if they can be re-used. Typical examples would be thread pools that keep running threads
+    around, instead of firing up a new one for every task. Same can be done for memory objects
+    that are expensive to allocate (or have long-running init code like gzip.Writer).
+
+    Pools can be easily implemented using an array (or similar) and a mutex.
+    sync.Pool is a Go-specific solution that has some knowledge of the garbage collector
+    which would be not available to normal programs otherwise. It keeps a set of objects
+    around until they would be garbage collected anyways. I.e. the objects in the pool
+    get automatically freed after one or two GC runs.
+
+----
+
+GC: Memory Limit
+================
 
 .. code-block:: bash
 
-    noptr  577.7 ns/op	 336 B/op	      2 allocs/op
-    ptr    761.4 ns/op	 384 B/op	     10 allocs/op
+    $ GOMEMLIMIT=5500M go run app.go
 
-    (The 10 will increase with input!
-     Longer runs will cause more GC for the ptr case)
+.. image:: images/memlimit_gc.png
+   :width: 100%
+
+.. note::
+
+    Linux only supports setting a max amount of memory that a process (or cgroup)
+    may consume. If the limit is exceeded, then the process (or cgroup) is killed.
+    This makes the limit a hard limit, which is seldomly useful.
+
+    What is more useful is to have a soft limit, that makes the application attempt
+    to free memory before it reaches the limit. As the garbage collector normally
+    has a backlog of short-lived (i.e. memory on the heap that gets regularly freed)
+    it could peak over a hard limit (6G in the diagram) for a short moment of time.
+    By setting a GOMEMLIMIT we can tell the GC to run the
+
+    More Info:
+    https://weaviate.io/blog/gomemlimit-a-game-changer-for-high-memory-applications
 
 ----
 
-Virtual memory
-==============
+Virtual memory (VM)
+===================
 
-.. image:: images/virtual_memory.svg.png
+.. image:: images/elephant_in_the_room.jpg
    :width: 100%
 
-* The physical memory of a system is splitted up into 4k pages.
-* Each process maintains a virtual memory mapping table, mapping
-  from the virtual range of memory to physical memory.
-* Address translation is handled efficiently by the MMU
+.. note::
+
+    Let's talk about the elephant in the room: The adress of a value
+    is not the adress in physical memory. How can we proof it?
+
+    TODO: write proof.
+
+----
+
+VM: The mapping
+===============
+
+.. image:: images/virtual_memory.svg.png
+   :width: 50%
 
 .. note::
+
+    * The physical memory of a system is splitted up into 4k pages.
+    * Each process maintains a virtual memory mapping table, mapping
+      from the virtual range of memory to physical memory.
+    * Address translation is handled efficiently by the MMU
 
     Wait, those addresses I saw earlier... are those the addrs in RAM?
     Hopefully not, because otherwise you could somehow find out where the OpenSSH
@@ -278,8 +605,10 @@ Virtual memory
 
 ----
 
-Virtual memory implementation
-=============================
+VM: implementation
+==================
+
+TODO: Make diagram
 
 * Each process has a list of page tables mapping virtual to physical memory ("page table")
 * On process start this table is filled with a few default kilobytes of mapped pages
@@ -290,73 +619,76 @@ Virtual memory implementation
 
 ----
 
-Virtual memory advantages
-=========================
+VM: Advantages
+==============
 
-* Pages can be mapped only once it is needed (CoW)
-* Processes can share the same page for shared memory.
+* Pages can be mapped only once used (CoW)
+* Several processes can share the same pages
 * Pages do not need to be mapped to physical memory: Disk, DMA or even network is possible!
 * Processes are isolated from each other.
 * Processes consume only as much physical ("residual") memory as really needed.
 * Programs get easier to write because they can just assume that the memory is not fragmented.
-* Pages can be swaped by the OS without the process even noticing (Swapping)
+* Pages can be swapped to disk by the OS without the process even noticing
 * The kernel can give away more memory than there is on the system (overcommiting)
 * Pages with the same content can be deduplicated
+* Kernel may steal pages of inactive processes
 
 ----
 
-Residual vs virtual memory usage
-================================
+VM: ``mmap()``
+===============
 
-TODO: look a  htop and free
-
-----
-
-Quick peak memory measurement
-=============================
-
-.. code-block::
-
-   /usr/bin/time -v <command>
-
-----
-
-malloc()
-========
-
-
-.. code-block:: c
-
-    char *one_kb_buf = malloc(1024 * sizeof(char));
-    /* use one_kb_buf somehow */
-    free(onone_kb_buf);
-
-* ``malloc`` itself is implemented in user space, not by the kernel.
-* Think of it as some sort of memory pool management library (implemente by glibc)
-* When ``malloc`` runs out of space it asks the kernel for more space by using either the ``sbrk`` call (for small allocations)
-  or ``mmap`` (for big allocations). Allocations have as multiple of PAGE_SIZE (4KB)
-* ``sbrk`` is a system call that moves the *program break* of a program upwards (or downwards) by a certain amount.
-* The new space is then managed by ``malloc``. Each allocation gets added a header by ``malloc`` at the start (~10 byte),
-  so many small allocations are wasteful.
-* Memory that is not directly used is kept in a freelist. Only once the freelist is empty, new memory is fetched
-  from the operating system.
-* On ``free`` a memory block is added back to the freelist.
-* ``malloc`` is optimized for the usecase of allocating many (typically) small sized objects with minimal fragmentation.
-  Since every program tends to have different needs it makes sense to do this in userspace.
-* Go uses a similar implementation, but is more sophisticated. Main difference:
-  it keeps pre-allocated arenas for differently sized objects. i.e. 4, 8, 16,
-  32, 64 and so on.
+* Can map files (among other things) to a processes' memory.
+* File contents are loaded TODO
 
 .. note::
 
-    What the fuck happens on allocation?
+   Maybe one of the most mysterious system features we have on Linux.
 
-    In C you have to explicitly what ``Go`` does in the background for you:
+   Typical open/read/write/close APIs see files as streams.
+   With mmap() we can handle files as arrays and the memory needed for
+   this can be shared by several processes!
+
+   Great for implementing databases
+   or implementing random access to a big file (ex: reading every tenth byte of a file)
 
 ----
 
-Swapping
-========
+VM: ``mmap()`` for databases
+============================
+
+Short answer: Don't. Not enough control. Random order + writes hurt mmap.
+
+Long answer: https://db.cs.cmu.edu/mmap-cidr2022
+
+**Good mmap use cases:**
+
+* Reading large files (+ telling the OS how to read)
+* Sharing the file data with several processes in a very efficient way.
+* Zero copy during reading.
+* Ease-of-use. No buffers, no file handles.
+
+----
+
+VM: ``madvise()`` and ``fadvise()``
+===================================
+
+* You can give tips to the kernel.
+* When you know that you need a certain memory page soon,
+  then you can do ``madvise(addr, 4096, MADV_WILLNEED)``.
+* With ``fadvise()`` you can do the same for files.
+
+.. note::
+
+   This is greatly notice-able with file I/O!
+
+   Caveat: Complex orders (like tree traversal) cannot be requested
+   by userspace.
+
+----
+
+VM: Swapping
+============
 
 .. code-block:: bash
 
@@ -387,15 +719,78 @@ Swapping
 
 ----
 
-The OOM Killer
-==============
+Profiling: Residual memory vs virtual memory
+=============================================
 
-* Kicks in if sytem almost completely ran out of RAM.
-* Selects a process based on a scoring system and kills it.
-* Processes can be given a priority in advance.
+.. image:: images/res_vs_virtual.png
+   :width: 100%
 
 .. note::
 
+   Picture above showing htop on my laptop from 2017
+   with a normal workload. The amount of virtual memory for some programs
+   like signal-desktop is HUGE and only a tiny portion is actually used.
+
+----
+
+Profiling: Quick measurement
+============================
+
+.. code-block::
+
+   /usr/bin/time -v <command>
+
+.. class:: example
+
+   Example: code/virtualmem
+
+.. note::
+
+   Start ./virt and observe in htop how the virtual memory is immediately there
+   and the residual memory slowly increases second by second. The program will
+   crash if you wait long enough.
+
+   Start with '/usr/bin/time -v ./virt' and interrupt at any time.
+
+----
+
+Profiling: pprof
+================
+
+Find out where the memory was used.
+
+TODO: Provide a nice example.
+
+----
+
+Profiling: Monitoring
+=====================
+
+.. image:: images/memleak_grafana.png
+   :width: 100%
+
+.. note::
+
+    No way around it. Profiling and benchmarking leave a gap:
+    long running applications where you do not expect performance issues.
+    In that case you should always monitor resource usage so you can check
+    when and how fast memory usage increased (and maybe correlate with load)
+
+    When you notice issues you can do profiling via pprof.
+
+----
+
+The OOM Killer
+==============
+
+.. image:: images/oom.jpg
+   :width: 50%
+
+.. note::
+
+    * Kicks in if system almost completely ran out of RAM.
+    * Selects a process based on a scoring system and kills it.
+    * Processes can be given a priority in advance.
     * Last resort mechanism.
     * Reports in dmesg.
     * Sometimes comes too late and is not able to operate anymore.
@@ -410,54 +805,5 @@ The OOM Killer
 
 ----
 
-``mmap()``
-==========
-
-* Can map files (among other things) to a processes' memory.
-* File contents are loaded TODO
-
-
-.. note::
-
-   Maybe one of the most mysterious system features we have on Linux.
-
-   Typical open/read/write/close APIs see files as streams.
-   With mmap() we can handle files as arrays and the memory needed for
-   this can be shared by several processes!
-
-   Great for implementing databases
-   or implementing random access to a big file (ex: reading every tenth byte of a file)
-
----
-
-``mmap()`` for databases
-========================
-
-Short answer: Don't. Not enough control. Random order + writes hurt mmap.
-
-Long answer: https://db.cs.cmu.edu/mmap-cidr2022
-
-**Good mmap use cases:**
-
-* Reading large files (+ telling the OS how to read)
-* Sharing the file data with several processes in a very efficient way.
-* Zero copy during reading.
-* Ease-of-use. No buffers, no file handles.
-
-----
-
-``madvise()`` and ``fadvise()``
-===============================
-
-* You can give tips to the kernel.
-* When you know that you need a certain memory page soon,
-  then you can do ``madvise(addr, 4096, MADV_WILLNEED)``.
-* With ``fadvise()`` you can do the same for files.
-
-
-.. note::
-
-   This is greatly notice-able with file I/O!
-
-   Caveat: Complex orders (like tree traversal) cannot be requested
-   by userspace.
+Fynn
+====

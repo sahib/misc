@@ -18,8 +18,8 @@ Agenda
 Quiz
 ====
 
-1. If two programs A and B execute the same number of machine instructions will they have roughly the same runtime?
-2. If two CPUs have the same frequency, can we make assumptions on their speed?
+1. If two CPUs have the same frequency, can we make assumptions on their speed?
+2. If two programs *A* and *B* execute the same number of machine instructions will they have roughly the same runtime?
 
 .. note::
 
@@ -68,8 +68,11 @@ Fun fact: Supercompilers
       piece of code.
     * Not used in practice, since freaking slow but helpful for developing new compiler optimizations.
 
+    As you will see in the rest of the workshop,
+    70% of optimization is to help the compiler
+    make the right decisions.
 
-   STOKE: https://github.com/StanfordPL/stoke
+    STOKE: https://github.com/StanfordPL/stoke
 
 -----
 
@@ -414,8 +417,10 @@ Branchless programming
 
 ----
 
-Loop unrolling
-==============
+Loop unrolling and ILP
+======================
+
+*ILP* = Instruction Level Parallelism
 
 .. code-block:: go
 
@@ -435,6 +440,16 @@ Loop unrolling
     * A for loop is just a repeated branch condition.
     * Compilers unroll simple loops.
     * If they don't hand unrolling can be useful (very seldom!)
+
+    TODO:
+
+    Example with interdependent code:
+
+    v := 1234
+    for v > 0 {
+        digit := v % 10
+        v /= 10
+    }
 
 ----
 
@@ -550,16 +565,18 @@ Calling functions()
 
 .. note::
 
-    Go and C have different calling conventions.
-    C passes params and return values over registers
-    Go uses memory addresses (on the stack).
+    TODO: The assembler above is not terribly intuitive.
 
-    In both cases, there is a certain overhead in calling functions.
+    Go and C have different calling conventions.
+    C passes params and return values over registers and the stack.
+    Go uses memory addresses passed on the stack.
 
     This makes it impossible to call a C function directly from Go.
     Some languages like Zig share the same calling convetions and make
     it therefore possible to directly call C code. For go we need a weird
     abstraction layer called cgo.
+
+    In both cases, there is a certain overhead in calling functions.
 
 --------------
 
@@ -700,6 +717,9 @@ What's padding?
 
     If a struct is bigger than a cache line, then accessing .A and .I
     would cause the CPU to always require to get a new cache line!
+
+    Keep your structures under 64 bytes at max. Even less is better,
+    aim to stay under 32 byte.
 
 ----
 
@@ -867,7 +887,26 @@ True sharing
 
 ----
 
-Data oriented programming
+Typical Access patterns
+=======================
+
+.. image:: images/access_patterns.png
+   :width: 100%
+
+.. image:: images/struct_of_slices.png
+    :width: 90%
+
+|
+
+.. note::
+
+    *Learning:* Group data in a CPU friendly way. Prefer *Struct of Arrays* over
+    *Array of Structs* if you require a performance boost.
+
+
+----
+
+Data-Oriented programming
 =========================
 
 The science of designing programs in a CPU friendly way.
@@ -914,6 +953,46 @@ Quiz: Matrix Traversal
     2. ...column by column?
 
     Good picture source: https://medium.com/mirum-budapest/introduction-to-data-oriented-programming-85b51b99572d
+
+----
+
+Virtual funcs & Interfaces
+============================
+
+.. image:: images/interface.svg
+   :width: 60%
+
+.. class:: example
+
+   Example: code/cost_of_interface
+
+.. note::
+
+   Interface calls have between 2x to 10x as much overhead as direct calls in Go.
+
+   Interfaces also have a space cost. A variable of type interface is basically
+   a pointer with 16 byte (Space!). It consists of two actual pointers: type
+   (pointing to a struct describing the type for reflection) and a pointer to
+   the actual data the interface points to. This is one indirection more, one
+   more cycle for the GC.
+
+   Also, interfaces are opaque to the compiler. It cannot reason about what
+   they could do, so they can not use inlining or do proper escape analysis and
+   instead allocate on the heap always.
+
+   More info: https://syslog.ravelin.com/go-interfaces-but-at-what-cost-961e0f58a07b
+
+   Now you could say: Ah, I don't use Go, all good. Well, pretty much all
+   languages that support OOP are affected by this kind of behaviour. Virtual
+   methods in C++ or Java have their price too: They need to lookup a vtable,
+   which adds some more instructions but most importantly hinders the compiler
+   to optimize further.
+
+   Since especially Java uses Getters and Setters a lot - which are just one-line
+   functions in most cases - they pay quite a penalty regarding performance.
+
+   Python is especially wild, since they just might do tons of dictionary lookups
+   if you use classes with a lot of inheritance.
 
 ----
 
@@ -1001,5 +1080,9 @@ Rough Rules to take away
 .. note::
 
    Go even warns about too structures (if they are used as values):
-
    gocritic hugeParam: cfg is heavy (240 bytes); consider passing it by pointer
+
+   A good and very quick summary is also in this article
+   (although you need background info to understand the tips):
+
+   https://medium.com/scum-gazeta/golang-simple-optimization-notes-70bc64673980

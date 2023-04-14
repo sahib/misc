@@ -54,6 +54,7 @@ func (c *Counter2) Count() int64 {
 ////////////////////
 
 type Counter3 struct {
+	x      int
 	counts [8]int64
 }
 

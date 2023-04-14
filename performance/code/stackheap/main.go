@@ -6,6 +6,18 @@ import (
 	"unsafe"
 )
 
+func recursive(depth int) {
+	if depth <= 0 {
+		return
+	}
+
+	var a int
+	sa := strconv.FormatInt(int64(uintptr(unsafe.Pointer(&a))), 16)
+	fmt.Println(sa)
+	// fmt.Printf(" %p\n", &a)
+	recursive(depth - 1)
+}
+
 //go:noinline
 func f() *int {
 	v := 3
@@ -13,6 +25,7 @@ func f() *int {
 }
 
 func main() {
+	recursive(10)
 	// Two for the stack:
 	a := 23
 	b := 42
@@ -36,6 +49,6 @@ func main() {
 	sb := strconv.FormatInt(int64(uintptr(unsafe.Pointer(&b))), 16)
 	sc := strconv.FormatInt(int64(uintptr(unsafe.Pointer(c))), 16)
 	sd := strconv.FormatInt(int64(uintptr(unsafe.Pointer(d))), 16)
-	fmt.Println(sa, sb)
-	fmt.Println(sc, sd)
+	fmt.Printf("a=0x%s b=0x%s\n", sa, sb)
+	fmt.Printf("c=0x%s d=0x%s\n", sc, sd)
 }
