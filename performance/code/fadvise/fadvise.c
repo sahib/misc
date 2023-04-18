@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <time.h>
+#include <sys/time.h>
 
 void read_seq(int fd, int devnull_fd) {
     char buf[4 * 1024];
@@ -52,7 +53,7 @@ void read_backwards(int fd, int devnull_fd) {
 
         int to_read = sizeof(buf);
         if(curr <= 0) {
-            to_read -= curr;
+            to_read = -curr;
             curr = 0;
             end = true;
         }
@@ -103,7 +104,12 @@ int main(int argc, char **argv) {
 
     int devnull_fd = open("/dev/null", O_WRONLY);
 
-    clock_t before = clock();
+    // give kernel time to fulfill the advice:
+    // sleep(10);
+
+    struct timeval before, after;
+    gettimeofday(&before, NULL);
+
     if(strcmp(argv[2], "read_seq") == 0) {
         read_seq(fd, devnull_fd);
     } else if(strcmp(argv[2], "read_random") == 0) {
@@ -115,8 +121,8 @@ int main(int argc, char **argv) {
         printf("unknown read mode: %s\n", argv[2]);
         exit(5);
     }
-    clock_t after = clock();
-    float seconds = ((float)(after - before)) / ((float)CLOCKS_PER_SEC);
+    gettimeofday(&after, NULL);
+    double seconds = (after.tv_sec - before.tv_sec) + (after.tv_usec - before.tv_usec) / 1e6;
 
     printf("%s\t%s\t%.2fs\n", argv[2], argv[1], seconds);
     close(fd);

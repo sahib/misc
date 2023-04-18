@@ -448,6 +448,44 @@ A note on seeking
 
 ----
 
+VM: ``mmap()``
+===============
+
+* Can map files (among other things) to a processes' memory.
+* File contents are loaded TODO
+
+.. note::
+
+   Maybe one of the most mysterious system features we have on Linux.
+
+   Typical open/read/write/close APIs see files as streams.
+   With mmap() we can handle files as arrays and the memory needed for
+   this can be shared by several processes!
+
+   Great for implementing databases
+   or implementing random access to a big file (ex: reading every tenth byte of a file)
+
+----
+
+VM: ``mmap()`` for databases
+============================
+
+Short answer: Don't. Not enough control. Random order + writes hurt mmap.
+
+Long answer: https://db.cs.cmu.edu/mmap-cidr2022
+
+**Good mmap use cases:**
+
+* Reading large files (+ telling the OS how to read)
+* Sharing the file data with several processes in a very efficient way.
+* Zero copy during reading.
+* Ease-of-use. No buffers, no file handles.
+
+----
+
+
+----
+
 I/O improving performance
 =========================
 
@@ -492,6 +530,43 @@ Re-orders read and write requests for performance.
     In the age of HDDs schedulers were vital.
 
 ----
+
+``madvise()`` & ``fadvise()``
+=============================
+
+.. image:: images/fadvise_bench.png
+   :width: 100%
+
+.. class:: example
+
+   Example: code/fadvise
+
+.. class:: example
+
+   Example: code/madvise
+
+.. note::
+
+    fadvise() and madvise() can be used to give the page cache hints on what
+    pages are going to be used next and in what order. This can make a big difference
+    for complex use cases like rsync or tar, where the program knows that it needs
+    to read a bunch of files in a certain order. In this case advises can be given
+    to the kernel quite a bit before the program starts reading the file.
+
+    The linked examples try to simulate this by clearing the cache, giving a advise,
+    waiting a bit and then reading the file in a specific order.
+
+    The examples also contain some noteable things:
+
+    * Reading random is much slower than reading forward.
+    * Reading backwards is the end boss and really much, much slower.
+    * hyperfine is a nice tool to automate little benchmarks like these.
+    * Complex orders (like heaps or tree traversal) cannot be requested.
+    * mmap does not suffer from the read order much and is much faster
+      for this kind of no-copy-needed workload.
+
+----
+
 
 ``ionice``
 ==========

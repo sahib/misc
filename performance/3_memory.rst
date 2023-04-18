@@ -109,10 +109,6 @@ ROWHAMMER 🔨
 
 ----
 
-TODO: Memory bus?
-
-----
-
 ECC Memory
 ==========
 
@@ -135,12 +131,12 @@ Is the access to all memory offsets equally fast?
 
 * Not if you have more than one CPU!
 * Every CPU gets 1/nth of the memory.
-* Every CPU can access the completely memory.
+* Every CPU can access the complete memory.
 * Non-local access is costly.
 
 .. note::
 
-   TODO: is that slide really important?
+   TODO: is that slide really important? If yes, make it prettier using a diagram.
 
    Linux is NUMA capable and that's why it's such a popular server and
    superomputer operating system. Or one of the reasons at least.
@@ -172,12 +168,22 @@ How is memory managed?
 Inside a process
 ================
 
-Each process gets allocated a certain amount of memory.
+* Each process may allocate certain amounts of memory on-demand.
+* Memory inside the process can be managed in two ways: *Stack* and *Heap.*
+* *Stack:* For short-lived memory.
+* *Heap:* For long-lived memory.
 
-Memory inside the process can be managed in two ways:
+----
 
-* Stack: For short-lived memory.
-* Heap: For long-lived memory.
+The stack: LIFO Layout
+======================
+
+.. image:: images/stack_layout.svg
+    :width: 80%
+
+.. note::
+
+   https://en.wikipedia.org/wiki/Stack-based_memory_allocation
 
 ----
 
@@ -197,9 +203,9 @@ The stack: Growth
     recursive(10)
 
     // Output:
-    0xc000070e70 -> diff: 80 bytes
+    0xc000070e70 -> diff: 80 bytes due to:
     0xc000070e20 -> stack pointer, frame pointer
-    0xc000070dd0 -> registers, params
+    0xc000070dd0 -> registers, params, ...
     ...
 
 .. note::
@@ -209,29 +215,6 @@ The stack: Growth
     More details on calling a function:
 
     https://eli.thegreenplace.net/2011/09/06/stack-frame-layout-on-x86-64
-
-----
-
-The stack: Layout
-=================
-
-.. image:: images/stack_layout.svg
-    :width: 80%
-
-.. note::
-
-   https://en.wikipedia.org/wiki/Stack-based_memory_allocation
-
-----
-
-The stack: Summary
-==================
-
-* ...cleaned up automatically on return.
-* ...bound to a function call.
-* ...low overhead and should be preferred.
-* ...can be reasoned about during compile time.
-* ...good for small amounts of data.
 
 ----
 
@@ -246,17 +229,31 @@ Why not use the Stack for everything?
 
 .. note::
 
-    1: Reason for this are security mostly. Recursion happens on the stack,
-       so endless recursive programs cannot break everything. Also running
-       over the extents of a buffer in C will overwrite parts of the stack,
-       so limiting it makes sense.
+    1: Reason for this are security mostly. Recursion happens on the stack, so
+       endless recursive programs cannot break everything. Also running over the
+       extents of a buffer in C (Security issue!) will overwrite parts of the
+       stack, so limiting it makes sense.
+
     2. Stack is a LIFO. You cannot free objects down in the stack without
        freeing everything in between.
+
     3. Every thread (and in Go every goroutine) has their own stack.
 
 .. class:: example
 
    Example: code/stackoverflow
+
+----
+
+The stack: Summary
+==================
+
+* ...cleaned up automatically on return.
+* ...bound to a function call.
+* ...low overhead and should be preferred.
+* ...can be reasoned about during compile time.
+* ...good for small amounts of data.
+
 
 ----
 
@@ -307,12 +304,11 @@ The Heap: Allocations
    opens up ways to fuck up tremendously by creating memory leaks, double
    frees, forgotten allocations or use-after-free scenarios.
 
-   Heap memory must be cleaned up after use. Go does
+   Heap memory must be cleaned up after use. Go does this with a GC.
 
    Heap grows upwards.
 
-
-    TODO: Maybe use graphics from here: https://medium.com/eureka-engineering/understanding-allocations-in-go-stack-heap-memory-9a2631b5035d
+   TODO: Maybe use graphics from here: https://medium.com/eureka-engineering/understanding-allocations-in-go-stack-heap-memory-9a2631b5035d
 
 ----
 
@@ -321,7 +317,7 @@ The Heap: ``malloc()``
 
 .. code-block:: c
 
-    int ptrs[100];
+    int *ptrs[100];
     for(int i = 0; i < 100; i++) {
         ptrs[i] = malloc(i * sizeof(int));
     }
@@ -360,17 +356,64 @@ The Heap: Freelist
    malloc() needs to track which parts of its pool are in-use and which can
    be issued on the next call. It does by the use of free-lists. Each block
    returned by malloc() has a small header (violet) that points to the next block.
-   If allocated, a free block is taken out of the list and added to the allocated
+   The memory returned by malloc() is just behind this small header.
+
+   Once allocated, a free block is taken out of the list and added to the "allocated"
    list. This means that every allocation has a small space and time overhead.
 
+   On free(), the opposite happens: The block is put back into the freelist
+   and out of the "allocated" list.
+
    (i.e. an allocation is O(log n), instead of O(1) as with the stack)
+
+   Useful Links:
+
+   * https://azeria-labs.com/heap-exploitation-part-1-understanding-the-glibc-heap-implementation (More details)
+   * https://sourceware.org/git/?p=glibc.git;a=blob;f=malloc/malloc.c;h=05e65a2d54f9b3850fa0c4d2c7dfaae3dfd94dac;hb=HEAD#l54
+   * https://sourceware.org/git/?p=glibc.git;a=blob;f=malloc/malloc.c;h=05e65a2d54f9b3850fa0c4d2c7dfaae3dfd94dac;hb=HEAD#l102:
 
 ----
 
 The Heap: Leaks
 ===============
 
-TODO: memory leaks (valgrind? leaks in Go?)
+
+.. code-block:: c
+
+    // In C:
+    char *s;
+    s = malloc(20);
+    s = malloc(30); // leak: 20 bytes.
+
+.. code-block:: go
+
+    // In Go:
+    var m map[string][]byte{}
+    func f(v int) {
+        // the slice will be still referenced after
+        // the function returned, if not delete()'d
+        m["blub"] = make([]byte, 100)
+        return v * v
+    }
+
+.. note::
+
+    Other sources of memory leaks:
+
+    - Go routines blocking forever.
+    - Assigning a small slice of a big array to a variable
+      (causing the whole array to be still referenced)
+
+    Use pprof to find memory leaks in Go.
+
+    In C it's very easy to forget a free(), therefore quite
+    some impressive tooling developed over the years. The most prominent
+    example is valgrind: https://valgrind.org
+
+    Python: Also has memory leaks, finding them is much harder
+    since the tooling is not great (at least when I looked last time).
+    Also: Memory leaks can happen on the C-side or in the python code
+    itself. If they happen in a C-module you're pretty much fuc.. lost.
 
 ----
 
@@ -382,7 +425,7 @@ The Heap: Summary
 * ...needs to be explicitly requested.
 * ...needs to be explititly cleaned up.
 * ...can be used until freed. Will crash otherwise.
-* ...required for big chunks of data or long-lived data.
+* ...required for big data chunks or long-lived data.
 * ...has a small, but noticeable, overhead.
 
 .. note::
@@ -479,6 +522,7 @@ GC: Escape Analysis
 
 .. note::
 
+    Only heap allocated data is managed by the garbage collector.
     The more you allocate on the heap, the more pressure you put on the
     memory bookkeeping and the garbage collector.
 
@@ -499,6 +543,19 @@ GC: Pre-Allocate
 
     s := make([]int, 0, len(input))
     m := make(map[string]int, 20)
+    // ...
+
+    // If you need to concatenate many strings:
+    var b strings.Builder
+    b.Grow(100 * 13)
+    for idx := 0; idx < 100; idx++ {
+        b.WriteString("Hello World!\n")
+    }
+    fmt.Println(b.String())
+
+.. class:: example
+
+   Example: code/prealloc
 
 ----
 
@@ -539,14 +596,111 @@ GC: Pooling
 
 ----
 
+GC: Internment #1
+=================
+
+.. code-block:: go
+
+    // type StringHeader struct {
+    //         Data uintptr
+    //         Len  int
+    // }
+    func stringptr(s string) uintptr {
+        return (*reflect.StringHeader)(unsafe.Pointer(&s)).Data
+    }
+
+    func main() {
+        s1 := "123"
+        s2 := s1
+        s3 := "1" + "2" + "3"
+        s4 := "12" + strconv.FormatInt(3, 10)
+        fmt.Printf("0x%x 0x%x 0x%x 0x%x\n",
+            stringptr(s1), // 0x000049a4c2
+            stringptr(s2), // 0x000049a4c2
+            stringptr(s3), // 0x000049a4c2
+            stringptr(s4), // 0xc000074ed0
+        )
+    }
+
+----
+
+GC: Internment #2
+=================
+
+.. code-block:: go
+
+    type stringInterner map[string]string
+
+    func (si stringInterner) Intern(s string) string {
+        if interned, ok := si[s]; ok {
+            return interned
+        }
+        si[s] = s
+        return s
+    }
+
+    func main() {
+        si := stringInterner{}
+        s1 := si.Intern("123")
+        s2 := si.Intern(strconv.Itoa(123))
+        fmt.Println(stringptr(s1) == stringptr(s2)) // true
+    }
+
+.. note::
+
+    Advantage:
+
+    - Strings can be compared by the compiler by ptr equality.
+    - Less memory is used.
+
+    Further examples and the full impressive benchmark can be found here:
+
+    https://artem.krylysov.com/blog/2018/12/12/string-interning-in-go
+
+----
+
+GC: Internment #3
+=================
+
+.. code-block:: go
+
+    // Measuring speed of string comparisons:
+    BenchmarkStringCompare1-4         1.873 ns/op
+    BenchmarkStringCompare10-4        4.816 ns/op
+    BenchmarkStringCompare100-4       9.481 ns/op
+    BenchmarkStringCompareIntern1-4   1.830 ns/op
+    BenchmarkStringCompareIntern10-4  1.868 ns/op
+    BenchmarkStringCompareIntern100-4 1.965 ns/op
+
+.. class:: example
+
+   Example: code/internment
+
+.. note::
+
+    Internment scales incredibly well.
+
+    Good usecases:
+
+    - Reading words of natural language.
+    - Enum-like strings like country names.
+    - Interning keys of json objects.
+
+    Bad usecases:
+
+    - Internment for input that is very long
+      and cannot be predicted (tweets e.g.)
+
+----
+
 GC: Memory Limit
 ================
 
 .. code-block:: bash
 
-    $ GOMEMLIMIT=5500M go run app.go
+    $ GOMEMLIMIT=2000M go run app.go
 
-.. image:: images/memlimit_gc.png
+.. image:: images/deephealth_mem.png
    :width: 100%
 
 .. note::
@@ -577,15 +731,13 @@ Virtual memory (VM)
     Let's talk about the elephant in the room: The adress of a value
     is not the adress in physical memory. How can we proof it?
 
-    TODO: write proof.
-
 ----
 
 VM: The mapping
 ===============
 
-.. image:: images/virtual_memory.svg.png
-   :width: 50%
+.. image:: images/virtual_memory.png
+   :width: 80%
 
 .. note::
 
@@ -608,14 +760,26 @@ VM: The mapping
 VM: implementation
 ==================
 
-TODO: Make diagram
+.. code-block:: bash
 
-* Each process has a list of page tables mapping virtual to physical memory ("page table")
-* On process start this table is filled with a few default kilobytes of mapped pages
-  (the first few pages are not mapped, so dereferencing a NULL pointer will always crash)
-* When the program first accesses those addresses the CPU will generate a page fault, indicating
-  that there is no such mapping. The OS receives this and will find a free physical page, map
-  it and retry execution. If another page fault occurs the OS will kill the process with SIGSEGV.
+   $ cat /proc/<pid>/maps
+   55eab7237000-55eab7258000 rw-p  [heap]
+   ...
+   7f54a1c18000-7f54a1c3a000 r--p  /usr/lib/libc.so.6
+   ...
+   7ffe78a26000-7ffe78a47000 rw-p  [stack]
+
+
+Each process has a »*Page Table*« mapping virtual to physical memory.
+
+.. note::
+
+    On process start this table is filled with a few default kilobytes of mapped pages
+    (the first few pages are not mapped, so dereferencing a NULL pointer will always crash)
+
+    When the program first accesses those addresses the CPU will generate a page fault, indicating
+    that there is no such mapping. The OS receives this and will find a free physical page, map
+    it and retry execution. If another page fault occurs the OS will kill the process with SIGSEGV.
 
 ----
 
@@ -626,7 +790,7 @@ VM: Advantages
 * Several processes can share the same pages
 * Pages do not need to be mapped to physical memory: Disk, DMA or even network is possible!
 * Processes are isolated from each other.
-* Processes consume only as much physical ("residual") memory as really needed.
+* Processes consume only as much physical (*»residual«*) memory as really needed.
 * Programs get easier to write because they can just assume that the memory is not fragmented.
 * Pages can be swapped to disk by the OS without the process even noticing
 * The kernel can give away more memory than there is on the system (overcommiting)
@@ -635,72 +799,25 @@ VM: Advantages
 
 ----
 
-VM: ``mmap()``
-===============
-
-* Can map files (among other things) to a processes' memory.
-* File contents are loaded TODO
-
-.. note::
-
-   Maybe one of the most mysterious system features we have on Linux.
-
-   Typical open/read/write/close APIs see files as streams.
-   With mmap() we can handle files as arrays and the memory needed for
-   this can be shared by several processes!
-
-   Great for implementing databases
-   or implementing random access to a big file (ex: reading every tenth byte of a file)
-
-----
-
-VM: ``mmap()`` for databases
-============================
-
-Short answer: Don't. Not enough control. Random order + writes hurt mmap.
-
-Long answer: https://db.cs.cmu.edu/mmap-cidr2022
-
-**Good mmap use cases:**
-
-* Reading large files (+ telling the OS how to read)
-* Sharing the file data with several processes in a very efficient way.
-* Zero copy during reading.
-* Ease-of-use. No buffers, no file handles.
-
-----
-
-VM: ``madvise()`` and ``fadvise()``
-===================================
-
-* You can give tips to the kernel.
-* When you know that you need a certain memory page soon,
-  then you can do ``madvise(addr, 4096, MADV_WILLNEED)``.
-* With ``fadvise()`` you can do the same for files.
-
-.. note::
-
-   This is greatly notice-able with file I/O!
-
-   Caveat: Complex orders (like tree traversal) cannot be requested
-   by userspace.
-
-----
-
 VM: Swapping
 ============
 
 .. code-block:: bash
 
+    # Create some space for swapping:
     $ dd if=/dev/zero of=swapfile count=1024 bs=1M
     $ swapon ./swapfile
 
-.. code-block:: bash
-
+    # Check how eager the system is to use the swap
+    # with a value between 0-100. This is the percentage
+    # of RAM that is left before swapping starts.
     $ cat /proc/sys/vm/swappiness
-    (value between 0-100)
-    0 = only swap if OOM would hit otherwise.
-    100 = swap everything not actively used.
+    (a value between 0-100)
+
+    # 0   = only swap if OOM would hit otherwise.
+    # 100 = swap everything not actively used.
+    #  60 = default for most desktops.
+    # <10 = good setting for database servers
 
 .. note::
 
@@ -727,18 +844,28 @@ Profiling: Residual memory vs virtual memory
 
 .. note::
 
-   Picture above showing htop on my laptop from 2017
+   Picture above showing htop on my rather old laptop
    with a normal workload. The amount of virtual memory for some programs
    like signal-desktop is HUGE and only a tiny portion is actually used.
 
+   Fun fact: The program I was actively using was gimp, but the actual
+   performance hogs were all browser-based applications. Brave new world.
+
 ----
 
-Profiling: Quick measurement
-============================
+Profiling: Quick & dirty
+========================
 
-.. code-block::
+.. code-block:: bash
 
-   /usr/bin/time -v <command>
+    # Show the peak residual memory usage:
+    $ /usr/bin/time -v <command>
+    ...
+    Maximum resident set size (kbytes): 16192
+    ...
+
+|
+|
 
 .. class:: example
 
@@ -754,12 +881,19 @@ Profiling: Quick measurement
 
 ----
 
-Profiling: pprof
-================
+Profiling: ``pprof``
+====================
 
-Find out where the memory was used.
+.. image:: images/pprof_heap.svg
+   :width: 100%
 
-TODO: Provide a nice example.
+.. note::
+
+   Works similar to the CPU profile and gives us a good overview.
+   The little cubes mean "x memory was allocated in y size batches".
+
+   The pprof output is also available as flamegraph if you prefer
+   this kind of presentation.
 
 ----
 
@@ -805,5 +939,5 @@ The OOM Killer
 
 ----
 
-Fynn
-====
+Fynn!
+=====

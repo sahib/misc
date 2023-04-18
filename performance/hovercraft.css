@@ -1,4 +1,5 @@
 @import url(http://fonts.googleapis.com/css?family=vollkorn);
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap');
 
 body {
     font-family: vollkorn;
@@ -21,7 +22,7 @@ a:before {
 }
 
 .example {
-    font-family: JetBrainsMono Nerd Font;
+    font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', monospace;
     font-size: 30px;
     font-weight: 500;
 
@@ -33,13 +34,22 @@ a:before {
     justify-content: center;
 
     padding-left: 10px;
-    padding-right: 10px;
+    padding-right: 20px;
     padding-top: 10px;
     padding-bottom: 10px;
 
     border-style: solid;
-    border-radius: 5px;
+    border-radius: 15px;
     border-color: #000;
+
+    box-shadow: -3px 3px   #7e57c2,
+                -6px 6px   #2196f3,
+                -9px 9px   #26c6da,
+                -12px 12px #43a047,
+                -15px 15px #eeff41,
+                -18px 18px #f9a825,
+                -21px 21px #ff5722,
+                -24px 24px 30px #000;
 }
 
 .example:before {
@@ -58,7 +68,7 @@ a:before {
 }
 
 .line-block {
-    font-family: JetBrainsMono Nerd Font;
+    font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', monospace;
 	font-size: 30px;
 }
 
@@ -114,7 +124,7 @@ h1, h2, h3 {
 	font-weight: 500;
 
     border-style: solid;
-    border-radius: 5px;
+    border-radius: 15px;
     border-color: #000;
 }
 
@@ -164,7 +174,7 @@ blockquote {
 }
 
 pre {
-    font-family: JetBrainsMono Nerd Font;
+    font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', monospace;
 	font-size: 35px;
 	font-style:normal;
 	font-weight: 400;

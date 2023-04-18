@@ -441,15 +441,15 @@ Loop unrolling and ILP
     * Compilers unroll simple loops.
     * If they don't hand unrolling can be useful (very seldom!)
 
-    TODO:
+    Example with interdependent code will not work as good:
 
-    Example with interdependent code:
+    .. code-block:: go
 
-    v := 1234
-    for v > 0 {
-        digit := v % 10
-        v /= 10
-    }
+        v := 1234
+        for v > 0 {
+            digit := v % 10
+            v /= 10
+        }
 
 ----
 
@@ -721,6 +721,11 @@ What's padding?
     Keep your structures under 64 bytes at max. Even less is better,
     aim to stay under 32 byte.
 
+    Some more background info regarding why the value needs to be padded
+    can be found here (i.e. instructions require proper alignment):
+
+    https://go101.org/article/memory-layout.html
+
 ----
 
 (Binary) size matters!
@@ -874,7 +879,7 @@ True sharing
 
 .. class:: example
 
-   Example: code/employee
+   Example: code/striding
 
 .. note::
 
@@ -993,6 +998,28 @@ Virtual funcs & Interfaces
 
    Python is especially wild, since they just might do tons of dictionary lookups
    if you use classes with a lot of inheritance.
+
+----
+
+Bounds checking Elimination
+===========================
+
+Help the compiler!
+
+.. class:: example
+
+   Example: code/boundscheck
+
+.. note::
+
+    In a memory-safe language all access to slices are checked
+    (and if out-of-bound, an language panic/exception is produced)
+
+    This is a very small price to pay for the safety, but it costs
+    a few instructions.
+
+    More infos can be found here:
+    https://go101.org/article/bounds-check-elimination.html
 
 ----
 

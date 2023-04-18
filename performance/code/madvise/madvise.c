@@ -7,13 +7,14 @@
 #include <fcntl.h>
 #include <time.h>
 #include <sys/mman.h>
+#include <sys/time.h>
 
 const int chunk_size = 4 * 1024;
 
 void read_seq(void *m, off_t size, int devnull_fd) {
-    int c = 0;
-    for(int idx = 0; idx < size; idx += chunk_size) {
-        int b = chunk_size;
+    off_t c = 0;
+    for(off_t idx = 0; idx < size; idx += chunk_size) {
+        off_t b = chunk_size;
         if(idx + chunk_size > size) {
             b = size - idx;
         }
@@ -24,8 +25,8 @@ void read_seq(void *m, off_t size, int devnull_fd) {
 }
 
 void read_random(void *m, off_t size, int devnull_fd) {
-    int c = 0;
-    for(int idx = 0; idx < size; idx += chunk_size) {
+    off_t c = 0;
+    for(off_t idx = 0; idx < size; idx += chunk_size) {
         off_t off = rand() % (size - chunk_size);
         c += write(devnull_fd, m+off, chunk_size);
     }
@@ -35,8 +36,8 @@ void read_random(void *m, off_t size, int devnull_fd) {
 
 void read_backwards(void *m, off_t size, int devnull_fd) {
     int c = 0;
-    for(int idx = size; idx >= 0; idx -= chunk_size) {
-        int b = chunk_size;
+    for(off_t idx = size; idx >= 0; idx -= chunk_size) {
+        off_t b = chunk_size;
         if(idx <= 0) {
             b -= idx;
         }
@@ -82,9 +83,14 @@ int main(int argc, char **argv) {
         exit(4);
     }
 
+    // give kernel time to fulfill the advice:
+    // sleep(10);
+
     int devnull_fd = open("/dev/null", O_WRONLY);
 
-    clock_t before = clock();
+    struct timeval before, after;
+    gettimeofday(&before, NULL);
+
     if(strcmp(argv[2], "read_seq") == 0) {
         read_seq(m, size, devnull_fd);
     } else if(strcmp(argv[2], "read_random") == 0) {
@@ -96,8 +102,8 @@ int main(int argc, char **argv) {
         printf("unknown read mode: %s\n", argv[2]);
         exit(5);
     }
-    clock_t after = clock();
-    float seconds = ((float)(after - before)) / ((float)CLOCKS_PER_SEC);
+    gettimeofday(&after, NULL);
+    double seconds = (after.tv_sec - before.tv_sec) + (after.tv_usec - before.tv_usec) / 1e6;
 
     printf("%s\t%s\t%.3fs\n", argv[2], argv[1], seconds);
     close(fd);

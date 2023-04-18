@@ -6,6 +6,7 @@
 int main(void) {
     // allocate 1G of virtual memory:
     char *big = malloc(1024 * 1024 * 1024);
+
     while(true) {
         // convert 1M to residual memory at a time:
         for(int i = 0; i < 1024 * 1024; i++) {
