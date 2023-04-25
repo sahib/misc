@@ -914,6 +914,30 @@ Profiling: Monitoring
 
 ----
 
+Profiling: Pyroscope
+====================
+
+.. image:: images/pyroscope.png
+   :width: 100%
+
+`Pyroscope <https://pyroscope.io/docs/golang>`_
+
+.. note::
+
+   Especially long-running memorly leaks are hard to debug
+   (i.e. when memory accumulates over the course of several days e.g.)
+
+   In this it can help to combine monitoring and profiling. This is sometimes
+   called "continuous profiling" therefore. Pyroscope is one of those tools.
+
+   A short article on how to integrate this with Go services:
+   https://grafana.com/blog/2023/04/19/how-to-troubleshoot-memory-leaks-in-go-with-grafana-pyroscope/
+
+   Demo for Go:
+   https://demo.pyroscope.io/?query=rideshare-app-golang.cpu%7B%7D&from=1682450314&until=1682450316
+
+----
+
 The OOM Killer
 ==============
 

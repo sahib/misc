@@ -4,6 +4,11 @@
 
 TODO: go routine profiling
 TODO: show executing tracer
+TODO: show go race detection.
+TODO: epoll / select and sorts?
+TODO: show https://unixism.net/loti/async_intro.html like graphs?
+TODO: When you start a goroutine, have a plan to stop it.
+
 
 Maybe steal some things here: https://livebook.manning.com/book/100-go-mistakes-and-how-to-avoid-them/chapter-8/16
 
@@ -15,6 +20,18 @@ Agenda
 * Parallel problems
 * Parallel patterns
 * A hard problem
+
+----
+
+Is this helpful?
+================
+
+.. image:: images/epoll_vs_othersz.png
+   :width: 100%
+
+.. note::
+
+   Just making it multithreaded doesn't hurt.
 
 ----
 

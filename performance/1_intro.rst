@@ -33,31 +33,37 @@ Who's that?
       talk were somewhat common knowledge 20 years ago (at least parts of it) it became somehow obscure knowledge over time and universities just focused
       on disciplines like web development and data science where you're not supposed to have this knowledge. Because you know, numpy and pandas does it for you.
       Or the browser will just do the right thing.
+
+----
+
+Programmers then & now
+======================
+
+.. image:: images/meme.jpg
+   :width: 100%
+
+.. note::
+
+    NOTE: Exaggerated of course and I kinda see myself also in that meme. Programming got much easier now, but also much ...broader. Much more languages,
+    frameworks, concepts that a programmer is expected to know. Still: In earlier days, programming required a much more thorough approach with more experimentation
+    and there was no StackOverflow, AI, Auto complete or even documentation. Throwing more hardware at the problem was also no choice.
+    Knowledge today is much more superficial than it was before. Mostly, because deep understanding of how a computer works is simply not required to produce something that works.
+
+    The thing is: Not requiring this kind of knowledge is a blessing and a curse at the same time. A blessing for our productivity, but
+    in general a curse for the software we produce:
+
     * In the 90s we still squeezed every byte of memory out of game consoles and did both amazing and scary optimizations to get basic functionality.
     * And last decade we invented things like Electron, a lazy-ass way to make
       applications "portable" by just starting a browser for every application
-      - I don't want you guys to invent something like Electron
+    * The main motivation of this workshop was actually being annoyed by things like Electron
+      and I wanted that you guys do not invent something like Electron.
     * If you think Electron is a good idea, then please stop doing anything related to software engineering.
     * Maybe try gardening, or do waterboarding in Guantanamo. Just do something less hurtful to mankind than Electron
     * Seriously take some pride as software engineerings and try to leave a solid legacy to the next generation of engineers.
-    * Teaching you about the internals of program execution.
-    * Very neglected field - not much teached in studies, during day-to-day work "it worked (once)" is more important.
+    * Understanding how a computer works helps to not be like Bill Gates and just eat up hardware advancements with
+      worse software.
 
-    Disclaimer:
-
-    * We're working from low level to slightly higher level here. Don't expect tips like "use this data structure to make
-      stuff incredibly fast". I'll won't go over all possible performance tips for your language (there are better
-      lists on the internet). I also won't go over a lot of data structures - what I do show is to show you how to choose
-      a data structure.
-    * The talk is loosely tied to the hardware: General intro, cpu, mem, io, parallel programming
-    * Most code examples will be in Go and C, as most ideads require a compiled language.
-    * Interpreted languages like Python/Typescript might take away a few concepts, but to be honest,
-      your language is fucked up and will never achieve solid performance.
-    * For Python you can at least put performance criticals into C libraries, for the blistering cestpool
-      that web technology is... well, I guess your only hope is Webassembly.
-    * If you are unsure how a specific concept translates to your language: just ask. I might have no idea,
-      but often there is only a limited choice of design decisions language designers can make.
-    * In this talk you will learn why people invent things Webassembly - even though it's kinda sad.
+    Also, this is the only meme. I promise.
 
 ----
 
@@ -138,6 +144,22 @@ Workshop contents
 
     If you can answer these questions to your own
     liking, then you succeeded. I can't yet.
+
+    Disclaimer:
+
+    * We're working from low level to slightly higher level here. Don't expect tips like "use this data structure to make
+      stuff incredibly fast". I'll won't go over all possible performance tips for your language (there are better
+      lists on the internet). I also won't go over a lot of data structures - what I do show is to show you how to choose
+      a data structure.
+    * The talk is loosely tied to the hardware: General intro, cpu, mem, io, parallel programming
+    * Most code examples will be in Go and C, as most ideads require a compiled language.
+    * Interpreted languages like Python/Typescript might take away a few concepts, but to be honest,
+      your language is fucked up and will never achieve solid performance.
+    * For Python you can at least put performance criticals into C libraries, for the blistering cestpool
+      that web technology is... well, I guess your only hope is Webassembly.
+    * If you are unsure how a specific concept translates to your language: just ask. I might have no idea,
+      but often there is only a limited choice of design decisions language designers can make.
+    * In this talk you will learn why people invent things Webassembly - even though it's kinda sad.
 
 ----
 
