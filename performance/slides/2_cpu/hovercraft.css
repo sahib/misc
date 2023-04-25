@@ -280,3 +280,13 @@ pre {
     background-color: none;
     font-size: 60px;
 }
+
+table, th, td {
+    font-size: 10px !important;
+    border: 1px solid;
+}
+
+th, td {
+    padding-right: 5px;
+    padding-left: 5px;
+}
