@@ -555,3 +555,10 @@ Goal: no philosopher should starve.
    * Hard & correct: Use global mutex pluse "hungry" state with semaphor per philosopher.
    * Easier: Give philosophers invdividual rights and priorities.
    * Weird: philosopher talk to each other if they need a fork (i.e. channels)
+
+----
+
+Fynn!
+=====
+
+🏁

@@ -1113,3 +1113,10 @@ Rough Rules to take away
    (although you need background info to understand the tips):
 
    https://medium.com/scum-gazeta/golang-simple-optimization-notes-70bc64673980
+
+----
+
+Fynn!
+=====
+
+🏁

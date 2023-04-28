@@ -752,6 +752,8 @@ TheStore: WAL 🐋
 Fynn!
 =====
 
+🏁
+
 .. note::
 
    I left quite some details out, but that's something you should be able to figure out.

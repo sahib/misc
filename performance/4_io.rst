@@ -132,8 +132,8 @@ Virtual File System
 
 ----
 
-How do syscalls work?
-=====================
+How do syscalls work? (#1)
+==========================
 
 .. code-block:: c
 
@@ -146,6 +146,10 @@ How do syscalls work?
     // );
     write(1, "Hello world!\n", 12);
 
+----
+
+How do syscalls work? (#2)
+==========================
 
 Compiled:
 
@@ -517,6 +521,32 @@ Detour: Fragmentation
     bringing the parts of the file closer together) during writes to that file.
     In practice, it does not matter anymore today.
 
+----
+
+Detour: Tweaking
+================
+
+* Do not fill up your filesystem.
+* Do not stack layers (``overlayfs``, ``luks``, ``mdadm``)
+* Do not enable ``atime`` (Access time, ``noatime``)
+* Disable journaling if you like to live risky.
+
+.. note::
+
+   Performance is not linear. The fuller the FS is the,
+   more it will be busy with background processes cleaning
+   things up.
+
+   Stacking filesystems (like with using encryption) can slow things
+   down. Often this without alternatives though. Only with RAID you
+   have the option to choose hardware RAID.
+
+   Journaling filesystems like ext4 use something like a WAL. They write the
+   metadata and/or data to a log before integrating it into the actual
+   data structure (which is more complex and takes longer to commit).
+   Data is written twice therefore with the advantage of being able to
+   recover it on crash or power loss. Disabling it speeds things up
+   at the risk of data loss (which might be okay on some servers).
 
 ----
 
@@ -528,19 +558,29 @@ Detour: FUSE
 
 ----
 
-VM: ``mmap()``
-===============
-
+``mmap()`` #1
+=============
 
 .. code-block:: c
 
+    // Handle files like arrays:
     int fd = open("/var/tmp/file1.db")
-    char *m = mmap(
-        NULL, 1024 /* file size */,
-        PROT_READ|PROT_WRITE /* prot */,
-        MAP_SHARED /* flags */, fd, 0
+    char *map = mmap(
+        NULL,                 // addr
+        1024                  // map size
+        PROT_READ|PROT_WRITE, // acess flags
+        MAP_SHARED            // private or shared
+        fd,                   // file descriptor
+        0                     // offset
     );
-    m[17] = '!'; /* set byte 18 to »!« */
+
+    // copy string to file with offset
+    strcpy(&map[20], "Hello World!");
+
+----
+
+``mmap()`` #2
+=============
 
 .. image:: images/mmap.png
    :width: 80%
@@ -570,24 +610,24 @@ VM: ``mmap()``
 
 ----
 
-VM: ``mmap()`` controversy
-==========================
+``mmap()`` controversy
+======================
 
 .. image:: images/mmap_for_db.png
    :width: 42%
 
 |
 
-* Some databases use ``mmap()`` (Influx, sqlite3)
+* Some databases use ``mmap()`` (*Influx, sqlite3, ...*)
 * Some people `advise vehemently against it <https://db.cs.cmu.edu/mmap-cidr2022>`_. 💩
-* Correct, but the situation is complicated.
-* Main argument: Not enough control.
+* For good reasons, but it's complicated.
+* Main argument: Not enough control & safety.
 * For some usecases ``mmap()`` is fine for databases.
 
 ----
 
-To sync or to async?
-====================
+To sync or to async? 🤔
+=======================
 
 .. image:: images/sync_async.jpg
    :width: 100%
@@ -606,50 +646,74 @@ To sync or to async?
 
 ----
 
-I/O improving performance
-=========================
+``O_DIRECT``
+============
 
-* Avoid I/O.
-* Use a sane buffer size.
-* Use append only data for writing.
-* Batch writes as they evict caches.
-* Prefer few big files over many small files.
-* Avoid directories with high amount of files (``git``)
-* For modifying big files use mmap.
-* Buy faster hardware.
+.. code-block:: c
 
-----
+   // Skip the page cache; see `man 2 open`
+   int fd = open("/some/file", O_DIRECT|O_RDONLY);
 
-I/O improving performance #2
-============================
-
-* Use a different I/O scheduler (``none``).
-* Use a different filesystem (``tmpfs``)
-* Leverage the page cache and trust the OS
-* Use zero-copy techniques: ``sendfile``, ``splice``
-* Not crazy: Use DMA if possible (hardware dependent)
-* Slightly crazy: fadvise() if you need prefetch
-* Maybe crazy: use O_DIRECT
-* Likely crazy: skip fsync()
-* Definitely crazy: FIEMAP
-
-TODO: io_uring
-
-----
-
-I/O scheduler
-=============
-
-Re-orders read and write requests for performance.
-
-* ``none``: Does no reordering.
-* ``bfq``: Complex, designed for desktops.
-* ``mq-deadline``, ``kyber``: Simpler, good allround schedulers.
+   // No use of the page cache here:
+   char buf[1024];
+   read(fd, buf, sizeof(buf));
 
 .. note::
 
+    This flag can be passed to the open() call.
+    It disables the page cache for this specific file handle.
+
+    Some people on the internet claim this would be faster,
+    but this is 90% wrong. There are 2 main use cases where O_DIRECT
+    has its use:
+
+    * Avoiding cache pollution: You know that you will not access the pages of
+      a specific file again and not want the page cache to remember those
+      files. This is a micro optimization and is probably not worth it. More or
+      less the same effect can be safely achieved by fadvise() with
+      FADV_DONTNEED.
+
+    * Implementing your own "page cache" in userspace. Many databases use this,
+      since they have a better idea of what pages they need to cache and which
+      should be re-read.
+
+----
+
+I/O scheduler 👎
+================
+
+.. image:: images/io_scheduler_perf.svg
+   :width: 100%
+
+`Full benchmark <https://www.phoronix.com/review/linux-56-nvme>`_
+
+.. note::
+
+    Re-orders read and write requests for performance.
+
+    * ``none``: Does no reordering.
+    * ``bfq``: Complex, designed for desktops.
+    * ``mq-deadline``, ``kyber``: Simpler, good allround schedulers.
+
+
     In the age of SSDs we can use dumber schedulers.
     In the age of HDDs schedulers were vital.
+
+----
+
+``ionice`` 👎
+=============
+
+.. code-block:: c
+
+    # Default level is 4. Lower is higher.
+    $ ionice -c 2 -n 0 <some-pid>
+
+
+.. note::
+
+    Well, you can probably guess what it does.
+
 
 ----
 
@@ -689,23 +753,6 @@ Re-orders read and write requests for performance.
 
 ----
 
-
-``ionice``
-==========
-
-.. code-block:: c
-
-    # Default level is 4. Lower is higher.
-    $ ionice -c 2 -n 0 <some-pid>
-
-
-.. note::
-
-    Well, you can probably guess what it does.
-
-
-----
-
 Why is `cp` faster?
 ===================
 
@@ -740,8 +787,8 @@ Why is `cp` faster?
 Reduce number of copies
 =======================
 
-* Do not copy buffers in your program too often
-* You can use ``readv`` to splice existing buffers to one.
+* Do not copy buffers too often (🤡)
+* Use ``readv()`` to splice existing buffers to one.
 * Use hardlinks if possible
 * Use CoW reflinks if possible.
 * ``sendfile()`` to copy files to Network.
@@ -749,5 +796,92 @@ Reduce number of copies
 
 ----
 
+I/O performance checklist: *The sane part*
+===========================================
+
+1. Avoid I/O. (🤡)
+2. Use a sane buffer size with ``read()``/``write()``.
+3. Use append only data for writing.
+4. Read files sequential, avoid seeking.
+5. Batch small writes, as they evict caches.
+6. Avoid creating too many small files.
+7. Make use of ``mmap()`` where applicable.
+8. Reduce copying (``mmap``, ``sendfile``, ``splice``).
+9. Compress data if you can spare the CPU cycles.
+
+.. note::
+
+    1. In many cases I/O can be avoided by doing more things in memory
+       or avoiding duplicate work.
+    2. Anything between 1 and 32k is mostly fine. Exact size depends
+       on your system and might vary a little. Benchmark to find out.
+    3. Appending to a file is a heavily optimized flow in Linux. Benefit
+       from this by designing your software accordingly.
+    4. Reading a file backwards is much much slower than reading it
+       sequentially in forward direction. This is also a heavily optimized
+       case. Avoid excessive seeking, even for SSDs (syscall overhead +
+       page cache has a harder time what you will read next)
+    5. Small writes of even a single byte will evict a complete page
+       from the page cache. TODO: is that even correct?
+    6. Every file is stored with metadata and some overhead. Prefer to
+       join small files to bigger ones by application logic.
+    7. mmap() can be very useful, especially in seek-heavy applications.
+       It can also be used to share the same file over several processes
+       and it has a zero-copy overhead.
+    8. Specialized calls can help to avoid copying data to userspace and
+       do a lot of syscalls by shifting the work to the kernel. In general,
+       try to avoid copying data in your application as much as possible.
+    9. If you have really slow storage (i.e. SD-cards) but a fast CPU,
+       then compressing data might be an option using a fast compression
+       algorithm like lz4 or snappy.
+
+----
+
+I/O performance checklist: *The deseperate part*
+=================================================
+
+10. Use ``io_uring``, if applicable.
+11. Buy faster/specialized hardware (``RAID 0``).
+12. Use no I/O scheduler (``none``).
+13. Tweak your filesystems settings.
+14. Use a different filesystem (``tmpfs``)
+15. Slightly crazy: ``fadvise()`` for cache warmup.
+16. Maybe crazy: use ``O_DIRECT``
+17. Likely crazy: skip ``fsync()/msync()``)
+18. Do not fill up your FS/SSD fully.
+
+.. note::
+
+    10. io_uring can offer huge benefits, especially when dealing
+        with many files and parallel processing of them. It is definitely
+        the most complex of the 3 APIs of read+write / mmap / io_uring
+        and its usage most be warranted.
+    11. Always a good option and often the cheapest one. RAID 0 can,
+        in theory, speed up throughput almost indefinitely, although
+        you'll hit limits with processing speeds quite fast.
+    12. Mostly standard now. I/O schedulers were important in the age
+        of HDDs. Today, it's best to skip scheduling (to avoid overhead)
+        by using the `none` scheduler.
+    13. If raw performance is needed, then you might tweak some filesystem
+        settings, as seen before.
+    14. Some filesystems are optimized for scaling and write workloads (XFS),
+        while others are more optimized for desktop workloads (ext4). Choose
+        wisely. The pros and cons go beyond the scope of this workshop.
+        If you're happy with memory, you can of course ``tmpfs`` which is
+        the fastest available FS - because it just does not use the disk.
+    15. fadvise() can help in workloads that include a lot of files.
+        The correct usage is rather tricky though.
+    16. Some databases use direct access without page cache to implement
+        their own buffer pools. Since they know better when to keep a page
+        and when to read it from disk again.
+    17. If you do not care for lost data, then do not use fsync() to ensure that
+        data was written.
+    18. Full SSDs (and filesystem) suffer more from write amplification and
+        finding more free extents becomes increasingly challenging.
+
+----
+
 Fynn!
-=====
+=========
+
+🏁
