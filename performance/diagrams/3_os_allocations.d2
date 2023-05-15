@@ -1,0 +1,38 @@
+m: RAM {
+  style.fill: white
+
+  reserved: Reserved {
+    width: 70
+
+  }
+
+  userspace: Free for all {
+    width: 450
+  }
+}
+
+swap {
+  style.fill: white
+  width: 200
+}
+
+k: Kernel {
+  style.fill: white
+  width: 600
+  icon: images/tux.jpg
+}
+
+
+k -> m.reserved: manage
+k -> m.userspace: manage
+k -> swap: manage
+
+P1.width: 100
+P2.width: 100
+P3.width: 100
+P4.width: 100
+
+P1 -> k: alloc 2M
+P2 -> k: alloc 3K
+P3 -> k: alloc 300M
+P4 -> k: alloc 1G

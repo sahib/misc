@@ -1,0 +1,44 @@
+direction: right
+
+before: "Without inline" {
+  shape: page
+  func: |go
+    func calculation(i int) float32 {
+        x := sin(float32(i) * math.Pi)
+        return x * x * x
+    }
+  |
+  code: |go
+    for idx := 0; idx < 10; idx++ {
+        fmt.Println(calculation(idx))
+    }
+
+    fmt.Println(calculation(42))
+  | {
+    height: 150
+  }
+}
+
+after: "With inline" {
+  shape: page
+  func: |go
+    func calculation(i int) float32 {
+        x := sin(float32(i) * math.Pi)
+        return x * x * x
+    }
+  |
+  code: |go
+    for idx := 0; idx < 10; idx++ {
+        x := sin(float32(i) * math.Pi)
+        fmt.Println(x * x * x)
+    }
+
+    fmt.Println(calculation(42))
+  | {
+    height: 150
+  }
+}
+
+before -> after {
+  style.stroke-width: 5
+}
