@@ -36,7 +36,7 @@ Who's that?
 
 ----
 
-Programmers then & now
+Performance inflation
 ======================
 
 .. image:: images/meme.jpg
@@ -64,6 +64,11 @@ Programmers then & now
       worse software.
 
     Also, this is the only meme. I promise.
+
+----
+
+.. image:: images/hyper.png
+   :width: 100%
 
 ----
 
@@ -129,6 +134,10 @@ Inside Python 🐍
    why there's so much C libraries in python, making the whole packaging system
    a bloody mess.
 
+   Side note: There are also declarative languages like SQL (as compared to
+   imperative languages like C) that this workshop is not focusing on. Working
+   on performance there is indirect, i.e. achieved by tricks.
+
 ----
 
 Workshop contents
@@ -141,9 +150,6 @@ Workshop contents
 *Remember:* **Work** shop.
 
 .. note::
-
-    If you can answer these questions to your own
-    liking, then you succeeded. I can't yet.
 
     Disclaimer:
 
@@ -160,6 +166,17 @@ Workshop contents
     * If you are unsure how a specific concept translates to your language: just ask. I might have no idea,
       but often there is only a limited choice of design decisions language designers can make.
     * In this talk you will learn why people invent things Webassembly - even though it's kinda sad.
+
+    My main goal is though to give you a "table of contents" of most things related to performance.
+    The whole thing is at least one semester of contents. We don't have enough time though, so we will
+    jump a lot from topic to topic while barely scratching the surface. This should not matter too much
+    though as long you just remember later "Ah, Lemur said something about this behavior, but I dont recall
+    the details, let's Google" (or maybe even open those slides again). The hardest part of experience
+    is that concepts exists. Applying them is often easier. If you manage to do that I will be fairly happy.
+
+    This also means that you don't need to worry if you don't understand something at first glance. Note it down
+    or directly ask during the workshop, but try to follow th ecurrent slides instead of trying to understand
+    every last detail.
 
 ----
 
@@ -188,6 +205,18 @@ What's missing?
 
 ----
 
+More infos
+==========
+
+- This workshop is written in a markup language.
+- Almost every slide has speaker notes.
+- I tried to make them generally understandable.
+- If you need more background, read them.
+
+`Link to Github <https://github.com/sahib/misc/blob/master/performance/1_intro.rst#workshop-contents>`_
+
+----
+
 Experiments mandatory 🥼
 ========================
 
@@ -199,7 +228,22 @@ You'll write your own *cute* database:
 
 .. note::
 
-   But do the database for yourself, not for me.
+   But do the database for yourself, not for me. Also, not every topic in
+   the slides has to be present in your database. I'm only sharing general ideads
+   here, not implementation tips. You don't have to remember all of them,
+   but hopefully you will take away the core thoughts behind those ideads.
+
+   Also, please note that I'm not expert in everything myself. I do those
+   workshops to educate myself on a certain topic. Also, I'm guilty of breaking
+   most of the "tips" I give in this talk. That should not come as a surprise,
+   as every rule is made to be broken. Most of the time for stupid reasons
+   though.
+
+   This might serve as career tip though: If you want to deep dive into a certain
+   topic, then prepare a presentation about it. If you're able to explain it to
+   others, then you're probably kind of good in it.
+
+   So: this is also some kind of test for myself.
 
 ----
 
@@ -267,8 +311,11 @@ Questions to ask:
 When not to optimize?
 =====================
 
-| "Programmers waste enormous amounts of time thinking about, or worrying about, the speed of noncritical parts of their programs, and these attempts at efficiency actually have a strong negative impact when debugging and maintenance are considered. We should forget about small efficiencies, say about 97% of the time: premature optimization is the root of all evil. Yet we should not pass up our opportunities in that critical 3%."
-| - Donald Knuth
+.. class:: quote
+
+    Programmers waste enormous amounts of time thinking about, or worrying about, the speed of noncritical parts of their programs, and these attempts at efficiency actually have a strong negative impact when debugging and maintenance are considered. We should forget about small efficiencies, say about 97% of the time: **premature optimization is the root of all evil.** Yet we should not pass up our opportunities in that critical 3%.
+
+| (Donald Knuth)
 
 .. note::
 
@@ -355,8 +402,8 @@ Requires a strong understanding of your program and experience.
 
 ----
 
-A rule of thumb
-===============
+A rule of thumb 👍
+==================
 
 **Go from big to small**:
 
@@ -429,9 +476,9 @@ Complexity exercises:
 1. *Time* complexity of *Bubble Sort*?
 2. *Time* complexity of *Binary Search* (*worst* & *best*)?
 3. *Space* complexity of *Merge Sort* versus *Quick Sort*?
-4. *Removing* an element from an *Array* vs from a *Linked List*?
-5. *Best/Worst* case time complexity of *Get/Set* of a *Hash Map*?
-6. *Space complexity* of a *Hash Map*?
+4. *Removing* an element from an *Array* vs a *Linked List*?
+5. *Best/Worst* case time complexity of *Get/Set* of *Dicts*?
+6. *Space complexity* of a *Dict*?
 
 .. note::
 
@@ -463,6 +510,7 @@ That's all. Go and remember a list of:
 * Sorting algorithms (+ external sorting)
 * Common & some specialized data structures.
 * Typical algorithms like binary search.
+* **How much space common types use.**
 * Levenshtein, Graphs, Backtracking, ...
 * ...whatever is of interest to you.
 
@@ -553,8 +601,11 @@ Profiling
 Workshop Project
 ================
 
-| “What I cannot create, I do not understand”.
-| - Richard Feynman
+.. class:: quote
+
+    What I cannot create, I do not understand.
+
+| (Richard Feynman)
 
 .. note::
 
@@ -567,7 +618,7 @@ Workshop Project
 
 ----
 
-TheStore: Memory only
+Store: Memory only
 =====================
 
 .. code-block:: go
@@ -596,7 +647,7 @@ TheStore: Memory only
 
 ----
 
-TheStore: Append only
+Store: Append only
 =====================
 
 .. code-block:: bash
@@ -621,7 +672,7 @@ TheStore: Append only
 
 ----
 
-TheStore: Indexed
+Store: Indexed
 =================
 
 .. code-block:: go
@@ -662,7 +713,7 @@ TheStore: Indexed
 
 ----
 
-TheStore: Segments
+Store: Segments
 ==================
 
 .. image:: diagrams/1_segments.svg
@@ -686,7 +737,7 @@ TheStore: Segments
 
 ----
 
-TheStore: Deletion
+Store: Deletion
 ==================
 
 .. image:: images/tombstones.png
@@ -703,7 +754,7 @@ TheStore: Deletion
 
 ----
 
-TheStore: Range queries
+Store: Range queries
 =======================
 
 .. image:: diagrams/1_lsm.svg
@@ -734,7 +785,7 @@ TheStore: Range queries
 
 ----
 
-TheStore: WAL 🐋
+Store: WAL 🐋
 ================
 
 .. image:: diagrams/1_wal.svg

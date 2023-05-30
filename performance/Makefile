@@ -16,8 +16,9 @@ all: 0_toc 1_intro 2_cpu 3_memory 4_io 5_concurrent homework.pdf
 	d2 --center --sketch --theme 301 $^
 
 diagram_outputs := $(shell grep -ho 'diagrams/.*' *.rst)
-slides/%/index.html: $(diagram_outputs) %.rst hovercraft.css
-	hovercraft --slide-numbers $(filter %.rst,$^) slides/$*
+slides/%/index.html: $(diagram_outputs) %.rst hovercraft.css hovercraft.js
+	hovercraft --slide-numbers $(filter %.rst,$^) slides/$* --js hovercraft.js
+	cp highlight-trac.css slides/$*/css/highlight.css
 
 watch:
 	# okay, that's actually funny.

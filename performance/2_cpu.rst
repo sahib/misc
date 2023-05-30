@@ -540,44 +540,6 @@ I like to MOV, MOV it
 
     Fun fact: MOV alone is Turing complete: https://github.com/xoreaxeaxeax/movfuscator
 
-----
-
-Calling functions()
-===================
-
-.. code-block:: asm
-
-   # arguments/returns go over heap memory
-   FuncAddGo:
-      MOVQ 0x8(SP), AX  ; get arg x -> ax
-      MOVQ 0x10(SP), CX ; get arg y -> cx
-      ADDQ CX, AX       ; %ax <- x + y
-      MOVQ AX, 0x20(SP) ; return x+y-z
-      RET
-
-.. code-block:: asm
-
-   # arguments/returns go over registers
-   FuncAddC:
-       LEAL  (%rdi,%rsi), %eax
-       ADDL  %edx, %eax
-       RETQ
-
-.. note::
-
-    TODO: The assembler above is not terribly intuitive.
-
-    Go and C have different calling conventions.
-    C passes params and return values over registers and the stack.
-    Go uses memory addresses passed on the stack.
-
-    This makes it impossible to call a C function directly from Go.
-    Some languages like Zig share the same calling convetions and make
-    it therefore possible to directly call C code. For go we need a weird
-    abstraction layer called cgo.
-
-    In both cases, there is a certain overhead in calling functions.
-
 --------------
 
 Optimization: Inlining
@@ -898,9 +860,6 @@ Typical Access patterns
 .. image:: images/access_patterns.png
    :width: 100%
 
-.. image:: images/struct_of_slices.png
-    :width: 90%
-
 |
 
 .. note::
@@ -908,6 +867,14 @@ Typical Access patterns
     *Learning:* Group data in a CPU friendly way. Prefer *Struct of Arrays* over
     *Array of Structs* if you require a performance boost.
 
+
+----
+
+AoS vs SoA
+==========
+
+.. image:: images/struct_of_slices.png
+    :width: 90%
 
 ----
 
@@ -958,6 +925,37 @@ Quiz: Matrix Traversal
     2. ...column by column?
 
     Good picture source: https://medium.com/mirum-budapest/introduction-to-data-oriented-programming-85b51b99572d
+
+----
+
+Recursion vs Iteration
+======================
+
+* Recursion is elegant but can be expensive.
+* Make the recursive call the last thing in your function.
+
+.. code-block::
+
+    BenchmarkSum/normal    286.7 ns/op
+    BenchmarkSum/tailcall  242.1 ns/op
+    BenchmarkSum/iterative  71.1 ns/op
+
+.. class:: example
+
+    Example: code/tailcall
+
+.. note::
+
+    Recursive algorithms like quicksort or merge sort are relatively elegant
+    when writing as recursive function. Sadly, this results in some performance impact.
+
+    Why? Because function call have a certain overhead, as we will see in the next chapter.
+    This function overhead can be reduced if we place the recursive function call at the end
+    of the function. This allows a smart compiler to save some instructions. An even smarter
+    compiler (clang or gcc) might even able to convert the recursion function into its
+    iterative equivalent.
+
+    This is called "Tail call optimization": https://de.wikipedia.org/wiki/Endrekursion
 
 ----
 

@@ -156,16 +156,17 @@ Compiled:
 .. code-block:: asm
 
     ; use the `write` system call (1)
-    movl $1, %rax
+    movl rax, 1
     ; write to stdout (1) - 1st arg
-    movl $1, %rbx
+    movl rbx, 1
     ; use string "Hello World" - 2nd arg
-    movl 'Hello World!\n', %rcx
+    ; (0x1234 is the addr of the "Hello World!\0")
+    movl rcx, 0x1234
     ; write 12 characters - 3rd arg
-    movl $12, %rdx
+    movl rdx, 12
     ; make system call via special instruction
     syscall
-    ; The return code is in the RAX register.
+    ; The return code is now in the RAX register.
 
 
 .. note::
@@ -257,7 +258,7 @@ Typical write I/O
 .. note::
 
     Q1: Does this mean that the data is available to read() when write() returned?
-    Q2: Is the data saved on disk after write() returns.
+    Q2: Is the data saved on disk after write() returns?
 
     A1: Mostly. There might be exotic edge cases with non-POSIX filesystems,
         but you should mostly be able to assume this.
@@ -793,6 +794,52 @@ Reduce number of copies
 * Use CoW reflinks if possible.
 * ``sendfile()`` to copy files to Network.
 * ``copy_file_range()`` to copy between files.
+
+----
+
+Good abstractions
+=================
+
+.. code-block:: go
+
+    type ReaderFrom interface {
+        ReadFrom(r Reader) (n int64, err error)
+    }
+
+    type WriterTo interface {
+        WriteTo(w Writer) (n int64, err error)
+    }
+
+.. note::
+
+    You might have heard that abstractions are costly from a performance point
+    of view and this partly true. Please do not take this an excuse for not adding
+    any abstractions to your code in fear of performance hits.
+
+    Most bad rap of abstractions come from interfaces that are not general
+    enough and cannot be extended when performance needs arise.
+
+    Example: io.Reader/io.Writer/io.Seeker are very general and hardly specific.
+    From performance point of view they tend to introduce some extra allocations
+    and also some extra copying that a more specialized implementation might get
+    rid of if it would know how it's used.
+
+    For example, a io.Reader that has to read a compressed stream needs to read
+    big chunks of compressed data since compression formats work block
+    oriented. Even if the caller only needs a single byte, it still needs to
+    decompress a whole block. If the API user needs another byte a few KB away,
+    the reader might have to throw away the curent block and allocate space for
+    a new one, while seeking in the underlying stream. This is costly.
+
+    Luckily, special cases can be optimized. What if the reader knows that the whole
+    stream is read in one go? Like FADV_SEQUENTIAL basically. This is what WriteTo()
+    is for. A io.Reader can implement this function to dump its complete content to
+    the writer specified by `w`. The knowledge that no seeking is required allows
+    the decompression reader to make some optimizations: i.e. use one big buffer,
+    no need to re-allocate, parallelize reading/decompression and avoid seek calls.
+
+    So remember: Keep your abstractions general, check if there are specific
+    patterns on how your API is called and offer optimizations for that.
 
 ----
 

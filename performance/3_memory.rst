@@ -218,6 +218,10 @@ The stack: Growth
 
 ----
 
+TODO: Explain stack pointer, instruction pointer here.
+
+----
+
 The stack: Overflow
 ===================
 
@@ -850,6 +854,8 @@ Profiling: Residual memory vs virtual memory
 
    Fun fact: The program I was actively using was gimp, but the actual
    performance hogs were all browser-based applications. Brave new world.
+
+   If you want to flex: Use `btop` for even prettier screens.
 
 ----
 

@@ -3,9 +3,12 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/signal"
 	"runtime"
+	"runtime/trace"
 	"sync"
 	"sync/atomic"
+	"syscall"
 	"time"
 )
 
@@ -101,7 +104,22 @@ func (c *Counter4) Count() int64 {
 
 ////////////////////
 
+const traceIt = false
+
 func main() {
+	if traceIt {
+		fd, err := os.Create("/tmp/counter.trace")
+		if err != nil {
+			panic(err)
+		}
+
+		sigs := make(chan os.Signal, 1)
+		signal.Notify(sigs, syscall.SIGINT)
+
+		trace.Start(fd)
+		defer trace.Stop()
+	}
+
 	var counters = map[string]Counter{
 		"mutex":       &Counter1{},
 		"atomic":      &Counter2{},
