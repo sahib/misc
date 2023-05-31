@@ -26,7 +26,7 @@ a:before {
     font-weight: 500;
 
     background-color: #000;
-    color: #fff;
+    color: #fff !important;
 
     display: flex;
     align-items: center;
