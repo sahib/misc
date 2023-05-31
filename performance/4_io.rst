@@ -286,29 +286,6 @@ Typical write I/O
 
 ----
 
-Fixed write version
-===================
-
-.. code-block:: c
-
-    /* ... */
-    char *buf_ptr = buf;
-    while(bytes_in_buf > 0) {
-       size_t written = write(fd, buf_ptr, bytes_in_buf);
-       bytes_in_buf -= written;
-       buf_ptr += written;
-       if(errno != 0) {
-           return;
-       }
-    }
-    /* ... */
-
-.. note::
-
-   TODO: Is this slide that important?
-
-----
-
 What about ``fread()``?
 =======================
 
@@ -462,7 +439,6 @@ Alternative to ``fsync()``
 
 .. note::
 
-    TODO: Move down.
     This only works obviously if you're not constantly updating the file,
     i.e. for files that are written just once.
 
@@ -868,8 +844,9 @@ I/O performance checklist: *The sane part*
        sequentially in forward direction. This is also a heavily optimized
        case. Avoid excessive seeking, even for SSDs (syscall overhead +
        page cache has a harder time what you will read next)
-    5. Small writes of even a single byte will evict a complete page
-       from the page cache. TODO: is that even correct?
+    5. Small writes of even a single byte will mark a complete page
+       from the page cache as dirty, i.e. it needs to be written.
+       If done for many pages this will have an impact.
     6. Every file is stored with metadata and some overhead. Prefer to
        join small files to bigger ones by application logic.
     7. mmap() can be very useful, especially in seek-heavy applications.

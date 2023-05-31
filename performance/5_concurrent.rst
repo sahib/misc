@@ -19,6 +19,9 @@ Agenda
    by nature (well, there are web workers, but that's embarassing). Parallel
    programming in bash would be fun, but you might not share my sense of humor.
 
+.. image:: images/thread.jpg
+   :width: 40%
+
 ----
 
 Parallel programming
@@ -42,8 +45,8 @@ the use of resources with minimal overhead.«*
 
 ----
 
-Rule of thumb
-=============
+Rule of thumb 👍
+================
 
 |
 
@@ -315,11 +318,16 @@ A binary semaphore.
 .. code-block:: go
 
     var count int
+    var mu sync.Mutex
 
     func inc() {
-        // critical section start
+        mu.Lock()
         count++
-        // critical section end
+        mu.Unlock()
+
+        // or better:
+        // mu.Lock()
+        // defer mu.Unlock()
     }
 
 ----

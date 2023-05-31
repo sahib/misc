@@ -70,6 +70,11 @@ Performance inflation
 .. image:: images/hyper.png
    :width: 100%
 
+.. note::
+
+   No joke: This electron based terminal took 700M (!) of residual memory.
+   This is absolutely insane and should not have been released.
+
 ----
 
 Simple can be complex

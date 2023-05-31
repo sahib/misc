@@ -125,9 +125,9 @@ ECC Memory
 NUMA - multiple CPUs
 ====================
 
-NUMA = Non Uniform Memory Architecture
+**NUMA** = *Non Uniform Memory Architecture*
 
-Is the access to all memory offsets equally fast?
+Is the access to all memory equally fast?
 
 * Not if you have more than one CPU!
 * Every CPU gets 1/nth of the memory.
@@ -136,7 +136,7 @@ Is the access to all memory offsets equally fast?
 
 .. note::
 
-   TODO: is that slide really important? If yes, make it prettier using a diagram.
+   NUMA is a term you might come across.
 
    Linux is NUMA capable and that's why it's such a popular server and
    superomputer operating system. Or one of the reasons at least.
@@ -183,7 +183,18 @@ The stack: LIFO Layout
 
 .. note::
 
-   https://en.wikipedia.org/wiki/Stack-based_memory_allocation
+    Registers:
+
+    ebp: Base pointer. Points to start of function. Cell at adress contains "return link to last function" (i.e. pointer to instruction offset)
+    esp: Initially the base pointer, but grows with each variable put on the stack.
+    eip: Pointer that points to current instruction.
+
+    Stack origin:  ebp.
+    Stack pointer: esp.
+
+    https://en.wikipedia.org/wiki/Stack-based_memory_allocation
+
+    Good explanation here too: https://people.cs.rutgers.edu/~pxk/419/notes/frames.html
 
 ----
 
@@ -215,10 +226,6 @@ The stack: Growth
     More details on calling a function:
 
     https://eli.thegreenplace.net/2011/09/06/stack-frame-layout-on-x86-64
-
-----
-
-TODO: Explain stack pointer, instruction pointer here.
 
 ----
 
@@ -311,8 +318,6 @@ The Heap: Allocations
    Heap memory must be cleaned up after use. Go does this with a GC.
 
    Heap grows upwards.
-
-   TODO: Maybe use graphics from here: https://medium.com/eureka-engineering/understanding-allocations-in-go-stack-heap-memory-9a2631b5035d
 
 ----
 

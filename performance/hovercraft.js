@@ -34,7 +34,8 @@ window.addEventListener('hashchange', function () {
     fragment = fragment.substring(2)
     newTimestamp = Date.now()
     if (lastSlideName != '') {
-        perSlideTiming.set(lastSlideName, newTimestamp - lastTimestamp)
+        var lastTiming = perSlideTiming.get(lastSlideName) ?? 0;
+        perSlideTiming.set(lastSlideName, lastTiming + (newTimestamp - lastTimestamp));
     }
 
     lastSlideName = fragment

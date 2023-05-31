@@ -873,6 +873,18 @@ Typical Access patterns
 AoS vs SoA
 ==========
 
+.. code-block:: go
+
+    var AoS []struct{ // ArrayOfStructures
+        A int
+        B int
+    }
+
+    var SoA struct{   // StructureOfArrays
+        A []int
+        B []int
+    }
+
 .. image:: images/struct_of_slices.png
     :width: 90%
 

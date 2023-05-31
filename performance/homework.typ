@@ -64,7 +64,7 @@ Try to see if you can incorparate some knowledge from the slides into your imple
 + Measure the write throughput and latency of your store on full load. (#go("Get()") & #go("Set()"))
 + Make your DB crash at random points and see if all data is written (#go("fsync()"))
 
-=== Concurrency Tasks: TODO
+=== Concurrency Tasks:
 
 + Provide an asynchronous API for your store so users do not block.
 + Implement (segment) compression, with background I/O.
