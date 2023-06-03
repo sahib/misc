@@ -523,7 +523,7 @@ Primitive: Promises
 
 .. code-block:: go
 
-    func fetchData(url string) chan Result {
+    func fetchData(url string) <-chan Result {
         ch := make(chan Result, 1)
         go func() {
             // use `url` somehow and do some potentially

@@ -2,8 +2,18 @@
 :data-transition-duration: 1500
 :css: hovercraft.css
 
-Peformance Workshop
-===================
+----
+
+.. class:: chapter
+
+    Performance
+
+A walk through the world of optimization. ⚡
+
+----
+
+Agenda
+------
 
 * `Intro <../1_intro/index.html>`_: General intro and homework 🏠
 * `CPU <../2_cpu/index.html>`_: The secrets of the computer 🧠
