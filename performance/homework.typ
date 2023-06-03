@@ -1,6 +1,6 @@
 #set text(
-    font: "Linux Libertine",
-    size: 10pt
+    font: "Roboto Slab",
+    size: 9pt
 )
 #set page(
     paper: "a4"

@@ -4,6 +4,14 @@
 
 ----
 
+.. class:: chapter
+
+   Intro
+
+General intro and homework 🏠
+
+----
+
 What's that?
 ============
 

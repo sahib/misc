@@ -9,6 +9,7 @@ https://sahib.github.io/misc/performance/slides/0_toc/index.html
 
 * ``hovercraft`` to build the slides from rST.
 * ``d2`` to produce diagrams (see ``diagrams/``)
+* ``rst2html`` and ``wkhtmltopdf`` for the PDF version.
 * ``typst`` to render PDFs for the homework.
 * ``make`` as ``make``
 
@@ -17,7 +18,7 @@ If you want live update, then just issue `make watch` and open the slides in
 
 ## Fonts used
 
-* Vollkorn for most typesetting
+* Roboto Slab for most typesetting
 * Jetbrains Mono for most code
 * OpenMoji for Emojis
 

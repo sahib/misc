@@ -2,6 +2,16 @@
 :data-transition-duration: 1500
 :css: hovercraft.css
 
+----
+
+.. class:: chapter
+
+    Memory
+
+Bookkeeping is hard 📝
+
+----
+
 Agenda
 ======
 

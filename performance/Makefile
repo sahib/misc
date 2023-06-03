@@ -1,12 +1,21 @@
-all: 0_toc 1_intro 2_cpu 3_memory 4_io 5_concurrent homework.pdf
+default: 0_toc 1_intro 2_cpu 3_memory 4_io 5_concurrent homework.pdf
+all: default onepage onepage.pdf
 
 # Shortcuts:
+onepage:      slides/onepage/index.html
 0_toc:        slides/0_toc/index.html
 1_intro:      slides/1_intro/index.html
 2_cpu:        slides/2_cpu/index.html
 3_memory:     slides/3_memory/index.html
 4_io:         slides/4_io/index.html
 5_concurrent: slides/5_concurrent/index.html
+
+.PHONY: onepage.pdf
+onepage.pdf: onepage.rst
+	rst2html --quiet onepage.rst > onepage.html
+	@rm -f onepage.pdf
+	wkhtmltopdf --quiet --enable-local-file-access onepage.html onepage.pdf
+	@rm -f onepage.html
 
 %.pdf: %.typ
 	typst $^

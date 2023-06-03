@@ -2,6 +2,16 @@
 :data-transition-duration: 1000
 :css: hovercraft.css
 
+----
+
+.. class:: chapter
+
+   Concurrency
+
+Make things confusing fast 🧵
+
+----
+
 Agenda
 ======
 
@@ -508,6 +518,47 @@ Primitive: Select
 
 ----
 
+Primitive: Promises
+===================
+
+.. code-block:: go
+
+    func fetchData(url string) chan Result {
+        ch := make(chan Result, 1)
+        go func() {
+            // use `url` somehow and do some potentially
+            // long running I/O work.
+            ch <- Result{...}
+        }()
+
+        return ch
+    }
+
+    func main() {
+        promise := longRunningTask(1, 2)
+        // ...do something else...
+
+        // await the result:
+        fmt.Println(<-promise)
+    }
+
+
+.. note::
+
+    Promises are a good way to make asynchronous code look like synchronous code.
+    A good example is fetching stuff via HTTP. While waiting for the response you can
+    potentially do something else.
+
+    You can also chain promises together. I.e. automatically do something
+    once the promise returns - by adding another go routine. This is called
+    promise chaining.
+
+    Other languages like Python/Javascript have first-class support
+    for async/await which kinda doing the same background. Go-routines
+    are however a more flexible concept and it's easy to write libraries
+    that emulate this behaviour (and others have done so)
+
+----
 
 Primitive: Atomics
 ==================

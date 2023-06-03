@@ -2,6 +2,16 @@
 :data-transition-duration: 1500
 :css: hovercraft.css
 
+----
+
+.. class:: chapter
+
+    CPU
+
+The secrets of the computer 🧠
+
+----
+
 Agenda
 ======
 
@@ -14,6 +24,7 @@ Agenda
    :width: 50%
 
 -----
+
 
 Quiz
 ====
