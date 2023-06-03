@@ -280,12 +280,13 @@ pre {
     font-style: italic;
 }
 
-.chapter-class {
+.chapter {
     text-align: center;
-    color: white;
-    background-color: none;
-    font-size: 60px;
+    text-decoration: underline;
+    font-size: 80px;
+    font-weight: 700;
 }
+
 
 table, th, td {
     font-size: 10px !important;
