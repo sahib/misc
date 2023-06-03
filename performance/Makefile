@@ -33,7 +33,7 @@ watch:
 	# okay, that's actually funny.
 	sh -c 'while true; do make --silent; sleep 0.1; done'
 
-publish: all
+publish: default
 	rm -rf /tmp/slides
 	cp slides /tmp/slides -r
 	git checkout gh-pages
