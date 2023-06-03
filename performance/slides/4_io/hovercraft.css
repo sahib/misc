@@ -85,6 +85,7 @@ ul {
     margin: auto;
     margin-bottom: 10px;
     width: fit-content;
+    list-style-type: circle;
 }
 
 .math-block {
