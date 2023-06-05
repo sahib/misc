@@ -1,8 +1,10 @@
 :title: Performance
-:data-transition-duration: 1500
+:data-transition-duration: 950
 :css: hovercraft.css
 
 ----
+
+:data-x: r2500
 
 .. class:: chapter
 
@@ -36,7 +38,8 @@ The plan
 - ~200 slides in total on 5 days.
 - 3-4 hours / ~40 slides a day / ~5m per slide.
 - Many different topics scratched.
+- Slides also available as (shitty) `PDF <https://github.com/sahib/misc/blob/master/performance/onepage.pdf>`_.
 - Thursday: Lecture days like university.
-- Workshop project on the side.
+- Workshop project on the side. (`Link <https://github.com/sahib/misc/blob/master/performance/homework.pdf>`_)
 - Friday for your hands-on questions.
 - **Goal:** 🌍 in your 🧠

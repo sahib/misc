@@ -1,8 +1,10 @@
 :title: Performance: Memory
-:data-transition-duration: 1500
+:data-transition-duration: 950
 :css: hovercraft.css
 
 ----
+
+:data-x: r2500
 
 .. class:: chapter
 
@@ -358,6 +360,12 @@ The Heap: ``malloc()``
 
    As malloc() needs to cater objects of many different sizes (as seen in the
    example above) it is prone to fragmentation.
+
+   malloc() can fail! Originally it was supposed to fail if there is no memory
+   left, but on Linux there is "infinite" virtual memory and overcommitting (we come to
+   those later), which is why it does not fail for this reasons. It will fail however
+   if you ask it a too large block, have some memory restrictions on your processes (cgroups)
+   or other administration reasons.
 
 ----
 

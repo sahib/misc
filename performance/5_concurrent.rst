@@ -1,8 +1,10 @@
 :title: Performance: Concurrency
-:data-transition-duration: 1000
+:data-transition-duration: 950
 :css: hovercraft.css
 
 ----
+
+:data-x: r2500
 
 .. class:: chapter
 

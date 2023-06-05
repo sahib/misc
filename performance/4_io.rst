@@ -1,8 +1,10 @@
 :title: Performance: I/O
-:data-transition-duration: 1500
+:data-transition-duration: 950
 :css: hovercraft.css
 
 ----
+
+:data-x: r2500
 
 .. class:: chapter
 

@@ -1,8 +1,10 @@
 :title: Performance: Intro
-:data-transition-duration: 1500
+:data-transition-duration: 950
 :css: hovercraft.css
 
 ----
+
+:data-x: r2500
 
 .. class:: chapter
 
@@ -218,8 +220,8 @@ What's missing?
 
 ----
 
-More infos
-==========
+Help!
+=====
 
 - This workshop is written in a markup language.
 - Almost every slide has speaker notes.
@@ -643,8 +645,13 @@ Store: Memory only
         for k, v := range kv {
             b.WriteString(fmt.Sprintf("%s=%s\n", k, v))
         }
+        return ioutil.WriteFile("/blah", b.Bytes(), 0644)
+    }
 
-        ioutil.WriteFile("/blah", b.Bytes(), 0644)
+    func load() *KV {
+        data, err := ioutil.ReadFile("/blah")
+        // ... parse file and assign to map ...
+        return kv
     }
 
 .. note::
