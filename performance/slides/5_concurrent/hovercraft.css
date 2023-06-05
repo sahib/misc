@@ -299,6 +299,42 @@ th, td {
     padding-left: 5px;
 }
 
+@keyframes fadeOut {
+    0% { opacity: 1;}
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+#impress-help {
+    background-color: black;
+    width: 400px;
+	font-family: Roboto Slab;
+    font-weight: 400;
+
+    /* Let the help fade after for some time */
+    display: block !important; /* some js sets this to none, we need !important therefore */
+    animation: fadeOut 10s;
+    animation-fill-mode: forwards;
+}
+
+#impress-help>table, #impress-help>table>tbody>tr>td {
+    font-size: 14px !important;
+    border: 0px;
+}
+
+#impress-help>table {
+    width: 100%;
+}
+
+#impress-help>table>tbody>tr>:nth-child(odd) {
+    text-align: left !important;
+    font-weight: 600;
+}
+
+#impress-help>table>tbody>tr>:nth-child(even) {
+    text-align: right !important;
+}
+
 .big-text {
     font-size: 90px;
 }
