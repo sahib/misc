@@ -10,7 +10,20 @@
 
    Intro
 
-General intro and homework 🏠
+General intro and sideproject 🏠
+
+----
+
+Agenda
+======
+
+* Rant & Motivation
+* Benchmarking Basics
+* Complexity Theory
+* Sideproject
+
+.. image:: images/door.svg
+   :width: 42%
 
 ----
 
@@ -87,27 +100,55 @@ Performance inflation
 
 ----
 
-Simple can be complex
-=====================
+.. class:: quote
+
+    Software is easy, given infinite time.
+
+| - Linux Lemur, ca. 2023
+
+.. note::
+
+    You could argue now: Well, we would care more about performance but in todays world
+    we don't have time to time because we're agile and have to produce feature after feature.
+    We care only once we get into troubles. This also leads to developers never learning about
+    writing software that has to fulfill some performance criterias.
+
+    There is some truth about that. Product management usually is not that much aware of Performance
+    if it's not a hard product requirement. But that's your job - you're supposed to measure performance
+    and predict that it will be an issue. If you think it will be an issue, then you should fight for
+    the time to fix it.
+
+    Anyways, in this workshop we will enter a fantasy world, where we have infinite amounts of time.
+
+----
+
+»Simple«
+========
 
 .. code-block:: python
 
+    # Read in a line, print the line without whitespaces.
     import sys
     print(sys.stdin.readline().strip())
 
 
 .. note::
 
-   The prior rules assume that we're able to understand what's going on
-   in our program. After all we have to judge what gets executed ultimately.
-   Turns out, in interpreted language this is very hard.
+    Simple can mean different things.
+    "simple" can mean "small cognitive load", i.e. programs that are simple to understand.
+    "simple" can also mean "programs with few instructions and few abstractions"
 
-   Interpreted -> compiled to byte code.
-   sys.stdin.readline are two dict lookups.
-   memory allocations
-   file I/O from stdin to stdout
-   calling a c function (strip)
-   unicode conversion!
+    The prior rules assume that we're able to understand what's going on
+    in our program. After all we have to judge what gets executed ultimately.
+    Turns out, in interpreted language this is very hard.
+
+    Interpreted -> compiled to byte code.
+    sys.stdin.readline are two dict lookups.
+    memory allocations
+    file I/O from stdin to stdout
+    calling a c function (strip)
+    several syscalls
+    unicode conversion!
 
 ----
 
@@ -158,6 +199,8 @@ Inside Python 🐍
 Workshop contents
 =================
 
+We try to answer these questions:
+
 - Why is performance important?
 - How does the machine we program on work?
 - Are there ways to exploit this machine?
@@ -195,15 +238,15 @@ Workshop contents
 
 ----
 
-What's missing?
-===============
+What's not in here?
+===================
 
 - An exhausting list of tips. You'd forget them.
 - A full lecture on algorithm and data structures.
 - A lecture you just have to listen to make it click.
 - Language specific optimization techniques.
 - Performance in distributed systems.
-- Application specific performance tips (*Networking, SQL, Data* ...)
+- Application specific performance tips (*Networking, SQL, Databases, IPC* ...)
 
 .. note::
 
@@ -223,10 +266,10 @@ What's missing?
 Help!
 =====
 
-- This workshop is written in a markup language.
+- This workshop is written in a markup language (`.rst`).
 - Almost every slide has speaker notes.
 - I tried to make them generally understandable.
-- If you need more background, read them.
+- If you need more background, read them:
 
 `Link to Github <https://github.com/sahib/misc/blob/master/performance/1_intro.rst#workshop-contents>`_
 
@@ -372,6 +415,18 @@ Huh, premature?
 
 ----
 
+1. Make it correct.
+2. Make it beautiful.
+3. Make it fast.
+
+.. note::
+
+    Often enough we do not even get to step 2 though. Sometimes not even step 1 :D
+    Making things fast should always be a consideration. Software is not done once
+    you are happy with the beautiful abstractions you found.
+
+----
+
 How do I measure?
 =================
 
@@ -395,6 +450,9 @@ In a reproducible environment.
    Use benchmarks primarily to compare numbers of older benchmarks.
    And if you have to compare different implementations: Stay fair.
 
+   Profiling    = Performance debugging.
+   Benchmarking = Performance testing (i.e. ware optimizations still working?)
+
 
 ----
 
@@ -403,7 +461,7 @@ How to optimize?
 
 Requires a strong understanding of your program and experience.
 
-* No way around measurements.
+* No way around measurements as **first** step.
 * A certain level of experience helps.
 * The model of your program in your head
   is different to what gets actually executed.
@@ -417,14 +475,54 @@ Requires a strong understanding of your program and experience.
 
 ----
 
+Critical path
+=============
+
+.. code-block:: go
+   :number-lines: 1
+
+    func process(b []byte) {
+        if(edgeCaseCondition) {
+            // ...
+        }
+
+        for i := 0; i < len(b); i++ {
+            for j := i; j < len(b); j++ {
+                b[i] = magicCalculation(b, i, j)
+            }
+
+            if i == len(b) - 1 {
+                for j := 0; j < len(b); j++ {
+                    b[j] *= 2;
+                }
+            }
+        }
+    }
+
+.. note::
+
+    The critical path is the path through your programs that is taken
+    most often. This path defines the order in which you should optimize.
+    If you optimize some edge case that is only taken 1% of the time,
+    then the speedup of your optimization is also only worth 1%, because
+    99% of your program is still as slow as before.
+
+    How to find the path? Tools like pprof can find it, but also coverage
+    tools or even debuggers can help you find them. Chances are that you
+    the critical path for your module anyways.
+
+    Other related terms are "hot path" or "tight loop".
+
+----
+
 A rule of thumb 👍
 ==================
 
 **Go from big to small**:
 
-1. Do the obvious things right away.
+1. Do the obvious implementation first.
 2. Check if your requirements are met.
-3. Find the biggest bottleneck.
+3. If not, find the **biggest** critical path.
 4. Optimize it and repeat from step 1.
 
 .. note::
@@ -435,6 +533,9 @@ A rule of thumb 👍
     2. If you don't have concrete performance requirements, make some.
     3. We are incredible bad at guessing! Never ever skip this step!
     4. Never mix up this order.
+
+    Step 3 is the most difficult one. You should start measuring the full speed of your program
+    then of one module and so on until you know what part consumes the most time/resources.
 
 ----
 
@@ -455,6 +556,10 @@ Theory: Complexity
 
    Good example (thanks Alex): https://sortvisualizer.com
    (compare quick sort and merge sort)
+
+   The general idea is to have a function that relates the number
+   of elements given to an algorithm to the number of operations the
+   algorithm has to do to produce a result.
 
 ----
 
@@ -482,6 +587,8 @@ https://www.bigocheatsheet.com
     -> Most have tradeoffs, only few are universally useful like arrays / hash tables
     -> Some are probalibisitic: i.e. they save you work or space at the expense of accuracy (bloom filters)
     -> Difference between O(log n) and O(1) is not important most of the time. (database developers might disagree here though)
+
+    For small n the difference doe snot mattern. It can be difficult to figure out what "n" is small.
 
 ----
 
@@ -575,7 +682,6 @@ by computing **performance metrics** and...
    Makes sense only for big projects. Many projects have
    their own set of scripts to do this. I'm not aware of a standard solution.
 
-
 ----
 
 Humans vs Magnitudes
@@ -583,22 +689,28 @@ Humans vs Magnitudes
 
 `Interactive Latency Visualization <https://colin-scott.github.io/personal_website/research/interactive_latency.html>`_
 
-**Optimize in this order:**
+**Optimize bottom up:**
 
-.. math::
+.. image:: images/cache_pyramid.jpg
+   :width: 100%
 
-    Network > Files > Memory > CPU
+
+.. note::
+
+    Network is far below that.
 
 ----
-
 
 Profiling
 =========
 
 .. code-block:: bash
 
-   # Profiling is throwaway-benchmarking:
-   $ hyperfine <some-command>
+    # Just the total time is already helpful.
+    $ time <some-command>
+
+    # Better: With statistics.
+    $ hyperfine <some-command>
 
 .. note::
 
@@ -613,8 +725,8 @@ Profiling
 
 ----
 
-Workshop Project
-================
+Sideproject
+===========
 
 .. class:: quote
 
@@ -633,8 +745,8 @@ Workshop Project
 
 ----
 
-Store: Memory only
-=====================
+Memory only
+===========
 
 .. code-block:: go
 
@@ -667,10 +779,14 @@ Store: Memory only
 
 ----
 
-Store: Append only
+Append only
 =====================
 
 .. code-block:: bash
+
+    init() {
+        touch ./db
+    }
 
     set() {
         printf "%s=%s\n" "$1" "$2" >> ./db
@@ -692,7 +808,7 @@ Store: Append only
 
 ----
 
-Store: Indexed
+Indexed
 =================
 
 .. code-block:: go
@@ -733,8 +849,8 @@ Store: Indexed
 
 ----
 
-Store: Segments
-==================
+Segmented
+=========
 
 .. image:: diagrams/1_segments.svg
    :width: 100%
@@ -757,8 +873,8 @@ Store: Segments
 
 ----
 
-Store: Deletion
-==================
+Deletion
+========
 
 .. image:: images/tombstones.png
    :width: 50%
@@ -774,7 +890,7 @@ Store: Deletion
 
 ----
 
-Store: Range queries
+Range queries
 =======================
 
 .. image:: diagrams/1_lsm.svg
@@ -805,7 +921,7 @@ Store: Range queries
 
 ----
 
-Store: WAL 🐋
+WAL 🐋
 ================
 
 .. image:: diagrams/1_wal.svg
@@ -823,8 +939,19 @@ Store: WAL 🐋
 Fynn!
 =====
 
-🏁
+|
+
+.. class:: big-text
+
+    🏁
+
+|
 
 .. note::
 
    I left quite some details out, but that's something you should be able to figure out.
+
+
+.. class:: next-link
+
+    **Next:** `CPU <../2_cpu/index.html>`_: The secrets of the computer 🧠

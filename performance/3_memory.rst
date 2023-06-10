@@ -187,29 +187,6 @@ Inside a process
 
 ----
 
-The stack: LIFO Layout
-======================
-
-.. image:: images/stack_layout.svg
-    :width: 80%
-
-.. note::
-
-    Registers:
-
-    ebp: Base pointer. Points to start of function. Cell at adress contains "return link to last function" (i.e. pointer to instruction offset)
-    esp: Initially the base pointer, but grows with each variable put on the stack.
-    eip: Pointer that points to current instruction.
-
-    Stack origin:  ebp.
-    Stack pointer: esp.
-
-    https://en.wikipedia.org/wiki/Stack-based_memory_allocation
-
-    Good explanation here too: https://people.cs.rutgers.edu/~pxk/419/notes/frames.html
-
-----
-
 The stack: Growth
 =================
 
@@ -238,6 +215,30 @@ The stack: Growth
     More details on calling a function:
 
     https://eli.thegreenplace.net/2011/09/06/stack-frame-layout-on-x86-64
+
+
+----
+
+The stack: LIFO Layout
+======================
+
+.. image:: images/stack_layout.svg
+    :width: 80%
+
+.. note::
+
+    Registers:
+
+    ebp: Base pointer. Points to start of function. Cell at adress contains "return link to last function" (i.e. pointer to instruction offset)
+    esp: Initially the base pointer, but grows with each variable put on the stack.
+    eip: Pointer that points to current instruction.
+
+    Stack origin:  ebp.
+    Stack pointer: esp.
+
+    https://en.wikipedia.org/wiki/Stack-based_memory_allocation
+
+    Good explanation here too: https://people.cs.rutgers.edu/~pxk/419/notes/frames.html
 
 ----
 
@@ -784,7 +785,7 @@ VM: The mapping
 
 ----
 
-VM: implementation
+VM: Implementation
 ==================
 
 .. code-block:: bash
@@ -841,7 +842,7 @@ VM: Swapping
     $ cat /proc/sys/vm/swappiness
     (a value between 0-100)
 
-    # 0   = only swap if OOM would hit otherwise.
+    #   0 = only swap if OOM would hit otherwise.
     # 100 = swap everything not actively used.
     #  60 = default for most desktops.
     # <10 = good setting for database servers
@@ -863,7 +864,7 @@ VM: Swapping
 
 ----
 
-Profiling: Residual memory vs virtual memory
+Residual memory *versus* Virtual memory
 =============================================
 
 .. image:: images/res_vs_virtual.png
@@ -882,7 +883,7 @@ Profiling: Residual memory vs virtual memory
 
 ----
 
-Profiling: Quick & dirty
+Profiling: Quick & Dirty
 ========================
 
 .. code-block:: bash
@@ -908,12 +909,15 @@ Profiling: Quick & dirty
 
    Start with '/usr/bin/time -v ./virt' and interrupt at any time.
 
+   Note that `time` only samples in a certain interval. If you're unlucky
+   you might miss the actual peak. So don't rely on values to be exact here.
+
 ----
 
 Profiling: ``pprof``
 ====================
 
-.. image:: images/pprof_heap.svg
+.. image:: images/pprof_heap.png
    :width: 100%
 
 .. note::
@@ -995,4 +999,14 @@ The OOM Killer
 Fynn!
 =====
 
-🏁
+|
+
+.. class:: big-text
+
+    🏁
+
+|
+
+.. class:: next-link
+
+    **Next:** `I/O & Syscalls <../4_io/index.html>`_: Speaking with the kernel 🐧

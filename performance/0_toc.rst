@@ -17,7 +17,7 @@ A walk through the world of optimization. ⚡
 Agenda
 ------
 
-* `Intro <../1_intro/index.html>`_: General intro and homework 🏠
+* `Intro <../1_intro/index.html>`_: General intro and sideproject 🏠
 * `CPU <../2_cpu/index.html>`_: The secrets of the computer 🧠
 * `Memory <../3_memory/index.html>`_: Bookkeeping is hard 📝
 * `I/O & Syscalls <../4_io/index.html>`_: Speaking with the kernel 🐧
@@ -38,8 +38,9 @@ The plan
 - ~200 slides in total on 5 days.
 - 3-4 hours / ~40 slides a day / ~5m per slide.
 - Many different topics scratched.
+- Speaker notes in the `markup files <https://github.com/sahib/misc/blob/master/performance/1_intro.rst>`_.
 - Slides also available as (shitty) `PDF <https://github.com/sahib/misc/blob/master/performance/onepage.pdf>`_.
-- Thursday: Lecture days like university.
+- *Thursday:* Lecture days like university.
 - Workshop project on the side. (`Link <https://github.com/sahib/misc/blob/master/performance/homework.pdf>`_)
-- Friday for your hands-on questions.
+- *Friday* for your hands-on questions.
 - **Goal:** 🌍 in your 🧠

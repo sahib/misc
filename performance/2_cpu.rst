@@ -186,15 +186,15 @@ Go Assembler #2
 .. code-block:: bash
 
   $ go build -gcflags="-S" add.go
-  (...)
+  [...]
   main.add STEXT nosplit size=4 [...]
-    (test.go:4) TEXT   main.add(SB), (...)
+    (test.go:4) TEXT   main.add(SB), [...]
     (test.go:4) PCDATA $3, $1
     (test.go:5) ADDQ   BX, AX
     (test.go:5) RET
-  (...)
+  [...]
   main.main STEXT size=121 [...]
-  (...)
+  [...]
     (test.go:9) MOVL $2, AX
     (test.go:9) MOVL $3, BX
     (test.go:9) CALL main.add(SB)
@@ -204,7 +204,8 @@ https://go.dev/doc/asm
 
 .. note::
 
-    Important: Explain registers!
+    Important: There are many assembler dialects for many ISA. This is a IR.
+    Also Important: Explain registers!
 
     Can we just say: To make things faster you have to reduce the number of instructions?
 
@@ -248,8 +249,8 @@ Von-Neumann Architecture
 
 ----
 
-Execution in the CPU
-====================
+Single instruction pipeline
+===========================
 
 .. image:: images/pipeline.png
    :width: 70%
@@ -267,8 +268,8 @@ Execution in the CPU
 
 ----
 
-Pipelining, OoO, Superscalar, WTF?
-==================================
+Pipelining, OoO, Superscalar, wtf?
+=====================================
 
 * **Pipelining:** The 5 steps get done in parallel.
 * **Out-of-Order:**  Instructions get re-ordered.
@@ -284,7 +285,7 @@ Pipelining, OoO, Superscalar, WTF?
 
     * Every instruction needs to do all 5 steps
     * Modern CPUs can work on many instructions at the same time
-    * They can be also re-ordered by the CPU!
+    * They can be also re-ordered by the CPU! (think of a queue that gets reordered)
     * This can lead to issues when an instruction depends on results of another instructions! (branches!)
     * It can even happen that we do unncessary work!
       This made the SPECTRE and MELTDOWN security issues possible that made cloud computing 20% slower over night.
@@ -300,12 +301,12 @@ Pipelining, OoO, Superscalar, WTF?
 Disclaimer: CPU effects
 =======================
 
-* Modern CPUs are insanely complex.
-* Modern compilers are insanely smart.
+* Modern CPUs are insanely complex (like humans).
+* Compilers are insanely smart (unlike humans).
 * This tandem is probably smarter than you and me.
   The following slides are mostly for educational purpose.
-  Trust the compiler in 99.9% of the time.
-* Still helpful to know what happens.
+  Trust the compiler in 95% of the time.
+* Still helpful to know what happens in the 5%.
 
 ----
 
@@ -370,8 +371,8 @@ Can we observe it?
 
 ----
 
-Profile Guided Optimization (PGO)
-==================================
+Profile Guided Optimization
+===========================
 
 .. image:: images/pgo.png
    :width: 80%
@@ -400,7 +401,8 @@ Branchless programming
 
 .. code-block:: c
 
-    // Don't optimize this at home, kids:
+    // Don't optimize this at home, kids.
+    // Your compiler does this for you.
     uint32_t max(uint32_t a, uint32_t b) {
         if(a > b) {
             return a;
@@ -413,10 +415,11 @@ Branchless programming
     // variant 1; not possible in Go:
     return (a > b) * a + !(a > b) * b;
 
-.. code-block:: c
-
     // variant 2; possible in Go:
     return a - (a - b)
+
+
+
 
 .. note::
 
@@ -527,6 +530,23 @@ https://github.com/mmcloughlin/avo
 
 ----
 
+Optimization: Inlining
+======================
+
+.. image:: diagrams/2_inlining.svg
+   :width: 130%
+
+.. note::
+
+    Inlining functions can speed up things at the cost of increased ELF size.
+
+    Advantage: Parameters do not need to get copied, but CPU can re-use whatever
+    is in the registers alreadys. Also return values do not need to be copied.
+
+    Only done for small functions and only in hot paths.
+
+--------------
+
 I like to MOV, MOV it
 =====================
 
@@ -547,28 +567,13 @@ I like to MOV, MOV it
 
 .. note::
 
-    How does access to main memory work? By
-
+    How does access to main memory work? By using the MOV instruction.
+    And MOV from main memory is very costly:
     Access to main memory is 125ns, L1 cache is ~1ns
 
     Fun fact: MOV alone is Turing complete: https://github.com/xoreaxeaxeax/movfuscator
 
---------------
-
-Optimization: Inlining
-======================
-
-.. image:: diagrams/2_inlining.svg
-   :width: 130%
-
-.. note::
-
-    Inlining functions can speed up things at the cost of increased ELF size.
-
-    Advantage: Parameters do not need to get copied, but CPU can re-use whatever
-    is in the registers alreadys. Also return values do not need to be copied.
-
-    Only done for small functions and only in hot paths.
+    TODO: Move this slide a bit before cache lines?
 
 --------------
 
@@ -686,6 +691,7 @@ What's padding?
     println(s(x.G))    // 8 map (ptr)
     println(s(x.H))    // 16 iface (ptr+typ)
     println(s(x.I))    // 8 int
+                       // Sum: 86
     println(s(x))      // 88 (not 86!)
 
 .. note::
@@ -708,11 +714,13 @@ What's padding?
 
 * More debug symbols, functions, lookup tables and instructions make the binary bigger.
 * A process needs *at least* as much memory as the binary size (*Caveat:* only the first one)
-* The bigger the binary, the longer the startup time. Important for shortlived processes (scripts!)
+* The bigger the binary, the longer the startup time. Important for shortlived processes/bootup (scripts!)
 * CPUs have separate caches for code instructions. If your program is so fat that that the caches get evicted while jumping
   between two functions, then you pay with performance.
 
-*Yo binary is so fat, you see it on Google Earth!* 🌍
+.. class:: small
+
+    »*Yo binary is so fat, you see it on Google Earth!* 🌍«
 
 .. note::
 
@@ -865,6 +873,11 @@ True sharing
     * Grouping often accessed data together.
       (arrays of data, not array of structs of data)
 
+    A bad example of this are linked lists. The next node is usually somewhere else
+    in memory and the size of a single node is below 64 bytes. This results in cache lines
+    that are mostly loaded for no reason. One solution would be to design cache-friendly linked
+    list by packing more data into the node itself.
+
 ----
 
 Typical Access patterns
@@ -903,7 +916,7 @@ AoS vs SoA
 
 ----
 
-Data-Oriented programming
+Dataoriented programming
 =========================
 
 The science of designing programs in a CPU friendly way.
@@ -958,6 +971,7 @@ Recursion vs Iteration
 
 * Recursion is elegant but can be expensive.
 * Make the recursive call the last thing in your function.
+* (»Tailcall optimization«)
 
 .. code-block::
 
@@ -1024,7 +1038,7 @@ Virtual funcs & Interfaces
 
 ----
 
-Bounds checking Elimination
+Boundcheck Elimination
 ===========================
 
 Help the compiler!
@@ -1142,4 +1156,14 @@ Rough Rules to take away
 Fynn!
 =====
 
-🏁
+|
+
+.. class:: big-text
+
+    🏁
+
+|
+
+.. class:: next-link
+
+    **Next:** `Memory <../3_memory/index.html>`_: Bookkeeping is hard 📝

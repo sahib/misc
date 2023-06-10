@@ -93,10 +93,10 @@ Rule of thumb 👍
 
 ----
 
-Concurrent vs Parallel #1
-=========================
+Concurrent vs Parallel
+======================
 
-Please define it.
+What's the difference again?
 
 .. note::
 
@@ -104,9 +104,6 @@ Please define it.
     Parallel = several instructions get executed at the same time.
 
 ----
-
-Concurrent vs Parallel #2
-=========================
 
 .. image:: images/event-loop-concurrent.jpg
 
@@ -143,7 +140,7 @@ What are coroutines?
 - Coroutines are lightweight threads (oh come on)
 - Coroutines are implemented completely in user space using a scheduler
 - Every detail depends on the individual programming languages' implementation
-- Goroutines are one example of a coroutine implementation. Fibers are another often used term.
+- »Goroutines« are one example of a coroutine implementation. »Fibers« are another often used term.
 - Not a kernel concept, kernel scheduler does not care.
 
 .. note::
@@ -303,6 +300,10 @@ Primitive: ``sleep()``
 ======================
 
 Just kidding. **Don't!**
+
+.. class:: small-text
+
+   Okay, let's be honest. Sometimes you have no other way and we all did it.
 
 .. note::
 
@@ -539,7 +540,6 @@ Primitive: Promises
     func main() {
         promise := longRunningTask(1, 2)
         // ...do something else...
-
         // await the result:
         fmt.Println(<-promise)
     }
@@ -1135,7 +1135,7 @@ Brainfuck time 🧠
 =================
 
 .. image:: images/philosophers.png
-   :width: 60%
+   :width: 50%
 
 |
 
@@ -1168,4 +1168,14 @@ Brainfuck time 🧠
 Fynn!
 =====
 
-🏁
+|
+
+.. class:: big-text
+
+    🏁
+
+|
+
+.. class:: next-link
+
+    **Next:** `Bookmark the GitHub repo! <https://github.com/sahib/misc/tree/master/performance>`_

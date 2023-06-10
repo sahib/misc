@@ -34,7 +34,7 @@ Typical terms
 
 * *Latency:* Time until the first drop of water arrives.
 * *Throughput:* Current volume of water per time.
-* *Bandwidth:* Maximum throughput.
+* *Bandwidth:* Maximum throughput. (liter/time)
 
 |
 |
@@ -66,7 +66,7 @@ Hardware: HDDs
 ==============
 
 .. image:: images/hdd.jpg
-   :width: 70%
+   :width: 60%
 
 |
 
@@ -144,8 +144,8 @@ Virtual File System
 
 ----
 
-How do syscalls work? (#1)
-==========================
+How do syscalls work?
+=====================
 
 .. code-block:: c
 
@@ -160,10 +160,7 @@ How do syscalls work? (#1)
 
 ----
 
-How do syscalls work? (#2)
-==========================
-
-Compiled:
+**Compiled:**
 
 .. code-block:: asm
 
@@ -210,12 +207,17 @@ Typical syscalls
 
 .. note::
 
+   There is a syscall for every single thing that userspace cannot do without the kernel's help.
+
    Luckily for us, glibc and Go provide us nice names and interfaces to make those system calls.
    They usually provide thin wrappers that also do some basic error checking. Watch out: ``fread``
    is doing buffering in userspace!
 
    Can anyone think of another syscall not in the list above? exit! chdir ...
    (There are about 300 of them)
+
+   Also, what things are no syscalls? Math, random numbers, cryptography, ...
+   i.e. everything that can be done without any side effects or hardware.
 
 ----
 
@@ -298,23 +300,28 @@ Typical write I/O
 
 ----
 
-What about ``fread()``?
-=======================
+»Buffered« I/O
+==============
 
-Confusingly, this is double buffered.
+* Almost all I/O is buffered, but some is double buffered.
+* ``fread()``: Does buffering in userspace; calls ``read()``.
+* ``bufio.Reader``: Same thing in Go.
 
 **Usecases:**
 
 * You need to read byte by byte.
 * You need to unread some bytes frequently.
 * You need to read easily line by line.
+*
 
-Otherwise: Do not use.
+*Otherwise:* Prefer the simpler version.
 
 .. note::
 
-    Userspace buffered functions. No real advantage, but limiting and confusing API.
-    Has some extra features like printf-style formatting.
+    Userspace buffered functions. No real advantage, but limiting and confusing
+    API. Has some extra features like printf-style formatting. Since it imposes
+    another copy from its internal buffer to your buffer and since it uses
+    dynamic allocation for the FILE structure I tend to avoid it.
 
     In Go the normal read/write is using the syscall directly,
     bufio is roughly equivalent to f{read,write} etc.
@@ -459,15 +466,16 @@ Alternative to ``fsync()``
 Detour: Filesystems
 ===================
 
-They layout file data on disk:
+Defines layout of files on disk:
 
-* *ext2/3/4*: good, stable & fast choice.
-* *fat8/16/32*: simple, but legacy, do not use.
-* *NTFS*: slow and only for compatibility.
-* *XFS*: good with big files.
-* *btrfs*: feature-rich, can do CoW & snapshots.
-* *ZFS*: highly scalable and very complex.
-* *sshfs*: remote access over FUSE
+* **ext2/3/4**: good, stable & fast choice.
+* **fat8/16/32**: simple, but legacy; avoid
+* **NTFS**: slow and only for compatibility.
+* **XFS**: good with big files.
+* **btrfs**: feature-rich, can do CoW & snapshots.
+* **ZFS**: highly scalable and very complex.
+* **sshfs**: remote access over FUSE
+* ...
 
 .. note::
 
@@ -547,8 +555,8 @@ Detour: FUSE
 
 ----
 
-``mmap()`` #1
-=============
+``mmap()``
+==========
 
 .. code-block:: c
 
@@ -567,9 +575,6 @@ Detour: FUSE
     strcpy(&map[20], "Hello World!");
 
 ----
-
-``mmap()`` #2
-=============
 
 .. image:: images/mmap.png
    :width: 80%
@@ -619,7 +624,7 @@ To sync or to async? 🤔
 =======================
 
 .. image:: images/sync_async.jpg
-   :width: 100%
+   :width: 90%
 
 .. note::
 
@@ -754,6 +759,7 @@ Why is `cp` faster?
         "io"
     )
 
+    // Very simple `cp` in Go:
     func main() {
         src, _ := os.Open(os.Args[1])
         dst, _ := os.Create(os.Args[2])
@@ -836,7 +842,7 @@ I/O performance checklist: *The sane part*
 
 1. Avoid I/O. (🤡)
 2. Use a sane buffer size with ``read()``/``write()``.
-3. Use append only data for writing.
+3. Use append only writes if possible.
 4. Read files sequential, avoid seeking.
 5. Batch small writes, as they evict caches.
 6. Avoid creating too many small files.
@@ -879,7 +885,7 @@ I/O performance checklist: *The deseperate part*
 10. Use ``io_uring``, if applicable.
 11. Buy faster/specialized hardware (``RAID 0``).
 12. Use no I/O scheduler (``none``).
-13. Tweak your filesystems settings.
+13. Tweak your filesystems settings (`noatime`).
 14. Use a different filesystem (``tmpfs``)
 15. Slightly crazy: ``fadvise()`` for cache warmup.
 16. Maybe crazy: use ``O_DIRECT``
@@ -920,4 +926,14 @@ I/O performance checklist: *The deseperate part*
 Fynn!
 =========
 
-🏁
+|
+
+.. class:: big-text
+
+    🏁
+
+|
+
+.. class:: next-link
+
+    **Next:** `Concurrency <../5_concurrent/index.html>`_: Make things confusing fast 🧵
