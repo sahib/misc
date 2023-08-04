@@ -709,6 +709,28 @@ What's padding?
 
 ----
 
+.. code-block:: go
+
+    var data [100]XXX
+    for _, elem := range data {
+        // 100 cache misses (at least)!
+        fmt.Println(elem.A, elem.I)
+    }
+
+.. code-block:: bash
+
+    # How big is a cache line?
+    $ lscpu --caches
+
+
+.. note::
+
+    Good article with a slightly different (and more realworld) example:
+
+    https://www.ardanlabs.com/blog/2023/07/getting-friendly-with-cpu-caches.html
+
+----
+
 (Binary) size matters!
 =======================
 

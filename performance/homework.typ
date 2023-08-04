@@ -91,22 +91,26 @@ introductionary slides (see last part of the slide deck). This page should serve
 reference therefore. *Note:* This is only one of the possible implementations of a key-value
 store - there are many variations, often differing only in a few details.
 
-*Tip:* Before you settle on a certain design you should think about what
+*Tip 1:* Before you settle on a certain design you should think about what
 workload you want to optimize for. Is it write-heavy? Do you want to be
 especially fast in retrieving data? Should it be extremely resistant to
 crashing? Ask yourself what implications your decisions will have and
 experiment a bit.
 
+*Tip 2:* Once you found a design you like, you should start by sketching out your code
+by creating your complete folder structure and create stub methods and structs. Continue
+by writing comments for each of them. This will help you find issues early on. Design & document
+your serialization format next.
+
 == Insertion
 
 Every new key/value pair is inserted to an in-memory data structure.
-This data structure is typically a type of binary tree, but can be a hash table (if range queries
+This data structure is typically a type of B-tree, but can be a hash table (if range queries
 are not a requirement), arrays or linked-list (if write-only workloads are desired).
-
 Once this data structure reaches a certain size, it is serialized to disk and
 the in-memory structure is cleared. The format should be compact, but may or
-may not have checksums, compression or encryption schemes. This data batch is
-called a »segment« and you will accumulate a number of segments over time.
+may not have checksums, compression or encryption support. This data batch is
+called a »segment« and you will accumulate a number of segments over time.``
 
 The key-value pairs in a segment should be stored with keys ordered
 alphanumerically. Additionally, an *index* should be kept the in-memory that
@@ -159,7 +163,6 @@ When your key-value store is loaded, all existing segments need to be loaded
 from oldest to newest. All key/value pairs need to be loaded into a fresh
 index - you may decide to serialize the index from time to time, if you aim
 to make the load phase faster.
-
 If the previous run of the database crashed for some reason before it was able
 to write the most recent segment, then the in-memory segment can be
 restored by loading the values from the WAL.

@@ -1,3 +1,3 @@
 package segment
 
-type ID int16
+type ID int32

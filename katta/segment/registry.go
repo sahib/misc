@@ -4,15 +4,22 @@ type Registry struct {
 }
 
 func LoadDir(dir string) (*Registry, error) {
+	
+
 	return nil, nil
 }
 
-func (r *Registry) List() []*Reader {
+func (r *Registry) List() []*Segment {
 	return nil
 }
 
-func (r *Registry) ByID(id ID) (*Reader, bool) {
-	return &Reader{}, false
+func (r *Registry) NewSegment() *Segment {
+	// TODO: Create one if not there yet.
+	return nil
+}
+
+func (r *Registry) ByID(id ID) (*Segment, bool) {
+	return &Segment{}, false
 }
 
 // NextID returns the next ID for a segment.

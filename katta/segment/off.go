@@ -1,3 +1,3 @@
 package segment
 
-type Off uint32
+type Off int32

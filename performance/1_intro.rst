@@ -47,6 +47,7 @@ Who's that?
 
     * Maybe you heard of Moore's law? Computing power doubles every two years
     * Andy and Bill's law: What Andy Grove (Intel ex-CEO) produces in Hardware speed, Bill Gates takes away.
+    * Wirt's law: Software gets slower more rapdidly than hardware gets faster.
     * Lemur's law: Software engineers get twice as incompentent every decade (only half ironic) - seriously, as an engineering discipline we should be
       ashamed of how bad we performed over the last decades. We introduced so many layers of bad software and hacks that we depend on that we can't
       change anymore. It's like building a complete city on sand. Part of this because we don't really do engineerings and focus so much on providing
@@ -246,7 +247,7 @@ What's not in here?
 - A lecture you just have to listen to make it click.
 - Language specific optimization techniques.
 - Performance in distributed systems.
-- Application specific performance tips (*Networking, SQL, Databases, IPC* ...)
+- Application specific performance tips (*Networking, SQL, Marshalling, IPC* ...)
 
 .. note::
 
@@ -459,6 +460,27 @@ In a reproducible environment.
 How to optimize?
 ================
 
+* Do less work
+* Do the same work faster
+* Do the work at the same time
+* Do it in another order
+
+.. note::
+
+    Examples:
+
+    * Use a different data structure (map vs btree)
+    * Do things like caching.
+    * threads, processes, coroutines.
+    * Do not wait for the longest part to finish to continue
+
+    Rules stolen from here: https://eblog.fly.dev/startfast.html
+
+----
+
+Measurement first
+=================
+
 Requires a strong understanding of your program and experience.
 
 * No way around measurements as **first** step.
@@ -472,6 +494,9 @@ Requires a strong understanding of your program and experience.
     It will be a long journey and this is workshop will be only a step on the journey.
     Very many different languages, OS (Python, Go) and many different applications
     (SQL - 90%: just add an index) that cannot all be covered.
+
+    Example: If an application starts slow, then do you know what happens on startup?
+    Maybe not - but it's important to take the right decisions.
 
 ----
 
@@ -512,6 +537,10 @@ Critical path
     the critical path for your module anyways.
 
     Other related terms are "hot path" or "tight loop".
+
+    A related term is "slow path". This is often the path taken by a program
+    that hits some edge case. Edge cases are often (purposefully) not optimized
+    for, instead we generally optimize for the common "fast path".
 
 ----
 
@@ -742,6 +771,9 @@ Sideproject
    learn it for you.
 
    tacit = unausgeprochen
+
+   I will share a sort of reference implementation some time after the workshop. There is no one right
+   solution, but I will try to keep my solution well understandable and documented.
 
 ----
 

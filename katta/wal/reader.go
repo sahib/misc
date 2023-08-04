@@ -1,22 +1,67 @@
 package wal
 
+import (
+	"fmt"
+	"io"
+
+	"capnproto.org/go/capnp/v3"
+	"github.com/sahib/misc/katta/wal/waldisk"
+)
+
 type Reader struct {
+	r       io.Reader
+	decoder *capnp.Decoder
+
+	// iteration vars:
+	err         error
+	key         string
+	val         []byte
+	isTombstone bool
 }
 
-// TODO: Can Reader and Writer be used at the same time?
-
-func OpenReader(path string) (*Reader, error) {
-	return nil, nil
+func NewReader(r io.Reader) *Reader {
+	return &Reader{
+		r:       r,
+		decoder: capnp.NewPackedDecoder(r),
+	}
 }
 
 func (r *Reader) Next() bool {
-	return false
+	msg, err := r.decoder.Decode()
+	if err == io.EOF {
+		// no data left in stream.
+		return false
+	}
+
+	if err != nil {
+		r.err = fmt.Errorf("decode: %w", err)
+		return false
+	}
+
+	entry, err := waldisk.ReadRootEntry(msg)
+	if err != nil {
+		r.err = fmt.Errorf("read: %w", err)
+		return false
+	}
+
+	r.key, _ = entry.Key()
+	r.val, _ = entry.Val()
+	r.isTombstone = !entry.HasVal()
+	return true
+}
+
+func (r *Reader) Err() error {
+	return r.err
 }
 
 func (r *Reader) Key() string {
-	return ""
+	return r.key
 }
 
-func (r *Reader) Value() []byte {
-	return nil
+func (r *Reader) Val() []byte {
+	return r.val
+}
+
+func (r *Reader) IsTombstone() bool {
+	return r.isTombstone
 }
