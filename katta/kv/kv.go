@@ -1,5 +1,10 @@
 package kv
 
+// NOTE: High level TODOs:
+// TODO: Make wal reader seekable.
+// TODO: Convert btree.Map to segment.
+// TODO: Implement merge functionality.
+
 import (
 	"errors"
 	"fmt"
@@ -9,16 +14,22 @@ import (
 
 	"github.com/sahib/misc/katta/segment"
 	"github.com/sahib/misc/katta/wal"
+	"github.com/tidwall/btree"
 )
 
 var (
 	ErrKeyNotFound = errors.New("no such key")
 )
 
+type value struct {
+	IsTombstone bool
+	Data        []byte
+}
+
 type Store struct {
 	Registry *segment.Registry
 	WAL      *wal.Writer
-	Mem      *Memtable
+	Mem      *btree.Map[string, value]
 
 	walFD io.WriteCloser
 
@@ -72,7 +83,7 @@ func Open(dir string, opts Options) (*Store, error) {
 
 	return &Store{
 		Registry:         reg,
-		Mem:              NewMemtable(),
+		Mem:              &btree.Map[string, value]{},
 		WAL:              wal.NewWriter(walFD),
 		walFD:            walFD,
 		maxElemsInMemory: opts.MaxElemsInMemory,
@@ -80,25 +91,33 @@ func Open(dir string, opts Options) (*Store, error) {
 }
 
 func (s *Store) Get(key string) ([]byte, error) {
-	if v := s.Mem.Get(key); v != nil {
-		return v, nil
+	if v, ok := s.Mem.Get(key); ok {
+		if v.IsTombstone {
+			// was explicitly deleted.
+			return nil, ErrKeyNotFound
+		}
+
+		return v.Data, nil
 	}
 
 	for _, segment := range s.Registry.List() {
 		lo, hi := segment.Index().Lookup(key)
-		r := segment.Reader()
+		r, err := segment.Reader()
+		if err != nil {
+			return nil, fmt.Errorf("read: %w", err)
+		}
+
 		if err := r.Seek(lo); err != nil {
 			return nil, fmt.Errorf("seek: %w", err)
 		}
 
 		for r.Next() && r.Pos() < hi {
 			if r.Key() == key {
-				val, isTomb := r.Value()
-				if !isTomb {
+				if r.IsTombstone() {
 					return nil, ErrKeyNotFound
 				}
 
-				return val, nil
+				return r.Val(), nil
 			}
 		}
 
@@ -117,34 +136,30 @@ func (s *Store) clearMemtable() error {
 	}
 
 	// Clear old memtable and start fresh:
-	s.Mem = NewMemtable()
+	s.Mem = &btree.Map[string, value]{}
 	return nil
 }
 
-func (s *Store) Set(key string, val []byte) error {
-	if err := s.WAL.Append(key, val); err != nil {
+func (s *Store) set(key string, val value) error {
+	// TODO: Make a proper distinction between tombstones here.
+	if err := s.WAL.Append(key, val.Data); err != nil {
 		return fmt.Errorf("wal: %w", err)
 	}
 
 	s.Mem.Set(key, val)
-	if s.Mem.Size() < s.maxElemsInMemory {
+	if s.Mem.Len() < s.maxElemsInMemory {
 		return nil
 	}
 
 	return s.clearMemtable()
 }
 
+func (s *Store) Set(key string, val []byte) error {
+	return s.set(key, value{Data: val})
+}
+
 func (s *Store) Del(key string) error {
-	if err := s.WAL.AppendTombstone(key); err != nil {
-		return fmt.Errorf("wal: %w", err)
-	}
-
-	s.Mem.Del(key)
-
-	// TODO: Also add this to a segment? The latest one? Which?
-	//       or add it to the mem index and write it later?
-	//       also trigger mem table swap here?
-	return nil
+	return s.set(key, value{IsTombstone: true})
 }
 
 func (s *Store) Close() error {

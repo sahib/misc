@@ -1,9 +1,16 @@
 package segment
 
 import (
+	"fmt"
+	"io"
+
+	"capnproto.org/go/capnp/v3"
+	"github.com/sahib/misc/katta/segment/indexdisk"
 	"github.com/tidwall/btree"
 	"golang.org/x/exp/constraints"
 )
+
+type Off int32
 
 // Index maps keys to offsets. It is supposed to be created for each segment.
 // The index expects that all keys are feed to the index. The implementation
@@ -21,10 +28,10 @@ type Index struct {
 //        false positive are tolerable therefore)
 // TODO: Implement knob or fine-tuning to control how sparse the index is.
 // TODO: Functionality to merge two indices.
-// TODO: Function for bulk loading.
 
 // New returns an empty index.
 func NewIndex(maxElements int) *Index {
+	btree.NewMap
 	return &Index{
 		tree:        &btree.Map[string, Off]{},
 		maxElements: maxElements,
@@ -120,4 +127,63 @@ func (i *Index) sparsify() {
 
 		return true
 	})
+}
+
+func (i *Index) Marshal(w io.Writer) error {
+	encoder := capnp.NewPackedEncoder(w)
+	arena := make([]byte, 4096)
+
+	var outErr error
+
+	i.tree.Scan(func(key string, off Off) bool {
+		msg, seg := capnp.NewSingleSegmentMessage(arena[:0])
+		entry, err := indexdisk.NewRootEntry(seg)
+		if err != nil {
+			outErr = err
+			return false
+		}
+
+		entry.SetKey(key)
+		entry.SetOff(int64(off))
+		if err := encoder.Encode(msg); err != nil {
+			outErr = err
+			return false
+		}
+
+		return true
+	})
+
+	return outErr
+}
+
+func (i *Index) Unmarshal(r io.Reader) error {
+	decoder := capnp.NewPackedDecoder(r)
+
+	tree := btree.Map[string, Off]{}
+	for {
+		msg, err := decoder.Decode()
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			return fmt.Errorf("decode: %w", err)
+		}
+
+		entry, err := indexdisk.ReadRootEntry(msg)
+		if err != nil {
+			return fmt.Errorf("read: %w", err)
+		}
+
+		key, err := entry.Key()
+		if err != nil {
+			return fmt.Errorf("alloc: %w", err)
+		}
+
+		off := Off(entry.Off())
+		i.minKnown = min(off, i.minKnown)
+		i.maxKnown = max(off, i.maxKnown)
+		tree.Set(key, off)
+	}
+
+	i.tree = &tree
+	return nil
 }

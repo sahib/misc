@@ -9,6 +9,7 @@ import (
 )
 
 type Reader struct {
+	// TODO: Make this is a io.ReadSeeker.
 	r       io.Reader
 	decoder *capnp.Decoder
 
@@ -64,4 +65,13 @@ func (r *Reader) Val() []byte {
 
 func (r *Reader) IsTombstone() bool {
 	return r.isTombstone
+}
+
+func (r *Reader) Close() error {
+	c, ok := r.r.(io.Closer)
+	if !ok {
+		return nil
+	}
+
+	return c.Close()
 }
