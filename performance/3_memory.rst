@@ -1,6 +1,18 @@
 :title: Performance: Memory
-:data-transition-duration: 1500
+:data-transition-duration: 950
 :css: hovercraft.css
+
+----
+
+:data-x: r2500
+
+.. class:: chapter
+
+    Memory
+
+Bookkeeping is hard 📝
+
+----
 
 Agenda
 ======
@@ -125,9 +137,9 @@ ECC Memory
 NUMA - multiple CPUs
 ====================
 
-NUMA = Non Uniform Memory Architecture
+**NUMA** = *Non Uniform Memory Architecture*
 
-Is the access to all memory offsets equally fast?
+Is the access to all memory equally fast?
 
 * Not if you have more than one CPU!
 * Every CPU gets 1/nth of the memory.
@@ -136,7 +148,7 @@ Is the access to all memory offsets equally fast?
 
 .. note::
 
-   TODO: is that slide really important? If yes, make it prettier using a diagram.
+   NUMA is a term you might come across.
 
    Linux is NUMA capable and that's why it's such a popular server and
    superomputer operating system. Or one of the reasons at least.
@@ -175,18 +187,6 @@ Inside a process
 
 ----
 
-The stack: LIFO Layout
-======================
-
-.. image:: images/stack_layout.svg
-    :width: 80%
-
-.. note::
-
-   https://en.wikipedia.org/wiki/Stack-based_memory_allocation
-
-----
-
 The stack: Growth
 =================
 
@@ -215,6 +215,30 @@ The stack: Growth
     More details on calling a function:
 
     https://eli.thegreenplace.net/2011/09/06/stack-frame-layout-on-x86-64
+
+
+----
+
+The stack: LIFO Layout
+======================
+
+.. image:: images/stack_layout.svg
+    :width: 80%
+
+.. note::
+
+    Registers:
+
+    ebp: Base pointer. Points to start of function. Cell at adress contains "return link to last function" (i.e. pointer to instruction offset)
+    esp: Initially the base pointer, but grows with each variable put on the stack.
+    eip: Pointer that points to current instruction.
+
+    Stack origin:  ebp.
+    Stack pointer: esp.
+
+    https://en.wikipedia.org/wiki/Stack-based_memory_allocation
+
+    Good explanation here too: https://people.cs.rutgers.edu/~pxk/419/notes/frames.html
 
 ----
 
@@ -308,8 +332,6 @@ The Heap: Allocations
 
    Heap grows upwards.
 
-   TODO: Maybe use graphics from here: https://medium.com/eureka-engineering/understanding-allocations-in-go-stack-heap-memory-9a2631b5035d
-
 ----
 
 The Heap: ``malloc()``
@@ -339,6 +361,12 @@ The Heap: ``malloc()``
 
    As malloc() needs to cater objects of many different sizes (as seen in the
    example above) it is prone to fragmentation.
+
+   malloc() can fail! Originally it was supposed to fail if there is no memory
+   left, but on Linux there is "infinite" virtual memory and overcommitting (we come to
+   those later), which is why it does not fail for this reasons. It will fail however
+   if you ask it a too large block, have some memory restrictions on your processes (cgroups)
+   or other administration reasons.
 
 ----
 
@@ -757,7 +785,7 @@ VM: The mapping
 
 ----
 
-VM: implementation
+VM: Implementation
 ==================
 
 .. code-block:: bash
@@ -814,7 +842,7 @@ VM: Swapping
     $ cat /proc/sys/vm/swappiness
     (a value between 0-100)
 
-    # 0   = only swap if OOM would hit otherwise.
+    #   0 = only swap if OOM would hit otherwise.
     # 100 = swap everything not actively used.
     #  60 = default for most desktops.
     # <10 = good setting for database servers
@@ -836,7 +864,7 @@ VM: Swapping
 
 ----
 
-Profiling: Residual memory vs virtual memory
+Residual memory *versus* Virtual memory
 =============================================
 
 .. image:: images/res_vs_virtual.png
@@ -851,9 +879,11 @@ Profiling: Residual memory vs virtual memory
    Fun fact: The program I was actively using was gimp, but the actual
    performance hogs were all browser-based applications. Brave new world.
 
+   If you want to flex: Use `btop` for even prettier screens.
+
 ----
 
-Profiling: Quick & dirty
+Profiling: Quick & Dirty
 ========================
 
 .. code-block:: bash
@@ -879,12 +909,15 @@ Profiling: Quick & dirty
 
    Start with '/usr/bin/time -v ./virt' and interrupt at any time.
 
+   Note that `time` only samples in a certain interval. If you're unlucky
+   you might miss the actual peak. So don't rely on values to be exact here.
+
 ----
 
 Profiling: ``pprof``
 ====================
 
-.. image:: images/pprof_heap.svg
+.. image:: images/pprof_heap.png
    :width: 100%
 
 .. note::
@@ -966,4 +999,14 @@ The OOM Killer
 Fynn!
 =====
 
-🏁
+|
+
+.. class:: big-text
+
+    🏁
+
+|
+
+.. class:: next-link
+
+    **Next:** `I/O & Syscalls <../4_io/index.html>`_: Speaking with the kernel 🐧

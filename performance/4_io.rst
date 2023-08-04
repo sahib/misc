@@ -1,6 +1,18 @@
 :title: Performance: I/O
-:data-transition-duration: 1500
+:data-transition-duration: 950
 :css: hovercraft.css
+
+----
+
+:data-x: r2500
+
+.. class:: chapter
+
+    I/O & Syscalls
+
+Speaking with the kernel 🐧
+
+----
 
 Agenda
 ======
@@ -22,7 +34,7 @@ Typical terms
 
 * *Latency:* Time until the first drop of water arrives.
 * *Throughput:* Current volume of water per time.
-* *Bandwidth:* Maximum throughput.
+* *Bandwidth:* Maximum throughput. (liter/time)
 
 |
 |
@@ -54,7 +66,7 @@ Hardware: HDDs
 ==============
 
 .. image:: images/hdd.jpg
-   :width: 70%
+   :width: 60%
 
 |
 
@@ -132,8 +144,8 @@ Virtual File System
 
 ----
 
-How do syscalls work? (#1)
-==========================
+How do syscalls work?
+=====================
 
 .. code-block:: c
 
@@ -148,24 +160,22 @@ How do syscalls work? (#1)
 
 ----
 
-How do syscalls work? (#2)
-==========================
-
-Compiled:
+**Compiled:**
 
 .. code-block:: asm
 
     ; use the `write` system call (1)
-    movl $1, %rax
+    movl rax, 1
     ; write to stdout (1) - 1st arg
-    movl $1, %rbx
+    movl rbx, 1
     ; use string "Hello World" - 2nd arg
-    movl 'Hello World!\n', %rcx
+    ; (0x1234 is the addr of the "Hello World!\0")
+    movl rcx, 0x1234
     ; write 12 characters - 3rd arg
-    movl $12, %rdx
+    movl rdx, 12
     ; make system call via special instruction
     syscall
-    ; The return code is in the RAX register.
+    ; The return code is now in the RAX register.
 
 
 .. note::
@@ -197,12 +207,17 @@ Typical syscalls
 
 .. note::
 
+   There is a syscall for every single thing that userspace cannot do without the kernel's help.
+
    Luckily for us, glibc and Go provide us nice names and interfaces to make those system calls.
    They usually provide thin wrappers that also do some basic error checking. Watch out: ``fread``
    is doing buffering in userspace!
 
    Can anyone think of another syscall not in the list above? exit! chdir ...
    (There are about 300 of them)
+
+   Also, what things are no syscalls? Math, random numbers, cryptography, ...
+   i.e. everything that can be done without any side effects or hardware.
 
 ----
 
@@ -257,7 +272,7 @@ Typical write I/O
 .. note::
 
     Q1: Does this mean that the data is available to read() when write() returned?
-    Q2: Is the data saved on disk after write() returns.
+    Q2: Is the data saved on disk after write() returns?
 
     A1: Mostly. There might be exotic edge cases with non-POSIX filesystems,
         but you should mostly be able to assume this.
@@ -285,46 +300,28 @@ Typical write I/O
 
 ----
 
-Fixed write version
-===================
+»Buffered« I/O
+==============
 
-.. code-block:: c
-
-    /* ... */
-    char *buf_ptr = buf;
-    while(bytes_in_buf > 0) {
-       size_t written = write(fd, buf_ptr, bytes_in_buf);
-       bytes_in_buf -= written;
-       buf_ptr += written;
-       if(errno != 0) {
-           return;
-       }
-    }
-    /* ... */
-
-.. note::
-
-   TODO: Is this slide that important?
-
-----
-
-What about ``fread()``?
-=======================
-
-Confusingly, this is double buffered.
+* Almost all I/O is buffered, but some is double buffered.
+* ``fread()``: Does buffering in userspace; calls ``read()``.
+* ``bufio.Reader``: Same thing in Go.
 
 **Usecases:**
 
 * You need to read byte by byte.
 * You need to unread some bytes frequently.
 * You need to read easily line by line.
+*
 
-Otherwise: Do not use.
+*Otherwise:* Prefer the simpler version.
 
 .. note::
 
-    Userspace buffered functions. No real advantage, but limiting and confusing API.
-    Has some extra features like printf-style formatting.
+    Userspace buffered functions. No real advantage, but limiting and confusing
+    API. Has some extra features like printf-style formatting. Since it imposes
+    another copy from its internal buffer to your buffer and since it uses
+    dynamic allocation for the FILE structure I tend to avoid it.
 
     In Go the normal read/write is using the syscall directly,
     bufio is roughly equivalent to f{read,write} etc.
@@ -461,7 +458,6 @@ Alternative to ``fsync()``
 
 .. note::
 
-    TODO: Move down.
     This only works obviously if you're not constantly updating the file,
     i.e. for files that are written just once.
 
@@ -470,15 +466,16 @@ Alternative to ``fsync()``
 Detour: Filesystems
 ===================
 
-They layout file data on disk:
+Defines layout of files on disk:
 
-* *ext2/3/4*: good, stable & fast choice.
-* *fat8/16/32*: simple, but legacy, do not use.
-* *NTFS*: slow and only for compatibility.
-* *XFS*: good with big files.
-* *btrfs*: feature-rich, can do CoW & snapshots.
-* *ZFS*: highly scalable and very complex.
-* *sshfs*: remote access over FUSE
+* **ext2/3/4**: good, stable & fast choice.
+* **fat8/16/32**: simple, but legacy; avoid
+* **NTFS**: slow and only for compatibility.
+* **XFS**: good with big files.
+* **btrfs**: feature-rich, can do CoW & snapshots.
+* **ZFS**: highly scalable and very complex.
+* **sshfs**: remote access over FUSE
+* ...
 
 .. note::
 
@@ -558,8 +555,8 @@ Detour: FUSE
 
 ----
 
-``mmap()`` #1
-=============
+``mmap()``
+==========
 
 .. code-block:: c
 
@@ -578,9 +575,6 @@ Detour: FUSE
     strcpy(&map[20], "Hello World!");
 
 ----
-
-``mmap()`` #2
-=============
 
 .. image:: images/mmap.png
    :width: 80%
@@ -630,7 +624,7 @@ To sync or to async? 🤔
 =======================
 
 .. image:: images/sync_async.jpg
-   :width: 100%
+   :width: 90%
 
 .. note::
 
@@ -765,6 +759,7 @@ Why is `cp` faster?
         "io"
     )
 
+    // Very simple `cp` in Go:
     func main() {
         src, _ := os.Open(os.Args[1])
         dst, _ := os.Create(os.Args[2])
@@ -796,12 +791,58 @@ Reduce number of copies
 
 ----
 
+Good abstractions
+=================
+
+.. code-block:: go
+
+    type ReaderFrom interface {
+        ReadFrom(r Reader) (n int64, err error)
+    }
+
+    type WriterTo interface {
+        WriteTo(w Writer) (n int64, err error)
+    }
+
+.. note::
+
+    You might have heard that abstractions are costly from a performance point
+    of view and this partly true. Please do not take this an excuse for not adding
+    any abstractions to your code in fear of performance hits.
+
+    Most bad rap of abstractions come from interfaces that are not general
+    enough and cannot be extended when performance needs arise.
+
+    Example: io.Reader/io.Writer/io.Seeker are very general and hardly specific.
+    From performance point of view they tend to introduce some extra allocations
+    and also some extra copying that a more specialized implementation might get
+    rid of if it would know how it's used.
+
+    For example, a io.Reader that has to read a compressed stream needs to read
+    big chunks of compressed data since compression formats work block
+    oriented. Even if the caller only needs a single byte, it still needs to
+    decompress a whole block. If the API user needs another byte a few KB away,
+    the reader might have to throw away the curent block and allocate space for
+    a new one, while seeking in the underlying stream. This is costly.
+
+    Luckily, special cases can be optimized. What if the reader knows that the whole
+    stream is read in one go? Like FADV_SEQUENTIAL basically. This is what WriteTo()
+    is for. A io.Reader can implement this function to dump its complete content to
+    the writer specified by `w`. The knowledge that no seeking is required allows
+    the decompression reader to make some optimizations: i.e. use one big buffer,
+    no need to re-allocate, parallelize reading/decompression and avoid seek calls.
+
+    So remember: Keep your abstractions general, check if there are specific
+    patterns on how your API is called and offer optimizations for that.
+
+----
+
 I/O performance checklist: *The sane part*
 ===========================================
 
 1. Avoid I/O. (🤡)
 2. Use a sane buffer size with ``read()``/``write()``.
-3. Use append only data for writing.
+3. Use append only writes if possible.
 4. Read files sequential, avoid seeking.
 5. Batch small writes, as they evict caches.
 6. Avoid creating too many small files.
@@ -821,8 +862,9 @@ I/O performance checklist: *The sane part*
        sequentially in forward direction. This is also a heavily optimized
        case. Avoid excessive seeking, even for SSDs (syscall overhead +
        page cache has a harder time what you will read next)
-    5. Small writes of even a single byte will evict a complete page
-       from the page cache. TODO: is that even correct?
+    5. Small writes of even a single byte will mark a complete page
+       from the page cache as dirty, i.e. it needs to be written.
+       If done for many pages this will have an impact.
     6. Every file is stored with metadata and some overhead. Prefer to
        join small files to bigger ones by application logic.
     7. mmap() can be very useful, especially in seek-heavy applications.
@@ -843,7 +885,7 @@ I/O performance checklist: *The deseperate part*
 10. Use ``io_uring``, if applicable.
 11. Buy faster/specialized hardware (``RAID 0``).
 12. Use no I/O scheduler (``none``).
-13. Tweak your filesystems settings.
+13. Tweak your filesystems settings (`noatime`).
 14. Use a different filesystem (``tmpfs``)
 15. Slightly crazy: ``fadvise()`` for cache warmup.
 16. Maybe crazy: use ``O_DIRECT``
@@ -884,4 +926,14 @@ I/O performance checklist: *The deseperate part*
 Fynn!
 =========
 
-🏁
+|
+
+.. class:: big-text
+
+    🏁
+
+|
+
+.. class:: next-link
+
+    **Next:** `Concurrency <../5_concurrent/index.html>`_: Make things confusing fast 🧵

@@ -1,6 +1,29 @@
 :title: Performance: Intro
-:data-transition-duration: 1500
+:data-transition-duration: 950
 :css: hovercraft.css
+
+----
+
+:data-x: r2500
+
+.. class:: chapter
+
+   Intro
+
+General intro and sideproject 🏠
+
+----
+
+Agenda
+======
+
+* Rant & Motivation
+* Benchmarking Basics
+* Complexity Theory
+* Sideproject
+
+.. image:: images/door.svg
+   :width: 42%
 
 ----
 
@@ -24,6 +47,7 @@ Who's that?
 
     * Maybe you heard of Moore's law? Computing power doubles every two years
     * Andy and Bill's law: What Andy Grove (Intel ex-CEO) produces in Hardware speed, Bill Gates takes away.
+    * Wirt's law: Software gets slower more rapdidly than hardware gets faster.
     * Lemur's law: Software engineers get twice as incompentent every decade (only half ironic) - seriously, as an engineering discipline we should be
       ashamed of how bad we performed over the last decades. We introduced so many layers of bad software and hacks that we depend on that we can't
       change anymore. It's like building a complete city on sand. Part of this because we don't really do engineerings and focus so much on providing
@@ -36,7 +60,7 @@ Who's that?
 
 ----
 
-Programmers then & now
+Performance inflation
 ======================
 
 .. image:: images/meme.jpg
@@ -67,27 +91,65 @@ Programmers then & now
 
 ----
 
-Simple can be complex
-=====================
+.. image:: images/hyper.png
+   :width: 100%
+
+.. note::
+
+   No joke: This electron based terminal took 700M (!) of residual memory.
+   This is absolutely insane and should not have been released.
+
+----
+
+.. class:: quote
+
+    Software is easy, given infinite time.
+
+| - Linux Lemur, ca. 2023
+
+.. note::
+
+    You could argue now: Well, we would care more about performance but in todays world
+    we don't have time to time because we're agile and have to produce feature after feature.
+    We care only once we get into troubles. This also leads to developers never learning about
+    writing software that has to fulfill some performance criterias.
+
+    There is some truth about that. Product management usually is not that much aware of Performance
+    if it's not a hard product requirement. But that's your job - you're supposed to measure performance
+    and predict that it will be an issue. If you think it will be an issue, then you should fight for
+    the time to fix it.
+
+    Anyways, in this workshop we will enter a fantasy world, where we have infinite amounts of time.
+
+----
+
+»Simple«
+========
 
 .. code-block:: python
 
+    # Read in a line, print the line without whitespaces.
     import sys
     print(sys.stdin.readline().strip())
 
 
 .. note::
 
-   The prior rules assume that we're able to understand what's going on
-   in our program. After all we have to judge what gets executed ultimately.
-   Turns out, in interpreted language this is very hard.
+    Simple can mean different things.
+    "simple" can mean "small cognitive load", i.e. programs that are simple to understand.
+    "simple" can also mean "programs with few instructions and few abstractions"
 
-   Interpreted -> compiled to byte code.
-   sys.stdin.readline are two dict lookups.
-   memory allocations
-   file I/O from stdin to stdout
-   calling a c function (strip)
-   unicode conversion!
+    The prior rules assume that we're able to understand what's going on
+    in our program. After all we have to judge what gets executed ultimately.
+    Turns out, in interpreted language this is very hard.
+
+    Interpreted -> compiled to byte code.
+    sys.stdin.readline are two dict lookups.
+    memory allocations
+    file I/O from stdin to stdout
+    calling a c function (strip)
+    several syscalls
+    unicode conversion!
 
 ----
 
@@ -129,10 +191,16 @@ Inside Python 🐍
    why there's so much C libraries in python, making the whole packaging system
    a bloody mess.
 
+   Side note: There are also declarative languages like SQL (as compared to
+   imperative languages like C) that this workshop is not focusing on. Working
+   on performance there is indirect, i.e. achieved by tricks.
+
 ----
 
 Workshop contents
 =================
+
+We try to answer these questions:
 
 - Why is performance important?
 - How does the machine we program on work?
@@ -141,9 +209,6 @@ Workshop contents
 *Remember:* **Work** shop.
 
 .. note::
-
-    If you can answer these questions to your own
-    liking, then you succeeded. I can't yet.
 
     Disclaimer:
 
@@ -161,17 +226,28 @@ Workshop contents
       but often there is only a limited choice of design decisions language designers can make.
     * In this talk you will learn why people invent things Webassembly - even though it's kinda sad.
 
+    My main goal is though to give you a "table of contents" of most things related to performance.
+    The whole thing is at least one semester of contents. We don't have enough time though, so we will
+    jump a lot from topic to topic while barely scratching the surface. This should not matter too much
+    though as long you just remember later "Ah, Lemur said something about this behavior, but I dont recall
+    the details, let's Google" (or maybe even open those slides again). The hardest part of experience
+    is that concepts exists. Applying them is often easier. If you manage to do that I will be fairly happy.
+
+    This also means that you don't need to worry if you don't understand something at first glance. Note it down
+    or directly ask during the workshop, but try to follow th ecurrent slides instead of trying to understand
+    every last detail.
+
 ----
 
-What's missing?
-===============
+What's not in here?
+===================
 
 - An exhausting list of tips. You'd forget them.
 - A full lecture on algorithm and data structures.
 - A lecture you just have to listen to make it click.
 - Language specific optimization techniques.
 - Performance in distributed systems.
-- Application specific performance tips (*Networking, SQL, Data* ...)
+- Application specific performance tips (*Networking, SQL, Marshalling, IPC* ...)
 
 .. note::
 
@@ -188,6 +264,18 @@ What's missing?
 
 ----
 
+Help!
+=====
+
+- This workshop is written in a markup language (`.rst`).
+- Almost every slide has speaker notes.
+- I tried to make them generally understandable.
+- If you need more background, read them:
+
+`Link to Github <https://github.com/sahib/misc/blob/master/performance/1_intro.rst#workshop-contents>`_
+
+----
+
 Experiments mandatory 🥼
 ========================
 
@@ -199,7 +287,22 @@ You'll write your own *cute* database:
 
 .. note::
 
-   But do the database for yourself, not for me.
+   But do the database for yourself, not for me. Also, not every topic in
+   the slides has to be present in your database. I'm only sharing general ideads
+   here, not implementation tips. You don't have to remember all of them,
+   but hopefully you will take away the core thoughts behind those ideads.
+
+   Also, please note that I'm not expert in everything myself. I do those
+   workshops to educate myself on a certain topic. Also, I'm guilty of breaking
+   most of the "tips" I give in this talk. That should not come as a surprise,
+   as every rule is made to be broken. Most of the time for stupid reasons
+   though.
+
+   This might serve as career tip though: If you want to deep dive into a certain
+   topic, then prepare a presentation about it. If you're able to explain it to
+   others, then you're probably kind of good in it.
+
+   So: this is also some kind of test for myself.
 
 ----
 
@@ -267,8 +370,11 @@ Questions to ask:
 When not to optimize?
 =====================
 
-| "Programmers waste enormous amounts of time thinking about, or worrying about, the speed of noncritical parts of their programs, and these attempts at efficiency actually have a strong negative impact when debugging and maintenance are considered. We should forget about small efficiencies, say about 97% of the time: premature optimization is the root of all evil. Yet we should not pass up our opportunities in that critical 3%."
-| - Donald Knuth
+.. class:: quote
+
+    Programmers waste enormous amounts of time thinking about, or worrying about, the speed of noncritical parts of their programs, and these attempts at efficiency actually have a strong negative impact when debugging and maintenance are considered. We should forget about small efficiencies, say about 97% of the time: **premature optimization is the root of all evil.** Yet we should not pass up our opportunities in that critical 3%.
+
+| (Donald Knuth)
 
 .. note::
 
@@ -310,6 +416,18 @@ Huh, premature?
 
 ----
 
+1. Make it correct.
+2. Make it beautiful.
+3. Make it fast.
+
+.. note::
+
+    Often enough we do not even get to step 2 though. Sometimes not even step 1 :D
+    Making things fast should always be a consideration. Software is not done once
+    you are happy with the beautiful abstractions you found.
+
+----
+
 How do I measure?
 =================
 
@@ -333,15 +451,39 @@ In a reproducible environment.
    Use benchmarks primarily to compare numbers of older benchmarks.
    And if you have to compare different implementations: Stay fair.
 
+   Profiling    = Performance debugging.
+   Benchmarking = Performance testing (i.e. ware optimizations still working?)
+
 
 ----
 
 How to optimize?
 ================
 
+* Do less work
+* Do the same work faster
+* Do the work at the same time
+* Do it in another order
+
+.. note::
+
+    Examples:
+
+    * Use a different data structure (map vs btree)
+    * Do things like caching.
+    * threads, processes, coroutines.
+    * Do not wait for the longest part to finish to continue
+
+    Rules stolen from here: https://eblog.fly.dev/startfast.html
+
+----
+
+Measurement first
+=================
+
 Requires a strong understanding of your program and experience.
 
-* No way around measurements.
+* No way around measurements as **first** step.
 * A certain level of experience helps.
 * The model of your program in your head
   is different to what gets actually executed.
@@ -353,16 +495,63 @@ Requires a strong understanding of your program and experience.
     Very many different languages, OS (Python, Go) and many different applications
     (SQL - 90%: just add an index) that cannot all be covered.
 
+    Example: If an application starts slow, then do you know what happens on startup?
+    Maybe not - but it's important to take the right decisions.
+
 ----
 
-A rule of thumb
-===============
+Critical path
+=============
+
+.. code-block:: go
+   :number-lines: 1
+
+    func process(b []byte) {
+        if(edgeCaseCondition) {
+            // ...
+        }
+
+        for i := 0; i < len(b); i++ {
+            for j := i; j < len(b); j++ {
+                b[i] = magicCalculation(b, i, j)
+            }
+
+            if i == len(b) - 1 {
+                for j := 0; j < len(b); j++ {
+                    b[j] *= 2;
+                }
+            }
+        }
+    }
+
+.. note::
+
+    The critical path is the path through your programs that is taken
+    most often. This path defines the order in which you should optimize.
+    If you optimize some edge case that is only taken 1% of the time,
+    then the speedup of your optimization is also only worth 1%, because
+    99% of your program is still as slow as before.
+
+    How to find the path? Tools like pprof can find it, but also coverage
+    tools or even debuggers can help you find them. Chances are that you
+    the critical path for your module anyways.
+
+    Other related terms are "hot path" or "tight loop".
+
+    A related term is "slow path". This is often the path taken by a program
+    that hits some edge case. Edge cases are often (purposefully) not optimized
+    for, instead we generally optimize for the common "fast path".
+
+----
+
+A rule of thumb 👍
+==================
 
 **Go from big to small**:
 
-1. Do the obvious things right away.
+1. Do the obvious implementation first.
 2. Check if your requirements are met.
-3. Find the biggest bottleneck.
+3. If not, find the **biggest** critical path.
 4. Optimize it and repeat from step 1.
 
 .. note::
@@ -373,6 +562,9 @@ A rule of thumb
     2. If you don't have concrete performance requirements, make some.
     3. We are incredible bad at guessing! Never ever skip this step!
     4. Never mix up this order.
+
+    Step 3 is the most difficult one. You should start measuring the full speed of your program
+    then of one module and so on until you know what part consumes the most time/resources.
 
 ----
 
@@ -393,6 +585,10 @@ Theory: Complexity
 
    Good example (thanks Alex): https://sortvisualizer.com
    (compare quick sort and merge sort)
+
+   The general idea is to have a function that relates the number
+   of elements given to an algorithm to the number of operations the
+   algorithm has to do to produce a result.
 
 ----
 
@@ -421,6 +617,8 @@ https://www.bigocheatsheet.com
     -> Some are probalibisitic: i.e. they save you work or space at the expense of accuracy (bloom filters)
     -> Difference between O(log n) and O(1) is not important most of the time. (database developers might disagree here though)
 
+    For small n the difference doe snot mattern. It can be difficult to figure out what "n" is small.
+
 ----
 
 Complexity exercises:
@@ -429,9 +627,9 @@ Complexity exercises:
 1. *Time* complexity of *Bubble Sort*?
 2. *Time* complexity of *Binary Search* (*worst* & *best*)?
 3. *Space* complexity of *Merge Sort* versus *Quick Sort*?
-4. *Removing* an element from an *Array* vs from a *Linked List*?
-5. *Best/Worst* case time complexity of *Get/Set* of a *Hash Map*?
-6. *Space complexity* of a *Hash Map*?
+4. *Removing* an element from an *Array* vs a *Linked List*?
+5. *Best/Worst* case time complexity of *Get/Set* of *Dicts*?
+6. *Space complexity* of a *Dict*?
 
 .. note::
 
@@ -463,6 +661,7 @@ That's all. Go and remember a list of:
 * Sorting algorithms (+ external sorting)
 * Common & some specialized data structures.
 * Typical algorithms like binary search.
+* **How much space common types use.**
 * Levenshtein, Graphs, Backtracking, ...
 * ...whatever is of interest to you.
 
@@ -512,7 +711,6 @@ by computing **performance metrics** and...
    Makes sense only for big projects. Many projects have
    their own set of scripts to do this. I'm not aware of a standard solution.
 
-
 ----
 
 Humans vs Magnitudes
@@ -520,22 +718,28 @@ Humans vs Magnitudes
 
 `Interactive Latency Visualization <https://colin-scott.github.io/personal_website/research/interactive_latency.html>`_
 
-**Optimize in this order:**
+**Optimize bottom up:**
 
-.. math::
+.. image:: images/cache_pyramid.jpg
+   :width: 100%
 
-    Network > Files > Memory > CPU
+
+.. note::
+
+    Network is far below that.
 
 ----
-
 
 Profiling
 =========
 
 .. code-block:: bash
 
-   # Profiling is throwaway-benchmarking:
-   $ hyperfine <some-command>
+    # Just the total time is already helpful.
+    $ time <some-command>
+
+    # Better: With statistics.
+    $ hyperfine <some-command>
 
 .. note::
 
@@ -550,11 +754,14 @@ Profiling
 
 ----
 
-Workshop Project
-================
+Sideproject
+===========
 
-| “What I cannot create, I do not understand”.
-| - Richard Feynman
+.. class:: quote
+
+    What I cannot create, I do not understand.
+
+| (Richard Feynman)
 
 .. note::
 
@@ -565,10 +772,13 @@ Workshop Project
 
    tacit = unausgeprochen
 
+   I will share a sort of reference implementation some time after the workshop. There is no one right
+   solution, but I will try to keep my solution well understandable and documented.
+
 ----
 
-TheStore: Memory only
-=====================
+Memory only
+===========
 
 .. code-block:: go
 
@@ -579,8 +789,13 @@ TheStore: Memory only
         for k, v := range kv {
             b.WriteString(fmt.Sprintf("%s=%s\n", k, v))
         }
+        return ioutil.WriteFile("/blah", b.Bytes(), 0644)
+    }
 
-        ioutil.WriteFile("/blah", b.Bytes(), 0644)
+    func load() *KV {
+        data, err := ioutil.ReadFile("/blah")
+        // ... parse file and assign to map ...
+        return kv
     }
 
 .. note::
@@ -596,10 +811,14 @@ TheStore: Memory only
 
 ----
 
-TheStore: Append only
+Append only
 =====================
 
 .. code-block:: bash
+
+    init() {
+        touch ./db
+    }
 
     set() {
         printf "%s=%s\n" "$1" "$2" >> ./db
@@ -621,7 +840,7 @@ TheStore: Append only
 
 ----
 
-TheStore: Indexed
+Indexed
 =================
 
 .. code-block:: go
@@ -662,8 +881,8 @@ TheStore: Indexed
 
 ----
 
-TheStore: Segments
-==================
+Segmented
+=========
 
 .. image:: diagrams/1_segments.svg
    :width: 100%
@@ -686,8 +905,8 @@ TheStore: Segments
 
 ----
 
-TheStore: Deletion
-==================
+Deletion
+========
 
 .. image:: images/tombstones.png
    :width: 50%
@@ -703,7 +922,7 @@ TheStore: Deletion
 
 ----
 
-TheStore: Range queries
+Range queries
 =======================
 
 .. image:: diagrams/1_lsm.svg
@@ -734,7 +953,7 @@ TheStore: Range queries
 
 ----
 
-TheStore: WAL 🐋
+WAL 🐋
 ================
 
 .. image:: diagrams/1_wal.svg
@@ -752,8 +971,19 @@ TheStore: WAL 🐋
 Fynn!
 =====
 
-🏁
+|
+
+.. class:: big-text
+
+    🏁
+
+|
 
 .. note::
 
    I left quite some details out, but that's something you should be able to figure out.
+
+
+.. class:: next-link
+
+    **Next:** `CPU <../2_cpu/index.html>`_: The secrets of the computer 🧠
