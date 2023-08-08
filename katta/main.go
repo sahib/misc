@@ -1,16 +1,15 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
-	"github.com/sahib/misc/katta/kv"
+	"github.com/sahib/misc/katta/cmd"
 )
 
 func main() {
-	s, err := kv.Open(os.Args[1], kv.DefaultOptions())
-	if err != nil {
-		panic(err)
+	if err := cmd.Run(os.Args); err != nil {
+		fmt.Fprintf(os.Stderr, "katta: %v", err)
+		os.Exit(1)
 	}
-
-	s.Set("key", []byte("value"))
 }

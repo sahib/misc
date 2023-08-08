@@ -10,6 +10,10 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
+const (
+	maxElements = 500
+)
+
 type Off int32
 
 // Index maps keys to offsets. It is supposed to be created for each segment.
@@ -24,14 +28,12 @@ type Index struct {
 }
 
 // TODO: Implement bloom filter to quickly check if a key is present.
-//       (to help skipping reading if we're sure it's not there,
-//        false positive are tolerable therefore)
-// TODO: Implement knob or fine-tuning to control how sparse the index is.
-// TODO: Functionality to merge two indices.
+//       Currently we scan through all segments even if a key is not
+//       in any of them. This can be mitigated by having a bloom filter
+//       that remembers those cases and is consulted before a Get.
 
 // New returns an empty index.
-func NewIndex(maxElements int) *Index {
-	btree.NewMap
+func NewIndex() *Index {
 	return &Index{
 		tree:        &btree.Map[string, Off]{},
 		maxElements: maxElements,

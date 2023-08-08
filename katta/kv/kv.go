@@ -1,10 +1,5 @@
 package kv
 
-// NOTE: High level TODOs:
-// TODO: Make wal reader seekable.
-// TODO: Convert btree.Map to segment.
-// TODO: Implement merge functionality.
-
 import (
 	"errors"
 	"fmt"
@@ -17,21 +12,18 @@ import (
 	"github.com/tidwall/btree"
 )
 
+// TODO: Range queries are not implemente at the moment.
+//       Have a try! What needs changing?
+
 var (
 	ErrKeyNotFound = errors.New("no such key")
 )
 
-type value struct {
-	IsTombstone bool
-	Data        []byte
-}
-
 type Store struct {
 	Registry *segment.Registry
 	WAL      *wal.Writer
-	Mem      *btree.Map[string, value]
-
-	walFD io.WriteCloser
+	Mem      *btree.Map[string, segment.Value]
+	walFD    *os.File
 
 	// Unpacked & validated options go here:
 	maxElemsInMemory int
@@ -59,6 +51,25 @@ func DefaultOptions() Options {
 	}
 }
 
+func walToMemTree(rs io.ReadSeeker) (*btree.Map[string, segment.Value], error) {
+	r := wal.NewReader(rs)
+	t := &btree.Map[string, segment.Value]{}
+
+	var entry wal.Entry
+	for r.Next(&entry) {
+		t.Set(entry.Key, segment.Value{
+			IsTombstone: entry.IsTombstone,
+			Data:        entry.Val,
+		})
+	}
+
+	if err := r.Err(); err != nil {
+		return nil, err
+	}
+
+	return t, nil
+}
+
 func Open(dir string, opts Options) (*Store, error) {
 	if err := opts.Validate(); err != nil {
 		return nil, fmt.Errorf("validation: %w", err)
@@ -74,16 +85,21 @@ func Open(dir string, opts Options) (*Store, error) {
 	walPath := filepath.Join(dir, "wal")
 	walFD, err := os.OpenFile(
 		walPath,
-		os.O_TRUNC|os.O_WRONLY|os.O_CREATE,
+		os.O_APPEND|os.O_RDWR|os.O_CREATE,
 		0600,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("wal: open: %w", err)
 	}
 
+	mem, err := walToMemTree(walFD)
+	if err != nil {
+		return nil, fmt.Errorf("wal: parse: %w", err)
+	}
+
 	return &Store{
 		Registry:         reg,
-		Mem:              &btree.Map[string, value]{},
+		Mem:              mem,
 		WAL:              wal.NewWriter(walFD),
 		walFD:            walFD,
 		maxElemsInMemory: opts.MaxElemsInMemory,
@@ -100,24 +116,30 @@ func (s *Store) Get(key string) ([]byte, error) {
 		return v.Data, nil
 	}
 
-	for _, segment := range s.Registry.List() {
-		lo, hi := segment.Index().Lookup(key)
-		r, err := segment.Reader()
+	for _, seg := range s.Registry.List() {
+		lo, hi := seg.Index().Lookup(key)
+		r, err := seg.Reader()
 		if err != nil {
 			return nil, fmt.Errorf("read: %w", err)
 		}
 
-		if err := r.Seek(lo); err != nil {
+		if _, err := r.Seek(int64(lo), io.SeekStart); err != nil {
 			return nil, fmt.Errorf("seek: %w", err)
 		}
 
-		for r.Next() && r.Pos() < hi {
-			if r.Key() == key {
-				if r.IsTombstone() {
+		var entry wal.Entry
+		for r.Next(&entry) && segment.Off(entry.Pos) < hi {
+			// Find the right entry, as the index is range
+			// based and only gets you near the right entry.
+			if entry.Key == key {
+				if entry.IsTombstone {
+					// The entry is there, but it's marked as deleted.
+					// Act as if it was never there.
 					return nil, ErrKeyNotFound
 				}
 
-				return r.Val(), nil
+				// TODO: scope of entry.Val? probably needs to be copied.
+				return entry.Val, nil
 			}
 		}
 
@@ -129,19 +151,25 @@ func (s *Store) Get(key string) ([]byte, error) {
 	return nil, ErrKeyNotFound
 }
 
-func (s *Store) clearMemtable() error {
-	seg := s.Registry.NewSegment()
-	if err := s.Mem.WriteToSegment(seg.Writer()); err != nil {
+func (s *Store) flushToSegment() error {
+	_, err := s.Registry.Add(s.Mem)
+	if err != nil {
 		return err
 	}
 
 	// Clear old memtable and start fresh:
-	s.Mem = &btree.Map[string, value]{}
+	s.Mem = &btree.Map[string, segment.Value]{}
+
+	// we did write a segment with the old data to disk.
+	// time to clear the WAL as the values there are stale.
+	if err := s.walFD.Truncate(0); err != nil {
+		return fmt.Errorf("wal: truncate: %w", err)
+	}
+
 	return nil
 }
 
-func (s *Store) set(key string, val value) error {
-	// TODO: Make a proper distinction between tombstones here.
+func (s *Store) set(key string, val segment.Value) error {
 	if err := s.WAL.Append(key, val.Data); err != nil {
 		return fmt.Errorf("wal: %w", err)
 	}
@@ -151,15 +179,15 @@ func (s *Store) set(key string, val value) error {
 		return nil
 	}
 
-	return s.clearMemtable()
+	return s.flushToSegment()
 }
 
 func (s *Store) Set(key string, val []byte) error {
-	return s.set(key, value{Data: val})
+	return s.set(key, segment.Value{Data: val})
 }
 
 func (s *Store) Del(key string) error {
-	return s.set(key, value{IsTombstone: true})
+	return s.set(key, segment.Value{IsTombstone: true})
 }
 
 func (s *Store) Close() error {

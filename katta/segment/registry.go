@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/tidwall/btree"
 	"golang.org/x/exp/slog"
 )
 
@@ -29,7 +30,7 @@ func LoadDir(dir string) (*Registry, error) {
 			continue
 		}
 
-		segment, err := NewSegment(dir, ID(segmentID))
+		segment, err := LoadSegment(dir, ID(segmentID))
 		if err != nil {
 			return nil, err
 		}
@@ -44,21 +45,28 @@ func LoadDir(dir string) (*Registry, error) {
 	}, nil
 }
 
-func (r *Registry) List() []Segment {
-	segments := make([]Segment, 0, len(r.segments))
+func (r *Registry) List() []*Segment {
+	segments := make([]*Segment, 0, len(r.segments))
 	for _, segment := range r.segments {
-		segments = append(segments, *segment)
+		segments = append(segments, segment)
 	}
 
 	return segments
 }
 
-func (r *Registry) NewSegment() *Segment {
+func (r *Registry) Dir() string {
+	return r.dir
+}
+
+func (r *Registry) Add(tree *btree.Map[string, Value]) (*Segment, error) {
 	id := r.NextID()
-	// TODO: Do not load index here - there is none yet.
-	seg := NewSegment(r.dir, id)
+	seg, err := FromTree(r.dir, id, tree)
+	if err != nil {
+		return nil, err
+	}
+
 	r.segments[id] = seg
-	return seg
+	return seg, nil
 }
 
 func (r *Registry) ByID(id ID) (*Segment, bool) {
@@ -71,4 +79,8 @@ func (r *Registry) ByID(id ID) (*Segment, bool) {
 func (r *Registry) NextID() ID {
 	r.idSeq++
 	return ID(r.idSeq)
+}
+
+func (r *Registry) Drop(id ID) {
+	delete(r.segments, id)
 }

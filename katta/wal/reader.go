@@ -8,26 +8,39 @@ import (
 	"github.com/sahib/misc/katta/wal/waldisk"
 )
 
-type Reader struct {
-	// TODO: Make this is a io.ReadSeeker.
-	r       io.Reader
-	decoder *capnp.Decoder
+// TODO: This reader can likely be made much more efficient using mmap!
 
-	// iteration vars:
-	err         error
-	key         string
-	val         []byte
-	isTombstone bool
+type Entry struct {
+	Pos         int64
+	Key         string
+	Val         []byte
+	IsTombstone bool
 }
 
-func NewReader(r io.Reader) *Reader {
+type Reader struct {
+	r       io.ReadSeeker
+	decoder *capnp.Decoder
+	err     error
+}
+
+func NewReader(r io.ReadSeeker) *Reader {
 	return &Reader{
 		r:       r,
 		decoder: capnp.NewPackedDecoder(r),
 	}
 }
 
-func (r *Reader) Next() bool {
+func (r *Reader) Pos() (int64, error) {
+	// TODO: Possibly optimize with posReadSeeker above.
+	// TODO: returning an error here is not nice.
+	return r.r.Seek(0, io.SeekCurrent)
+}
+
+func (r *Reader) Seek(offset int64, whence int) (int64, error) {
+	return r.r.Seek(offset, whence)
+}
+
+func (r *Reader) Next(e *Entry) bool {
 	msg, err := r.decoder.Decode()
 	if err == io.EOF {
 		// no data left in stream.
@@ -45,26 +58,16 @@ func (r *Reader) Next() bool {
 		return false
 	}
 
-	r.key, _ = entry.Key()
-	r.val, _ = entry.Val()
-	r.isTombstone = !entry.HasVal()
+	e.Key, _ = entry.Key()
+	e.Val, _ = entry.Val()
+	e.IsTombstone = !entry.HasVal()
+	e.Pos, _ = r.Pos()
+
 	return true
 }
 
 func (r *Reader) Err() error {
 	return r.err
-}
-
-func (r *Reader) Key() string {
-	return r.key
-}
-
-func (r *Reader) Val() []byte {
-	return r.val
-}
-
-func (r *Reader) IsTombstone() bool {
-	return r.isTombstone
 }
 
 func (r *Reader) Close() error {

@@ -8,15 +8,15 @@ import (
 )
 
 type Writer struct {
-	w       io.Writer
+	ws      io.WriteSeeker
 	encoder *capnp.Encoder
 	arena   []byte
 }
 
-func NewWriter(w io.Writer) *Writer {
-	encoder := capnp.NewPackedEncoder(w)
+func NewWriter(ws io.WriteSeeker) *Writer {
+	encoder := capnp.NewPackedEncoder(ws)
 	return &Writer{
-		w:       w,
+		ws:      ws,
 		encoder: encoder,
 		arena:   make([]byte, 4096),
 	}
@@ -38,6 +38,11 @@ func (w *Writer) Append(key string, val []byte) error {
 	return w.writeEntry(key, val)
 }
 
-func (w *Writer) AppendTombstone(key string) error {
-	return w.writeEntry(key, nil)
+
+func (w *Writer) Pos() int64 {
+	// TODO: That's a sucky way to tell the current position
+	// as it involves doing an additionaly syscall all the time.
+	// There must be a better way!
+	off, _ := w.ws.Seek(0, io.SeekCurrent)
+	return off
 }
