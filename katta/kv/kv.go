@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/sahib/misc/katta/index"
 	"github.com/sahib/misc/katta/segment"
 	"github.com/sahib/misc/katta/wal"
 	"github.com/tidwall/btree"
@@ -106,6 +107,11 @@ func Open(dir string, opts Options) (*Store, error) {
 	}, nil
 }
 
+// TODO: A bloom filter could be used to cache "not found" errors.
+//       If a key does not exist, we still have to go over all indexes
+//       and check with I/O if they key is there. That's expensive and
+//       a bloom filter could cache a large chunk of those cases.
+
 func (s *Store) Get(key string) ([]byte, error) {
 	if v, ok := s.Mem.Get(key); ok {
 		if v.IsTombstone {
@@ -118,6 +124,10 @@ func (s *Store) Get(key string) ([]byte, error) {
 
 	for _, seg := range s.Registry.List() {
 		lo, hi := seg.Index().Lookup(key)
+		if lo == index.NoOff || hi == index.NoOff {
+			continue
+		}
+
 		r, err := seg.Reader()
 		if err != nil {
 			return nil, fmt.Errorf("read: %w", err)
@@ -128,7 +138,7 @@ func (s *Store) Get(key string) ([]byte, error) {
 		}
 
 		var entry wal.Entry
-		for r.Next(&entry) && segment.Off(entry.Pos) < hi {
+		for r.Next(&entry) && index.Off(entry.Pos) < hi {
 			// Find the right entry, as the index is range
 			// based and only gets you near the right entry.
 			if entry.Key == key {

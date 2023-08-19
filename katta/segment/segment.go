@@ -5,21 +5,24 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/sahib/misc/katta/index"
 	"github.com/sahib/misc/katta/wal"
 	"github.com/tidwall/btree"
 )
 
+// ID references a single segment
 type ID int32
 
+// Value is a stored value in a segment
 type Value struct {
-	IsTombstone bool
 	Data        []byte
+	IsTombstone bool
 }
 
 type Segment struct {
 	id  ID
 	dir string
-	idx *Index
+	idx *index.Index
 }
 
 func basePath(dir string, id ID) string {
@@ -45,7 +48,7 @@ func LoadSegment(dir string, id ID) (*Segment, error) {
 
 	defer idxFd.Close()
 
-	idx := NewIndex()
+	idx := index.New()
 	if err := idx.Unmarshal(idxFd); err != nil {
 		return nil, err
 	}
@@ -58,7 +61,7 @@ func LoadSegment(dir string, id ID) (*Segment, error) {
 }
 
 func FromTree(dir string, id ID, tree *btree.Map[string, Value]) (*Segment, error) {
-	idx := NewIndex()
+	idx := index.New()
 	seg := &Segment{
 		id:  id,
 		dir: dir,
@@ -82,9 +85,10 @@ func FromTree(dir string, id ID, tree *btree.Map[string, Value]) (*Segment, erro
 		key := iter.Key()
 		val := iter.Value()
 		pos := w.Pos()
-		idx.Set(key, Off(pos))
+		idx.Set(key, index.Off(pos))
 
 		// NOTE:: If tombstone, then val.Data is empty.
+		// TODO: Do we really need tombstone as bool?
 		if err := w.Append(key, val.Data); err != nil {
 			return nil, err
 		}
@@ -93,7 +97,7 @@ func FromTree(dir string, id ID, tree *btree.Map[string, Value]) (*Segment, erro
 	// make sure we do not write all of the index,
 	// but only parts of it. Could be also done as part
 	// of the loop above.
-	idx.sparsify()
+	idx.Sparsify(1000)
 
 	idxFd, err := os.OpenFile(
 		indexPath(dir, id),
@@ -113,7 +117,7 @@ func FromTree(dir string, id ID, tree *btree.Map[string, Value]) (*Segment, erro
 	return seg, nil
 }
 
-func (s *Segment) Index() *Index {
+func (s *Segment) Index() *index.Index {
 	return s.idx
 }
 
@@ -138,6 +142,6 @@ func (s *Segment) ID() ID {
 	return s.id
 }
 
-func (s *Segment) UpdateIndex(idx *Index) {
+func (s *Segment) UpdateIndex(idx *index.Index) {
 	s.idx = idx
 }

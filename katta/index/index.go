@@ -1,66 +1,39 @@
-package segment
+package index
 
 import (
 	"fmt"
 	"io"
 
 	"capnproto.org/go/capnp/v3"
-	"github.com/sahib/misc/katta/segment/indexdisk"
+	"github.com/sahib/misc/katta/index/indexdisk"
 	"github.com/tidwall/btree"
-	"golang.org/x/exp/constraints"
 )
+
+// Off is a offset of a value in the index
+type Off int32
 
 const (
-	maxElements = 500
+	// NoOff is returned by index lookup if no such key exists.
+	NoOff = Off(-1)
 )
-
-type Off int32
 
 // Index maps keys to offsets. It is supposed to be created for each segment.
 // The index expects that all keys are feed to the index. The implementation
 // is sparse, i.e. not all keys are stored in-memory, but only a small fraction
 // of them. The Lookup function will return a range therefore.
 type Index struct {
-	tree        *btree.Map[string, Off]
-	maxElements int
-	maxKnown    Off
-	minKnown    Off
+	tree *btree.Map[string, Off]
 }
-
-// TODO: Implement bloom filter to quickly check if a key is present.
-//       Currently we scan through all segments even if a key is not
-//       in any of them. This can be mitigated by having a bloom filter
-//       that remembers those cases and is consulted before a Get.
 
 // New returns an empty index.
-func NewIndex() *Index {
+func New() *Index {
 	return &Index{
-		tree:        &btree.Map[string, Off]{},
-		maxElements: maxElements,
+		tree: &btree.Map[string, Off]{},
 	}
-}
-
-func min[T constraints.Ordered](a, b T) T {
-	if a < b {
-		return a
-	}
-
-	return b
-}
-
-func max[T constraints.Ordered](a, b T) T {
-	if a < b {
-		return b
-	}
-
-	return a
 }
 
 func (i *Index) Set(key string, off Off) {
 	i.tree.Set(key, off)
-
-	i.minKnown = min(off, i.minKnown)
-	i.maxKnown = max(off, i.maxKnown)
 }
 
 func (i *Index) Delete(key string) {
@@ -96,7 +69,9 @@ func (i *Index) Lookup(key string) (Off, Off) {
 			return hi, hi
 		}
 	} else {
-		hi = i.maxKnown
+		// all keys in our index are smaller than the key
+		// that was searched for.
+		return NoOff, NoOff
 	}
 
 	if iter.Prev() {
@@ -104,33 +79,54 @@ func (i *Index) Lookup(key string) (Off, Off) {
 		// as above applies, as this might not happen
 		lo = iter.Value()
 	} else {
-		lo = i.minKnown
+		// tree is empty or no previous value exists.
+		// value is out of range of this index.
+		return NoOff, NoOff
 	}
 
 	return lo, hi
 }
 
-func (i *Index) sparsify() {
-	l := i.tree.Len()
-	if l < i.maxElements {
+// Sparsify reduces the elements in the index to something
+// close to `maxElems`. It will leave the min and max value intact.
+func (i *Index) Sparsify(maxElems int) {
+	if maxElems < 0 {
 		return
 	}
 
-	getRidOffTotal := l - i.maxElements
+	l := i.tree.Len()
+	if l < maxElems {
+		return
+	}
+
+	getRidOffTotal := l - maxElems
 	getRidOneEvery := float64(l) / float64(getRidOffTotal)
-	one := 1.0 / float64(l)
 
 	count := 0.0
+
+	// in Lookup() we rely on the min and max value
+	// being present in the tree. Take care to not delete them.
+	_, minOff, _ := i.tree.Min()
+	_, maxOff, _ := i.tree.Max()
+
+	deleteKeys := make([]string, 0, getRidOffTotal)
 	i.tree.ScanMut(func(key string, val Off) bool {
-		count += one
-		if count >= getRidOneEvery {
-			i.tree.Delete(key)
+		count += 1
+		if count >= getRidOneEvery && val != minOff && val != maxOff {
+			count -= getRidOneEvery
+			deleteKeys = append(deleteKeys, key)
 		}
 
 		return true
 	})
+
+	// NOTE: Deleting while iterating leads to funny results.
+	for _, key := range deleteKeys {
+		i.tree.Delete(key)
+	}
 }
 
+// Marshal writes index to `w` as a compact binary representation.
 func (i *Index) Marshal(w io.Writer) error {
 	encoder := capnp.NewPackedEncoder(w)
 	arena := make([]byte, 4096)
@@ -158,6 +154,8 @@ func (i *Index) Marshal(w io.Writer) error {
 	return outErr
 }
 
+// Unmarshal loads index from the data in `r`, if
+// it has been marshalled with Marshal() before.
 func (i *Index) Unmarshal(r io.Reader) error {
 	decoder := capnp.NewPackedDecoder(r)
 
@@ -181,8 +179,6 @@ func (i *Index) Unmarshal(r io.Reader) error {
 		}
 
 		off := Off(entry.Off())
-		i.minKnown = min(off, i.minKnown)
-		i.maxKnown = max(off, i.maxKnown)
 		tree.Set(key, off)
 	}
 

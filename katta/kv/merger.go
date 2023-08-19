@@ -9,6 +9,7 @@ import (
 	"sort"
 	"time"
 
+	"github.com/sahib/misc/katta/index"
 	"github.com/sahib/misc/katta/segment"
 	"github.com/sahib/misc/katta/wal"
 	"golang.org/x/exp/slog"
@@ -113,7 +114,7 @@ func (m *Merger) merge(segs ...*segment.Segment) error {
 	defer segFd.Close()
 
 	mergedWriter := wal.NewWriter(segFd)
-	mergedIdx := segment.NewIndex()
+	mergedIdx := index.New()
 
 	steps := steps(make([]step, 0, len(segs)))
 	for _, seg := range segs {
@@ -159,7 +160,7 @@ func (m *Merger) merge(segs ...*segment.Segment) error {
 				return fmt.Errorf("merge: write: %w", err)
 			}
 
-			mergedIdx.Set(steps[0].Entry.Key, segment.Off(posBefore))
+			mergedIdx.Set(steps[0].Entry.Key, index.Off(posBefore))
 		}
 
 		dedupedEntry = currEntry

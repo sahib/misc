@@ -457,6 +457,28 @@ In a reproducible environment.
 
 ----
 
+Example: Go
+===========
+
+.. code-block:: go
+
+    func BenchmarkFoo(b *testing.B) {
+        possiblyExpensiveSetup()
+        b.ResetTimer()
+        for i := 0; i < b.N; i++ {
+            functionUnderTest()
+        }
+    }
+
+
+.. note::
+
+   Example taken from here: https://www.p99conf.io/2023/08/16/how-to-write-accurate-benchmarks-in-go/
+
+   (it also has some good tips about many accidents that might happen, we'll see some of them later)
+
+----
+
 How to optimize?
 ================
 

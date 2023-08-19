@@ -24,7 +24,7 @@ func LoadDir(dir string) (*Registry, error) {
 	segmentsByID := make(map[ID]*Segment, len(matches))
 	for _, match := range matches {
 		segmentName := strings.TrimSuffix(filepath.Base(match), ".seg")
-		segmentID, err := strconv.Atoi(segmentName)
+		segmentID, err := strconv.ParseInt(segmentName, 16, 64)
 		if err != nil {
 			slog.Warn("bad segment name", "name", segmentName, "err", err)
 			continue
@@ -81,6 +81,8 @@ func (r *Registry) NextID() ID {
 	return ID(r.idSeq)
 }
 
+// Drop makes the registry forget about a segment
+// that was previously deleted (as done by merging)
 func (r *Registry) Drop(id ID) {
 	delete(r.segments, id)
 }
