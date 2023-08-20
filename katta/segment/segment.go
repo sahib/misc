@@ -97,7 +97,7 @@ func FromTree(dir string, id ID, tree *btree.Map[string, Value]) (*Segment, erro
 	// make sure we do not write all of the index,
 	// but only parts of it. Could be also done as part
 	// of the loop above.
-	idx.Sparsify(1000)
+	idx.Sparsify(100)
 
 	idxFd, err := os.OpenFile(
 		indexPath(dir, id),

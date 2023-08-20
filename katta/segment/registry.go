@@ -1,15 +1,22 @@
 package segment
 
 import (
+	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
+	"sync"
 
+	"github.com/sahib/misc/katta/index"
 	"github.com/tidwall/btree"
 	"golang.org/x/exp/slog"
 )
 
+// Registry takes care of collecting all known segments
+// and giving easy access to them.
 type Registry struct {
+	mu       sync.Mutex
 	dir      string
 	idSeq    int
 	segments map[ID]*Segment
@@ -46,20 +53,38 @@ func LoadDir(dir string) (*Registry, error) {
 }
 
 func (r *Registry) List() []*Segment {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
 	segments := make([]*Segment, 0, len(r.segments))
 	for _, segment := range r.segments {
-		segments = append(segments, segment)
+		// copy segment here to caller cannot modify it.
+		segments = append(segments, &Segment{
+			id:  segment.id,
+			dir: segment.dir,
+			idx: segment.idx,
+		})
 	}
+
+	sort.Slice(segments, func(i, j int) bool {
+		return segments[i].id < segments[j].id
+	})
 
 	return segments
 }
 
 func (r *Registry) Dir() string {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
 	return r.dir
 }
 
 func (r *Registry) Add(tree *btree.Map[string, Value]) (*Segment, error) {
-	id := r.NextID()
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	id := r.nextID()
 	seg, err := FromTree(r.dir, id, tree)
 	if err != nil {
 		return nil, err
@@ -70,19 +95,43 @@ func (r *Registry) Add(tree *btree.Map[string, Value]) (*Segment, error) {
 }
 
 func (r *Registry) ByID(id ID) (*Segment, bool) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
 	seg, ok := r.segments[id]
 	return seg, ok
 }
 
-// NextID returns the next ID for a segment.
+// nextID returns the next ID for a segment.
 // Subsequent calls produce different IDs.
-func (r *Registry) NextID() ID {
+func (r *Registry) nextID() ID {
 	r.idSeq++
 	return ID(r.idSeq)
 }
 
-// Drop makes the registry forget about a segment
-// that was previously deleted (as done by merging)
-func (r *Registry) Drop(id ID) {
-	delete(r.segments, id)
+// Squash confirms a successful merge of several segments to one.
+// The `id` is the id of the merged segment, newIdx the newly generated
+// inde and drops contains the ids of the segments that are now
+// not required anymore.
+func (r *Registry) Squash(id ID, newIdx *index.Index, drops []ID) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	// Update index of the newly merged one.
+	if seg, ok := r.segments[id]; ok {
+		seg.idx = newIdx
+	}
+
+	// Drop all other segments from our knowledge and fs:
+	var lastErr error
+	for _, dropID := range drops {
+		segPath := segmentPath(r.dir, dropID)
+		if err := os.Remove(segPath); err != nil {
+			lastErr = err
+		}
+
+		delete(r.segments, dropID)
+	}
+
+	return lastErr
 }

@@ -185,3 +185,7 @@ func (i *Index) Unmarshal(r io.Reader) error {
 	i.tree = &tree
 	return nil
 }
+
+func (i *Index) Tree() *btree.Map[string, Off] {
+	return i.tree
+}

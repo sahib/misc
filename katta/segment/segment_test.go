@@ -6,7 +6,6 @@ import (
 
 	"github.com/sahib/misc/katta/wal"
 	"github.com/stretchr/testify/require"
-	"github.com/tidwall/btree"
 )
 
 func TestSegmentPaths(t *testing.T) {
@@ -21,18 +20,9 @@ func TestSegmentFromTree(t *testing.T) {
 	require.NoError(t, err)
 	defer os.RemoveAll(dir)
 
-	tree := &btree.Map[string, Value]{}
-	for off := Off(0); off < 26; off++ {
-		key := string([]byte{byte('a' + off)})
-		val := Value{Data: []byte("val_" + key)}
-		tree.Set(key, val)
-	}
-
-	seg, err := FromTree(dir, 0x17, tree)
-	require.NoError(t, err)
-
-	ks := seg.Index().tree.Keys()
-	for off := Off(0); off < 26; off++ {
+	seg := ABCSegment(t, dir, 0x17)
+	ks := seg.Index().Tree().Keys()
+	for off := 0; off < 26; off++ {
 		key := string([]byte{byte('a' + off)})
 		require.Equal(t, key, ks[off])
 	}

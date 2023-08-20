@@ -1,6 +1,7 @@
-package kv
+package db
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -21,10 +22,12 @@ var (
 )
 
 type Store struct {
-	Registry *segment.Registry
-	WAL      *wal.Writer
+	registry *segment.Registry
+	merger   *Merger
+	wal      *wal.Writer
 	Mem      *btree.Map[string, segment.Value]
 	walFD    *os.File
+	cancel   func()
 
 	// Unpacked & validated options go here:
 	maxElemsInMemory int
@@ -34,13 +37,11 @@ type Options struct {
 	// MaxElemsInMemory is the number of elements that
 	// maybe held at most at the same time in memory.
 	MaxElemsInMemory int
-
-	// TODO: Pack some memory related options here.
 }
 
 func (o Options) Validate() error {
-	if o.MaxElemsInMemory <= 100 {
-		return fmt.Errorf("MaxElemsInMemory must be at least 100")
+	if o.MaxElemsInMemory < 10 {
+		return fmt.Errorf("MaxElemsInMemory must be at least 10")
 	}
 
 	return nil
@@ -82,7 +83,11 @@ func Open(dir string, opts Options) (*Store, error) {
 		return nil, fmt.Errorf("registry: %w", err)
 	}
 
-	// TODO: Load & restore old WAL here!
+	if err := os.MkdirAll(segmentDir, 0700); err != nil {
+		return nil, fmt.Errorf("wal-mkdir: %w", err)
+	}
+
+	// Load and restore old WAL here
 	walPath := filepath.Join(dir, "wal")
 	walFD, err := os.OpenFile(
 		walPath,
@@ -98,11 +103,17 @@ func Open(dir string, opts Options) (*Store, error) {
 		return nil, fmt.Errorf("wal: parse: %w", err)
 	}
 
+	ctx, cancel := context.WithCancel(context.Background())
+	merger := NewMerger(ctx, reg)
+	merger.Start()
+
 	return &Store{
-		Registry:         reg,
+		registry:         reg,
+		merger:           merger,
 		Mem:              mem,
-		WAL:              wal.NewWriter(walFD),
+		wal:              wal.NewWriter(walFD),
 		walFD:            walFD,
+		cancel:           cancel,
 		maxElemsInMemory: opts.MaxElemsInMemory,
 	}, nil
 }
@@ -122,7 +133,7 @@ func (s *Store) Get(key string) ([]byte, error) {
 		return v.Data, nil
 	}
 
-	for _, seg := range s.Registry.List() {
+	for _, seg := range s.registry.List() {
 		lo, hi := seg.Index().Lookup(key)
 		if lo == index.NoOff || hi == index.NoOff {
 			continue
@@ -138,7 +149,7 @@ func (s *Store) Get(key string) ([]byte, error) {
 		}
 
 		var entry wal.Entry
-		for r.Next(&entry) && index.Off(entry.Pos) < hi {
+		for r.Next(&entry) && index.Off(entry.Pos) <= hi {
 			// Find the right entry, as the index is range
 			// based and only gets you near the right entry.
 			if entry.Key == key {
@@ -148,7 +159,9 @@ func (s *Store) Get(key string) ([]byte, error) {
 					return nil, ErrKeyNotFound
 				}
 
-				// TODO: scope of entry.Val? probably needs to be copied.
+				// TODO: Think about the scope of the returned value here.
+				//       How long does the memory live? Is it overwritten? If yes, when?
+				//       Can the caller take a reference of it and use it some time later?
 				return entry.Val, nil
 			}
 		}
@@ -162,7 +175,7 @@ func (s *Store) Get(key string) ([]byte, error) {
 }
 
 func (s *Store) flushToSegment() error {
-	_, err := s.Registry.Add(s.Mem)
+	_, err := s.registry.Add(s.Mem)
 	if err != nil {
 		return err
 	}
@@ -180,7 +193,7 @@ func (s *Store) flushToSegment() error {
 }
 
 func (s *Store) set(key string, val segment.Value) error {
-	if err := s.WAL.Append(key, val.Data); err != nil {
+	if err := s.wal.Append(key, val.Data); err != nil {
 		return fmt.Errorf("wal: %w", err)
 	}
 
@@ -200,7 +213,14 @@ func (s *Store) Del(key string) error {
 	return s.set(key, segment.Value{IsTombstone: true})
 }
 
+// Merge runs the segment merging process explitly
+func (s *Store) Merge() (int, error) {
+	return s.merger.Run()
+}
+
 func (s *Store) Close() error {
+	s.merger.Stop()
+	s.cancel()
 	s.walFD.Close()
 	return nil
 }

@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/sahib/misc/katta/kv"
+	"github.com/sahib/misc/katta/db"
 	"github.com/urfave/cli"
 )
 
-func withStore(fn func(ctx *cli.Context, store *kv.Store) error) cli.ActionFunc {
+func withStore(fn func(ctx *cli.Context, store *db.Store) error) cli.ActionFunc {
 	return func(ctx *cli.Context) error {
 		dir := ctx.GlobalString("db")
-		store, err := kv.Open(dir, kv.DefaultOptions())
+		store, err := db.Open(dir, db.DefaultOptions())
 		if err != nil {
 			return err
 		}
@@ -47,30 +47,33 @@ func Run(args []string) error {
 			Aliases: []string{"g"},
 			Usage:   "Get one or several keys",
 			Action:  withStore(handleGet),
-		},
-		{
+		}, {
 			Name:    "set",
 			Aliases: []string{"s"},
 			Usage:   "Set one or a several key-value pairs",
 			Action:  withStore(handleSet),
-		},
-		{
+		}, {
 			Name:    "del",
 			Aliases: []string{"d"},
 			Usage:   "Delete one or several keys",
 			Action:  withStore(handleDel),
+		}, {
+			Name:    "merge",
+			Aliases: []string{"m"},
+			Usage:   "Start the merge process manually",
+			Action:  withStore(handleMerge),
 		},
 	}
 
 	return app.Run(args)
 }
 
-func handleGet(ctx *cli.Context, store *kv.Store) error {
+func handleGet(ctx *cli.Context, store *db.Store) error {
 	args := ctx.Args()
 	for idx := 0; idx < len(args); idx++ {
 		key := args[idx]
 		data, err := store.Get(key)
-		if err != nil && err != kv.ErrKeyNotFound {
+		if err != nil && err != db.ErrKeyNotFound {
 			return err
 		}
 
@@ -80,9 +83,9 @@ func handleGet(ctx *cli.Context, store *kv.Store) error {
 	return nil
 }
 
-func handleSet(ctx *cli.Context, store *kv.Store) error {
+func handleSet(ctx *cli.Context, store *db.Store) error {
 	args := ctx.Args()
-	if len(args)%2 == 0 {
+	if len(args)%2 != 0 {
 		return fmt.Errorf("args have to be KEY1 VAL1 KEY2 VAL2...")
 	}
 
@@ -97,7 +100,7 @@ func handleSet(ctx *cli.Context, store *kv.Store) error {
 	return nil
 }
 
-func handleDel(ctx *cli.Context, store *kv.Store) error {
+func handleDel(ctx *cli.Context, store *db.Store) error {
 	args := ctx.Args()
 	for idx := 0; idx < len(args); idx++ {
 		key := args[idx]
@@ -107,4 +110,21 @@ func handleDel(ctx *cli.Context, store *kv.Store) error {
 	}
 
 	return nil
+}
+
+func handleMerge(ctx *cli.Context, store *db.Store) error {
+	var round int
+	for {
+		merged, err := store.Merge()
+		if err != nil {
+			return err
+		}
+
+		if merged == 0 {
+			return nil
+		}
+
+		round++
+		fmt.Printf("merged %d segments in %d round", merged, round)
+	}
 }

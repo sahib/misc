@@ -26,12 +26,14 @@ type Reader struct {
 func NewReader(r io.ReadSeeker) *Reader {
 	return &Reader{
 		r:       r,
-		decoder: capnp.NewPackedDecoder(r),
+		decoder: capnp.NewDecoder(r),
 	}
 }
 
 func (r *Reader) Pos() (int64, error) {
-	// TODO: Possibly optimize with posReadSeeker above.
+	// TODO: Possibly optimize with an index that is
+	//       incremented on every Read/Seek. This would
+	//       avoid a lot of syscalls!
 	// TODO: returning an error here is not nice.
 	return r.r.Seek(0, io.SeekCurrent)
 }
@@ -41,6 +43,9 @@ func (r *Reader) Seek(offset int64, whence int) (int64, error) {
 }
 
 func (r *Reader) Next(e *Entry) bool {
+	// position needs to be determined before reading
+	e.Pos, _ = r.Pos()
+
 	msg, err := r.decoder.Decode()
 	if err == io.EOF {
 		// no data left in stream.
@@ -61,7 +66,6 @@ func (r *Reader) Next(e *Entry) bool {
 	e.Key, _ = entry.Key()
 	e.Val, _ = entry.Val()
 	e.IsTombstone = !entry.HasVal()
-	e.Pos, _ = r.Pos()
 
 	return true
 }
