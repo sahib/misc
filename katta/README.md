@@ -4,6 +4,8 @@ This is a small key-value store focused on small memory footprint (in the sense
 that memory does not increase linear with the amount of data). The tradeoff between
 CPU usage and memory usage can be configured with some knobs.
 
+![a katta lemur](https://todaywetravel.de/wp-content/uploads/2017/10/madagaskar-lemuren-anja-3.jpg)
+
 ## Overview
 
 - Implements ``Get()``, ``Set()`` and ``Del()``.
@@ -14,7 +16,7 @@ CPU usage and memory usage can be configured with some knobs.
 
 ## Structure
 
-See [https://sahib.github.io/misc/performance/slides/1_intro/index.html#/step-33](my performance workshop) for an intro on how LSM based key-value stores work.
+See [my performance workshop](https://sahib.github.io/misc/performance/slides/1_intro/index.html#/step-33) for an intro on how LSM based key-value stores work.
 
 * ``wal/``: Contains a very bare-bone implementation of a Write-Ahead-Log (WAL) and it's binary
   representation on disk. Cap'n'Proto is used for marshalling and unmarshalling. Since this is
