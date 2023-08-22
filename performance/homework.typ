@@ -26,10 +26,12 @@ of your store can be whatever you like it to be as long it fulfills the
 requirements below. A basic LSM (Log-Structured-Merge-Tree), as discussed in
 the introductionary slides, is a good and performant choice though.
 
-_Deadline:_ You should prepare a basic prototype until the first workshop
-about CPU internals. After every workshop today you should have some ideas how
-to extend or improve your implementation.
-Try to see if you can incorparate some knowledge from the slides into your implementation:
+*Deadline:* Ideally you have a rough sketch until the first workshop about CPU
+internals. If you did not find the time then don't worry and work in your own
+speed. I'm not your judge, just hoping to guide you a bit. After every workshop
+today you should have some ideas how to extend or improve your implementation.
+Try to see if you can incorparate some knowledge from the slides into your
+implementation:
 
 #align(center)[
     https://sahib.github.io/misc/performance/slides/0_toc/index.html
@@ -45,7 +47,7 @@ Try to see if you can incorparate some knowledge from the slides into your imple
 
 === CPU Tasks:
 
-+ Write benchmarks to measure performance of #go("Get()") & #go("Set()")
++ Write benchmarks to measure performance of #go("Get()") & #go("Set()").
 + Profile your program using a profiler and identify bottlenecks.
 + Try to fix at least one of those bottlenecks.
 + Run your benchmarks again and see if it improved.
@@ -55,7 +57,7 @@ Try to see if you can incorparate some knowledge from the slides into your imple
 + Measure the number and amount of allocation.
 + See where the allocations come from and check if you can reduce them.
 + Measure again and repeat until you identified most allocations.
-+ Bonus: Implement a sorted index to lower the number of keys you can keep in memory.
++ Bonus: Implement a sparse index to lower the number of keys you can keep in memory.
 
 === I/O & Syscalls Tasks:
 
@@ -68,16 +70,16 @@ Try to see if you can incorparate some knowledge from the slides into your imple
 
 + Provide an asynchronous API for your store so users do not block.
 + Implement (segment) compression, with background I/O.
-+ Do the IO in background.
-+ Queue up writes to the database.
-+ Try to fetch keys in parallel.
++ Try to move some I/O to the background and re-use readers.
++ Batch up writes to the database to make it more efficient.
++ Use a race detector to check your code.
 
 === Optional tasks for the motivated:
 
-+ Implement segment compression
++ Implement segment compression.
 + Implement »#go("Delete(key) error")« using tombstones.
 + Make sure #go("Get()") performs well if the key does _not_ exist.
-+ Implement transactions (write several values or none at all).
++ Implement atomic transactions (write several values together or none at all).
 + Implement »#go("Snapshot(w io.Writer) error")«, which streams a _consistent
   copy_ of the database to `w` (which might be stdout or a file or a socket...). This can be used as backup.
 + Implement efficient range queries ($O(log n)$) that can list all keys with a certain prefix
@@ -89,7 +91,7 @@ This page contains some infos about how Log-structured-Mergetree (LSM) based
 Key-Value-Stores are structured. The knowledge here is also part of the
 introductionary slides (see last part of the slide deck). This page should serve as
 reference therefore. *Note:* This is only one of the possible implementations of a key-value
-store - there are many variations, often differing only in a few details.
+store. There are many other variations, often differing only in a few details.
 
 *Tip 1:* Before you settle on a certain design you should think about what
 workload you want to optimize for. Is it write-heavy? Do you want to be
@@ -101,6 +103,10 @@ experiment a bit.
 by creating your complete folder structure and create stub methods and structs. Continue
 by writing comments for each of them. This will help you find issues early on. Design & document
 your serialization format next.
+
+*Tip 3:* If you would really jump right into benchmarking -- which I do not recommend! -- you
+can use my minimal, unoptimized attempt of a key-value store here: https://github.com/sahib/misc/tree/master/katta
+Use at your own risk.
 
 == Insertion
 
@@ -125,17 +131,16 @@ Every key-value pair that was inserted is also appended to a Write-Ahead-Log
 insertion. This is used for crash recovery (see section below). Once a segment
 file was safely flushed to disk, the WAL may be truncated to retain disk space.
 
-Since the data is first written to memory, then to disk this concept is called
-»leveled«. In theory, you might have more levels than two if you have different
-kind of storage like network-backend storage.
+This concept is called »leveling«, as you first write to memory and then to
+disk. In theory, you might have more levels than those two if you introduce
+for example network-backed storage.
 
 == Querying
 
-When a key is looked up, the in-memory data structure is first probed. If this does
-not yield a direct result then the index structure is probed to see in what segment
-we can fiend the key. This segment is then loaded and the value is then read at the
-offset retrieved from the index.
-
+When a key is looked up, the in-memory data structure is first probed. If this
+does not yield a direct result then the index structure of each segment is
+probed to see if a segment contains this key and at what offset. If yes, we
+open the segment at the specific position and read the value from disk.
 Range queries are supported by checking the index for the lower and upper bound
 of the range and returning the key-value pairs in this offset range. Care must
 be taken to merge this result with the in-memory segment.
@@ -145,24 +150,19 @@ be taken to merge this result with the in-memory segment.
 There should be a background job that merges several old segments to a single
 one. Since those segments likely contain duplicate keys this also serves as
 compression scheme, improving disk usage and startup time. Since increasing
-number of segments also heavy a bad influence on query performance this should
-be run regularly.
+number of segments also have a strong influence on query performance this
+should be run regularly.
 
 == Deletion
 
 To delete keys, a special value has to be written, indicating that a key was
-deleted. This value is often called »tombstone«. When the querying logic
-encounters a tombstone as last entry, then the key is considered as
-non-existant. Please note: An empty value and a deleted key should be two
-different things! The merge logic should eventually get rid of the storage for
-this key entirely.
-
+deleted. This value is often fittingly called »tombstone«. When the querying
+logic encounters a tombstone as latest entry, then the key is considered as
+deleted. The merger will eventually remove the value. Please note: An empty
+value and a deleted key should be two different things!
 == Startup & Crash recovery
 
-When your key-value store is loaded, all existing segments need to be loaded
-from oldest to newest. All key/value pairs need to be loaded into a fresh
-index - you may decide to serialize the index from time to time, if you aim
-to make the load phase faster.
+When your key-value store is loaded, the indexes of all segments need to be loaded.
 If the previous run of the database crashed for some reason before it was able
 to write the most recent segment, then the in-memory segment can be
 restored by loading the values from the WAL.

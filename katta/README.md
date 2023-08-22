@@ -14,7 +14,7 @@ CPU usage and memory usage can be configured with some knobs.
 
 ## Structure
 
-See [https://sahib.github.io/misc/performance/slides/1_intro/index.html#/step-33](my performance workshop) for an intro on how LSM based key-value stores work.
+See [my performance workshop](https://sahib.github.io/misc/performance/slides/1_intro/index.html#/step-33) for an intro on how LSM based key-value stores work.
 
 * ``wal/``: Contains a very bare-bone implementation of a Write-Ahead-Log (WAL) and it's binary
   representation on disk. Cap'n'Proto is used for marshalling and unmarshalling. Since this is

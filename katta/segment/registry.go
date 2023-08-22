@@ -13,6 +13,11 @@ import (
 	"golang.org/x/exp/slog"
 )
 
+// Tree is the in-memory representation of key-value pairs.
+type Tree struct {
+	btree.Map[string, []byte]
+}
+
 // Registry takes care of collecting all known segments
 // and giving easy access to them.
 type Registry struct {
@@ -22,6 +27,8 @@ type Registry struct {
 	segments map[ID]*Segment
 }
 
+// LoadDir loads the database structure from `dir`.
+// `dir` might be empty, but it should be writable.
 func LoadDir(dir string) (*Registry, error) {
 	matches, err := filepath.Glob(filepath.Join(dir, "*.seg"))
 	if err != nil {
@@ -52,6 +59,7 @@ func LoadDir(dir string) (*Registry, error) {
 	}, nil
 }
 
+// List returns a list of all known segments.
 func (r *Registry) List() []*Segment {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -80,7 +88,9 @@ func (r *Registry) Dir() string {
 	return r.dir
 }
 
-func (r *Registry) Add(tree *btree.Map[string, Value]) (*Segment, error) {
+// Add takes the data from `tree` and generates a segment
+// and an index from it.
+func (r *Registry) Add(tree *Tree) (*Segment, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
@@ -94,6 +104,8 @@ func (r *Registry) Add(tree *btree.Map[string, Value]) (*Segment, error) {
 	return seg, nil
 }
 
+// ByID returns a segment by it's ID.
+// If it does not exist, the second return is false.
 func (r *Registry) ByID(id ID) (*Segment, bool) {
 	r.mu.Lock()
 	defer r.mu.Unlock()

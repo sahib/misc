@@ -4,22 +4,21 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/tidwall/btree"
 )
 
 func ABCKeyFromOff(off byte) string {
 	return string([]byte{'a' + off})
 }
 
-func ABCValueFromOff(off byte) Value {
+func ABCValueFromOff(off byte) []byte {
 	key := ABCKeyFromOff(off)
-	return Value{Data: []byte("val_" + key)}
+	return []byte("val_" + key)
 }
 
 // ABCTree produces a dummy tree filled with the
 // lowercase a-z keys. The values have a _val prefix.
-func ABCTree() *btree.Map[string, Value] {
-	tree := &btree.Map[string, Value]{}
+func ABCTree() *Tree {
+	tree := &Tree{}
 	for off := byte(0); off < 26; off++ {
 		key := ABCKeyFromOff(off)
 		val := ABCValueFromOff(off)

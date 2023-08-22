@@ -68,6 +68,7 @@ func (m *Merger) loop() {
 	}
 }
 
+// stream is an incoming collection of values from a single segment.
 type stream struct {
 	Reader    *wal.Reader
 	Segment   *segment.Segment
@@ -75,6 +76,9 @@ type stream struct {
 	Exhausted bool
 }
 
+// consume pops up a single value from the stream
+// and puts in the Entry field. If there's nothing
+// to fetch Exhausted will be set to true.
 func (s *stream) consume() error {
 	if s.Reader.Next(&s.Entry) {
 		return nil
@@ -123,8 +127,10 @@ func (m *Merger) zipSegments(segs ...*segment.Segment) (string, *index.Index, er
 		return "", nil, err
 	}
 
-	// TODO: Actually we should call fsync() on the result
-	defer segFd.Close()
+	defer func() {
+		segFd.Sync()
+		segFd.Close()
+	}()
 
 	mergedWriter := wal.NewWriter(segFd)
 	mergedIdx := index.New()
@@ -144,7 +150,7 @@ func (m *Merger) zipSegments(segs ...*segment.Segment) (string, *index.Index, er
 		}
 	}
 
-	// Make sure that the
+	// Make sure that the heap is initially sorted
 	heap.Init(streams)
 
 	// TODO: The merging could benefit greatly from several go routines.
@@ -152,7 +158,7 @@ func (m *Merger) zipSegments(segs ...*segment.Segment) (string, *index.Index, er
 	//       while the main thread writes the merged segment with the help of
 	//       of those channels, then we could expect quite some performance boost.
 
-	var dedupedEntry *wal.Entry
+	var lastEntry *wal.Entry
 	for {
 		// If, after sorting, the first stream is exhausted we don't have
 		// any streams left and we're done.
@@ -162,19 +168,23 @@ func (m *Merger) zipSegments(segs ...*segment.Segment) (string, *index.Index, er
 		}
 
 		lowestEntry := lowestStream.Entry
-		if dedupedEntry == nil || dedupedEntry.Key != lowestEntry.Key {
+		if lastEntry == nil || lastEntry.Key != lowestEntry.Key {
 			// Only write the entry if the key changed.
 			// This ensure that we take the value from the segment
 			// with the highest ID (which means it's the latest version)
 			posBefore := mergedWriter.Pos()
-			if err := mergedWriter.Append(lowestEntry.Key, lowestEntry.Val); err != nil {
-				return "", nil, fmt.Errorf("merge: write: %w", err)
-			}
 
-			mergedIdx.Set(lowestEntry.Key, index.Off(posBefore))
+			// Filter out deleted values if the last value is a tombstone.
+			if !lowestEntry.IsTombstone {
+				if err := mergedWriter.Append(lowestEntry.Key, lowestEntry.Val); err != nil {
+					return "", nil, fmt.Errorf("merge: write: %w", err)
+				}
+
+				mergedIdx.Set(lowestEntry.Key, index.Off(posBefore))
+			}
 		}
 
-		dedupedEntry = &lowestEntry
+		lastEntry = &lowestEntry
 
 		// Try to fetch the next entry from the first available reader:
 		if err := lowestStream.consume(); err != nil {
@@ -198,6 +208,9 @@ func (m *Merger) merge(segs ...*segment.Segment) error {
 		return fmt.Errorf("zip: %w", err)
 	}
 
+	// Make sure the resulting index is rather small.
+	// Depending on the size of the segments, we might have
+	// some additional memory peak in zipSegments() though
 	mergedIdx.Sparsify(100)
 
 	// Sort with highest ID first:

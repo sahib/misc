@@ -52,7 +52,7 @@ func TestDBExistingDir(t *testing.T) {
 		require.NoError(t, err)
 
 		expVal := segment.ABCValueFromOff(off)
-		require.Equal(t, expVal.Data, gotVal)
+		require.Equal(t, expVal, gotVal)
 	}
 
 	require.NoError(t, db.Close())
@@ -76,7 +76,7 @@ func TestDBNonEmptyWAL(t *testing.T) {
 	for off := byte(0); off < 26; off++ {
 		key := segment.ABCKeyFromOff(off)
 		val := segment.ABCValueFromOff(off)
-		require.NoError(t, ww.Append(key, val.Data))
+		require.NoError(t, ww.Append(key, val))
 	}
 	require.NoError(t, walFD.Close())
 
@@ -90,7 +90,7 @@ func TestDBNonEmptyWAL(t *testing.T) {
 		require.NoError(t, err)
 
 		expVal := segment.ABCValueFromOff(off)
-		require.Equal(t, expVal.Data, gotVal)
+		require.Equal(t, expVal, gotVal)
 	}
 
 	require.NoError(t, db.Close())
@@ -107,7 +107,7 @@ func TestDBFlushSegment(t *testing.T) {
 	for off := byte(0); off < 26; off++ {
 		key := segment.ABCKeyFromOff(off)
 		val := segment.ABCValueFromOff(off)
-		require.NoError(t, db.Set(key, val.Data))
+		require.NoError(t, db.Set(key, val))
 	}
 
 	for off := byte(0); off < 26; off++ {
@@ -116,7 +116,7 @@ func TestDBFlushSegment(t *testing.T) {
 		require.NoError(t, err)
 
 		expVal := segment.ABCValueFromOff(off)
-		require.Equal(t, expVal.Data, gotVal)
+		require.Equal(t, expVal, gotVal)
 	}
 
 	// Check what was written to the segment dir:

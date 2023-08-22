@@ -7,17 +7,10 @@ import (
 
 	"github.com/sahib/misc/katta/index"
 	"github.com/sahib/misc/katta/wal"
-	"github.com/tidwall/btree"
 )
 
 // ID references a single segment
 type ID int32
-
-// Value is a stored value in a segment
-type Value struct {
-	Data        []byte
-	IsTombstone bool
-}
 
 type Segment struct {
 	id  ID
@@ -60,7 +53,7 @@ func LoadSegment(dir string, id ID) (*Segment, error) {
 	}, nil
 }
 
-func FromTree(dir string, id ID, tree *btree.Map[string, Value]) (*Segment, error) {
+func FromTree(dir string, id ID, tree *Tree) (*Segment, error) {
 	idx := index.New()
 	seg := &Segment{
 		id:  id,
@@ -89,7 +82,7 @@ func FromTree(dir string, id ID, tree *btree.Map[string, Value]) (*Segment, erro
 
 		// NOTE:: If tombstone, then val.Data is empty.
 		// TODO: Do we really need tombstone as bool?
-		if err := w.Append(key, val.Data); err != nil {
+		if err := w.Append(key, val); err != nil {
 			return nil, err
 		}
 	}

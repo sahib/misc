@@ -11,7 +11,6 @@ import (
 	"github.com/sahib/misc/katta/index"
 	"github.com/sahib/misc/katta/segment"
 	"github.com/sahib/misc/katta/wal"
-	"github.com/tidwall/btree"
 )
 
 // TODO: Range queries are not implemente at the moment.
@@ -25,7 +24,7 @@ type Store struct {
 	registry *segment.Registry
 	merger   *Merger
 	wal      *wal.Writer
-	Mem      *btree.Map[string, segment.Value]
+	Mem      *segment.Tree
 	walFD    *os.File
 	cancel   func()
 
@@ -53,16 +52,13 @@ func DefaultOptions() Options {
 	}
 }
 
-func walToMemTree(rs io.ReadSeeker) (*btree.Map[string, segment.Value], error) {
+func walToMemTree(rs io.ReadSeeker) (*segment.Tree, error) {
 	r := wal.NewReader(rs)
-	t := &btree.Map[string, segment.Value]{}
+	t := &segment.Tree{}
 
 	var entry wal.Entry
 	for r.Next(&entry) {
-		t.Set(entry.Key, segment.Value{
-			IsTombstone: entry.IsTombstone,
-			Data:        entry.Val,
-		})
+		t.Set(entry.Key, entry.Val)
 	}
 
 	if err := r.Err(); err != nil {
@@ -125,12 +121,12 @@ func Open(dir string, opts Options) (*Store, error) {
 
 func (s *Store) Get(key string) ([]byte, error) {
 	if v, ok := s.Mem.Get(key); ok {
-		if v.IsTombstone {
+		if v == nil {
 			// was explicitly deleted.
 			return nil, ErrKeyNotFound
 		}
 
-		return v.Data, nil
+		return v, nil
 	}
 
 	for _, seg := range s.registry.List() {
@@ -181,7 +177,7 @@ func (s *Store) flushToSegment() error {
 	}
 
 	// Clear old memtable and start fresh:
-	s.Mem = &btree.Map[string, segment.Value]{}
+	s.Mem = &segment.Tree{}
 
 	// we did write a segment with the old data to disk.
 	// time to clear the WAL as the values there are stale.
@@ -192,8 +188,8 @@ func (s *Store) flushToSegment() error {
 	return nil
 }
 
-func (s *Store) set(key string, val segment.Value) error {
-	if err := s.wal.Append(key, val.Data); err != nil {
+func (s *Store) set(key string, val []byte) error {
+	if err := s.wal.Append(key, val); err != nil {
 		return fmt.Errorf("wal: %w", err)
 	}
 
@@ -206,11 +202,11 @@ func (s *Store) set(key string, val segment.Value) error {
 }
 
 func (s *Store) Set(key string, val []byte) error {
-	return s.set(key, segment.Value{Data: val})
+	return s.set(key, val)
 }
 
 func (s *Store) Del(key string) error {
-	return s.set(key, segment.Value{IsTombstone: true})
+	return s.set(key, nil)
 }
 
 // Merge runs the segment merging process explitly

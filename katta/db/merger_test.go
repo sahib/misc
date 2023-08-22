@@ -8,13 +8,12 @@ import (
 	"github.com/sahib/misc/katta/segment"
 	"github.com/sahib/misc/katta/wal"
 	"github.com/stretchr/testify/require"
-	"github.com/tidwall/btree"
 )
 
 // ABCTree produces a dummy tree filled with the
 // lowercase a-z keys. The values have a _val prefix.
-func ABCTree(first, step byte) *btree.Map[string, segment.Value] {
-	tree := &btree.Map[string, segment.Value]{}
+func ABCTree(first, step byte) *segment.Tree {
+	tree := &segment.Tree{}
 	for off := byte(first); off < 26; off += step {
 		key := segment.ABCKeyFromOff(off)
 		val := segment.ABCValueFromOff(off)
@@ -69,7 +68,7 @@ func TestDBMerger(t *testing.T) {
 		expVal := segment.ABCValueFromOff(off)
 
 		require.Equal(t, expKey, entry.Key)
-		require.Equal(t, expVal.Data, entry.Val)
+		require.Equal(t, expVal, entry.Val)
 		off++
 	}
 

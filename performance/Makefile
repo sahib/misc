@@ -18,7 +18,7 @@ onepage.pdf: onepage.rst
 	@rm -f onepage.html
 
 %.pdf: %.typ
-	typst $^
+	typst compile $^
 
 .PRECIOUS: %.svg  # save svg file from auto deletion
 %.svg: %.d2
