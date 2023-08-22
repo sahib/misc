@@ -8,8 +8,15 @@ import (
 	"github.com/sahib/misc/katta/wal/waldisk"
 )
 
-// TODO: This reader can likely be made much more efficient using mmap!
+// XXX: This reader uses slow file I/O, which has some overhead
+//      since we have to call Seek() quite often. Also we cannot
+//      do any buffering, because we need to know the exact position
+//      of each entry (and buffering would spoil that)
+//
+//      A great alternative would be to use mmap() on the file
+//      and rewrite the API below to use that. Make sure to benchmark!
 
+// Entry is one entry in a write ahead log.
 type Entry struct {
 	Pos         int64
 	Key         string
@@ -17,31 +24,32 @@ type Entry struct {
 	IsTombstone bool
 }
 
+// Reader helps loading write a head logs.
 type Reader struct {
+	io.Seeker
 	r       io.ReadSeeker
 	decoder *capnp.Decoder
 	err     error
 }
 
+// NewReader returns a new reader
+// You should call Next() in a for loop
+// and check Err() afterwards.
 func NewReader(r io.ReadSeeker) *Reader {
 	return &Reader{
 		r:       r,
 		decoder: capnp.NewDecoder(r),
+		Seeker:  r,
 	}
 }
 
+// Pos returns the current position in the stream.
 func (r *Reader) Pos() (int64, error) {
-	// TODO: Possibly optimize with an index that is
-	//       incremented on every Read/Seek. This would
-	//       avoid a lot of syscalls!
-	// TODO: returning an error here is not nice.
 	return r.r.Seek(0, io.SeekCurrent)
 }
 
-func (r *Reader) Seek(offset int64, whence int) (int64, error) {
-	return r.r.Seek(offset, whence)
-}
-
+// Next returns the next entry in the stream (returns true)
+// or stops if there are no more entries (returns false)
 func (r *Reader) Next(e *Entry) bool {
 	// position needs to be determined before reading
 	e.Pos, _ = r.Pos()
@@ -70,10 +78,12 @@ func (r *Reader) Next(e *Entry) bool {
 	return true
 }
 
+// Err returns the latest error or nil if all succeeded
 func (r *Reader) Err() error {
 	return r.err
 }
 
+// Close tries to close the reader if it is closable.
 func (r *Reader) Close() error {
 	c, ok := r.r.(io.Closer)
 	if !ok {

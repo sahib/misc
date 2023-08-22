@@ -5,7 +5,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"sort"
 	"sync"
@@ -17,28 +16,28 @@ import (
 	"golang.org/x/exp/slog"
 )
 
-type Merger struct {
+type merger struct {
 	mu       sync.Mutex
 	ctx      context.Context
 	cancel   func()
 	registry *segment.Registry
 }
 
-func NewMerger(ctx context.Context, registry *segment.Registry) *Merger {
+func newMerger(ctx context.Context, registry *segment.Registry) *merger {
 	ctx, cancel := context.WithCancel(ctx)
-	return &Merger{
+	return &merger{
 		ctx:      ctx,
 		cancel:   cancel,
 		registry: registry,
 	}
 }
 
-func (m *Merger) chooseSegmentsToMerge() ([]*segment.Segment, bool) {
-	// TODO: The choice here is very basic & could be improved. Thoughts:
-	// -> use at least 2, at most 10
-	// -> decide based on the cumulated segment size.
-	// -> decide based on file modification date (older segments preferred)
-	// -> Should not matter much if called several times.
+func (m *merger) chooseSegmentsToMerge() ([]*segment.Segment, bool) {
+	// NOTE: The choice here is very basic & could be improved. Thoughts:
+	// * use at least 2, at most 10
+	// * decide based on the cumulated segment size.
+	// * decide based on file modification date (older segments preferred)
+	// * Should not matter much if called several times.
 
 	segs := m.registry.List()
 	if len(segs) < 2 {
@@ -53,15 +52,18 @@ func (m *Merger) chooseSegmentsToMerge() ([]*segment.Segment, bool) {
 	return segs[:maxSegs], true
 }
 
-func (m *Merger) loop() {
+func (m *merger) loop() {
 	tckr := time.NewTicker(5 * time.Minute)
 	for {
 		select {
 		case <-tckr.C:
 			now := time.Now()
 			slog.Info("running merger")
-			m.Run()
-			slog.Info("merger finished", "took", time.Since(now))
+			if nSegments, err := m.run(); err != nil {
+				slog.Info("merger failed", "took", time.Since(now), "err", err)
+			} else {
+				slog.Info("merger finished", "took", time.Since(now), "nsegments", nSegments)
+			}
 		case <-m.ctx.Done():
 			return
 		}
@@ -117,12 +119,12 @@ func (s streams) Less(i, j int) bool {
 // NOTE: Push & Pop not implemented since we don't need it
 //
 //	(but still required by Go's heap interface :/ )
-func (h *streams) Push(x any) {}
-func (h *streams) Pop() any   { return nil }
+func (s *streams) Push(x any) {}
+func (s *streams) Pop() any   { return nil }
 
-func (m *Merger) zipSegments(segs ...*segment.Segment) (string, *index.Index, error) {
+func (m *merger) zipSegments(segs ...*segment.Segment) (string, *index.Index, error) {
 	// Create a temp file to which we will write our merged data.
-	segFd, err := ioutil.TempFile(m.registry.Dir(), "merge-*.seg")
+	segFd, err := os.CreateTemp(m.registry.Dir(), "merge-*.seg")
 	if err != nil {
 		return "", nil, err
 	}
@@ -153,10 +155,10 @@ func (m *Merger) zipSegments(segs ...*segment.Segment) (string, *index.Index, er
 	// Make sure that the heap is initially sorted
 	heap.Init(streams)
 
-	// TODO: The merging could benefit greatly from several go routines.
-	//       If there's one go routine per segment and each fills up a channel
-	//       while the main thread writes the merged segment with the help of
-	//       of those channels, then we could expect quite some performance boost.
+	// XXX: The merging could benefit greatly from several go routines.
+	//      If there's one go routine per segment and each fills up a channel
+	//      while the main thread writes the merged segment with the help of
+	//      of those channels, then we could expect quite some performance boost.
 
 	var lastEntry *wal.Entry
 	for {
@@ -198,7 +200,7 @@ func (m *Merger) zipSegments(segs ...*segment.Segment) (string, *index.Index, er
 	return segFd.Name(), mergedIdx, nil
 }
 
-func (m *Merger) merge(segs ...*segment.Segment) error {
+func (m *merger) merge(segs ...*segment.Segment) error {
 	if len(segs) < 2 {
 		return errors.New("merge: not enough segments passed")
 	}
@@ -248,7 +250,7 @@ func (m *Merger) merge(segs ...*segment.Segment) error {
 	return m.registry.Squash(segs[0].ID(), mergedIdx, dropIDs)
 }
 
-func (m *Merger) Run() (int, error) {
+func (m *merger) run() (int, error) {
 	// Make sure only one Run() can exeute at the same time.
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -262,10 +264,10 @@ func (m *Merger) Run() (int, error) {
 	return len(segs), m.merge(segs...)
 }
 
-func (m *Merger) Start() {
+func (m *merger) start() {
 	go m.loop()
 }
 
-func (m *Merger) Stop() {
+func (m *merger) stop() {
 	m.cancel()
 }

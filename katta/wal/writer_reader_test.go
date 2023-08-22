@@ -11,10 +11,10 @@ func TestWriterHappycase(t *testing.T) {
 	buf := &bytes.Buffer{}
 	w := NewWriter(buf)
 
-	w.Append("key1", []byte("value1"))
-	w.Append("key2", []byte("value2"))
-	w.Append("key3", []byte("value3"))
-	w.Append("key4", nil)
+	require.NoError(t, w.Append("key1", []byte("value1")))
+	require.NoError(t, w.Append("key2", []byte("value2")))
+	require.NoError(t, w.Append("key3", []byte("value3")))
+	require.NoError(t, w.Append("key4", nil))
 
 	r := NewReader(bytes.NewReader(buf.Bytes()))
 	var entry Entry

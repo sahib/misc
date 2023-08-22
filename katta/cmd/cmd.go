@@ -21,6 +21,7 @@ func withStore(fn func(ctx *cli.Context, store *db.Store) error) cli.ActionFunc 
 	}
 }
 
+// Run runs the katta command line on `args` (args[0] should be os.Args[0])
 func Run(args []string) error {
 	app := cli.NewApp()
 	app.Name = "katta"
@@ -86,7 +87,7 @@ func handleGet(ctx *cli.Context, store *db.Store) error {
 func handleSet(ctx *cli.Context, store *db.Store) error {
 	args := ctx.Args()
 	if len(args)%2 != 0 {
-		return fmt.Errorf("args have to be KEY1 VAL1 KEY2 VAL2...")
+		return fmt.Errorf("args have to be KEY1 VAL1 KEY2 VAL2 [...]")
 	}
 
 	for idx := 0; idx < len(args); idx += 2 {

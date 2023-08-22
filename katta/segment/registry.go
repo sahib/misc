@@ -81,6 +81,7 @@ func (r *Registry) List() []*Segment {
 	return segments
 }
 
+// Dir returns the dir passed to LoadDir()
 func (r *Registry) Dir() string {
 	r.mu.Lock()
 	defer r.mu.Unlock()

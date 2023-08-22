@@ -12,6 +12,8 @@ import (
 // ID references a single segment
 type ID int32
 
+// Segment is a stream of key-value pairs,
+// sorted by the key.
 type Segment struct {
 	id  ID
 	dir string
@@ -31,9 +33,9 @@ func indexPath(dir string, id ID) string {
 }
 
 func LoadSegment(dir string, id ID) (*Segment, error) {
-	// TODO: A good improvement in terms of safety would be to
-	//       regenerate the index if it was not found/could not be read.
-	//       The data in the segment is sufficient to build a new index.
+	// XXX: A good improvement in terms of safety would be to
+	//      regenerate the index if it was not found/could not be read.
+	//      The data in the segment is sufficient to build a new index.
 	idxFd, err := os.Open(indexPath(dir, id))
 	if err != nil {
 		return nil, err
@@ -53,6 +55,8 @@ func LoadSegment(dir string, id ID) (*Segment, error) {
 	}, nil
 }
 
+// FromTree creates a new segment in `dir` with the `id` and
+// the contents of `tree`.
 func FromTree(dir string, id ID, tree *Tree) (*Segment, error) {
 	idx := index.New()
 	seg := &Segment{
@@ -79,9 +83,6 @@ func FromTree(dir string, id ID, tree *Tree) (*Segment, error) {
 		val := iter.Value()
 		pos := w.Pos()
 		idx.Set(key, index.Off(pos))
-
-		// NOTE:: If tombstone, then val.Data is empty.
-		// TODO: Do we really need tombstone as bool?
 		if err := w.Append(key, val); err != nil {
 			return nil, err
 		}
@@ -110,14 +111,17 @@ func FromTree(dir string, id ID, tree *Tree) (*Segment, error) {
 	return seg, nil
 }
 
+// Index returns the index of the segment.
 func (s *Segment) Index() *index.Index {
 	return s.idx
 }
 
+// IndexPath returns the full path to the index of the segment.
 func (s *Segment) IndexPath() string {
 	return indexPath(s.dir, s.id)
 }
 
+// Path returns the full path to the segment.
 func (s *Segment) Path() string {
 	return segmentPath(s.dir, s.id)
 }
@@ -131,10 +135,7 @@ func (s *Segment) Reader() (*wal.Reader, error) {
 	return wal.NewReader(fd), nil
 }
 
+// ID returns the ID of the segment
 func (s *Segment) ID() ID {
 	return s.id
-}
-
-func (s *Segment) UpdateIndex(idx *index.Index) {
-	s.idx = idx
 }

@@ -5,31 +5,11 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/sahib/misc/katta/index"
 	"github.com/sahib/misc/katta/segment"
 	"github.com/sahib/misc/katta/wal"
 	"github.com/stretchr/testify/require"
 )
-
-// ABCTree produces a dummy tree filled with the
-// lowercase a-z keys. The values have a _val prefix.
-func ABCTree(first, step byte) *segment.Tree {
-	tree := &segment.Tree{}
-	for off := byte(first); off < 26; off += step {
-		key := segment.ABCKeyFromOff(off)
-		val := segment.ABCValueFromOff(off)
-		tree.Set(key, val)
-	}
-
-	return tree
-}
-
-// ABCSegment produces a dummy segment filled with the
-// lowercase a-z keys. The values have a _val prefix.
-func ABCSegment(t *testing.T, dir string, id segment.ID, first, step byte) *segment.Segment {
-	seg, err := segment.FromTree(dir, id, ABCTree(first, step))
-	require.NoError(t, err)
-	return seg
-}
 
 func TestDBMerger(t *testing.T) {
 	dir, err := os.MkdirTemp("", t.Name())
@@ -39,9 +19,9 @@ func TestDBMerger(t *testing.T) {
 	segmentDir := filepath.Join(dir, "segments")
 	require.NoError(t, os.MkdirAll(segmentDir, 0700))
 
-	ABCSegment(t, segmentDir, segment.ID(1), 0, 2)
-	ABCSegment(t, segmentDir, segment.ID(2), 1, 2)
-	ABCSegment(t, segmentDir, segment.ID(3), 0, 1)
+	segment.OffSegment(t, segmentDir, segment.ID(1), 0, 2, 100)
+	segment.OffSegment(t, segmentDir, segment.ID(2), 1, 2, 100)
+	segment.OffSegment(t, segmentDir, segment.ID(3), 30, 1, 30)
 
 	db, err := Open(dir, DefaultOptions())
 	require.NoError(t, err)
@@ -61,11 +41,11 @@ func TestDBMerger(t *testing.T) {
 	mr, err := mergedSeg.Reader()
 	require.NoError(t, err)
 
-	var off byte
+	var off index.Off
 	var entry wal.Entry
 	for mr.Next(&entry) {
-		expKey := segment.ABCKeyFromOff(off)
-		expVal := segment.ABCValueFromOff(off)
+		expKey := segment.OffKey(off)
+		expVal := segment.OffVal(off)
 
 		require.Equal(t, expKey, entry.Key)
 		require.Equal(t, expVal, entry.Val)

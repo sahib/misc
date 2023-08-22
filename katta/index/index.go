@@ -141,7 +141,11 @@ func (i *Index) Marshal(w io.Writer) error {
 			return false
 		}
 
-		entry.SetKey(key)
+		if err := entry.SetKey(key); err != nil {
+			outErr = err
+			return false
+		}
+
 		entry.SetOff(int64(off))
 		if err := encoder.Encode(msg); err != nil {
 			outErr = err
