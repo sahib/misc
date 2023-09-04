@@ -310,9 +310,9 @@ Typical write I/O
 **Usecases:**
 
 * You need to read byte by byte.
-* You need to unread some bytes frequently.
+* You need to "unread" some bytes frequently.
 * You need to read easily line by line.
-*
+* You have logic that does small reads.
 
 *Otherwise:* Prefer the simpler version.
 

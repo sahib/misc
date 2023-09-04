@@ -587,6 +587,22 @@ GC: Pre-Allocate
 
 ----
 
+GC: Re-use
+==========
+
+.. code-block:: go
+
+
+    s := make([]int, 0, maxLineLen)
+    for _, line := range lines {
+        s = s[:0]  // re-use underlying array!
+
+        // do something with s and line here
+    }
+
+
+----
+
 GC: Pooling
 ===========
 
