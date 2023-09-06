@@ -764,6 +764,41 @@ GC: Memory Limit
 
 ----
 
+Exercise: Optimized Copy
+========================
+
+.. code-block:: go
+
+    type Item struct {
+        Key int64
+        Blob []byte
+    }
+    func (i Item) Copy() Item {
+        blob := make([]byte, len(i.Blob))
+        copy(blob, i.Blob)
+        return Item{Key: i.Key, Blob: blob}
+    }
+
+    type Items []Item
+    func (items Items) Copy() Items {
+        copyItems := Items{}
+        for _, item := range items {
+            copyItems = append(copyItems, item.Copy())
+        }
+        return copyItems
+    }
+
+.. note::
+
+    Steps:
+
+    0. Write a benchmark.
+    1. Pre-allocate copyItems.
+    2. Pass already-allocated items from outside ("Copy(dst Items) Items")
+    3. Allocate one big buffer and slice from that.
+
+----
+
 Virtual memory (VM)
 ===================
 
