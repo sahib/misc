@@ -343,6 +343,10 @@ th, td {
     font-size: 12px;
 }
 
+.next-link {
+    font-size: 30px;
+}
+
 .quote:before {
     content: "»";
 }
