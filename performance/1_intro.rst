@@ -239,6 +239,42 @@ We try to answer these questions:
 
 ----
 
+What can you do with it?
+========================
+
+.. code-block::
+
+    // Old SQLite based queue:
+    BenchmarkDequeue/sqlite3-16  4878 μs/op  1239961 B/op  62167 allocs/op
+    BenchmarkEnqueue/sqlite3-16  2420 μs/op   688887 B/op  32034 allocs/op
+
+    // New mmap based queue:
+    BenchmarkPopSyncFull-16        35 μs/op      232 B/op      4 allocs/op
+    BenchmarkPushSyncFull-16       61 μs/op       98 B/op      3 allocs/op
+
+    Pop: 136x speedup
+    Push: 39x speedup
+
+    OP = Push/Pop 2k Items with 40 Bytes each.
+
+https://github.com/sahib/timeq
+
+.. note::
+
+    It may not look like it, but this was the slide I put the most work into.
+
+    I wrote a persistent priority queue in Go. It's kinda fast.
+    At the end of the workshop you should be able to understand why it is fast
+    and why it's designed that way. Maybe you can even improve it!
+
+    This is your first contact with the go bench suite
+
+    By the way, this doesn't mean that SQLite is bad. It's a general purpose database
+    that was forced into being a priority queue. There are obviously some assumptions
+    that allow better performance.
+
+----
+
 What's not in here?
 ===================
 

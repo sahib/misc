@@ -630,8 +630,10 @@ Cache lines (64B)
     Minimal line size is 64 byte!
     It can only be written and evicted as one.
     No partial reads or writes possible.
-
     (Reason: adress space would be too big otherwise)
+
+    Some platforms have different cache lines and future CPUs might change too.
+    So instead on relying on the magic 64 you should use some const or cpu.CacheLinePad.
 
 ----
 
@@ -795,8 +797,16 @@ Detour: ``pprof``
 .. image:: images/dashboard_pprof_preview.png
    :width: 100%
 
+
+.. code-block:: bash
+
+    # simple:
+    $ go test -v -cpuprofile=cpu.pprof -memprofile=mem.pprof
+    $ go tool pprof ./cpu.pprof
+
 .. code-block:: go
 
+    // permanently:
     import _ "net/http/pprof"
     go http.ListenAndServe("localhost:3000", nil)
 
@@ -804,6 +814,8 @@ Detour: ``pprof``
 
     $ go tool pprof localhost:3000/debug/pprof/profile
     $ go tool pprof localhost:3000/debug/pprof/heap
+
+`Profile of firmware's telemetry service <https://raw.githubusercontent.com/sahib/misc/master/performance/images/telemetry_pprof.svg>`_
 
 .. note::
 
