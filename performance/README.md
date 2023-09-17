@@ -25,18 +25,3 @@ If you want live update, then just issue `make watch` and open the slides in
 ## Usage
 
 Just `make` and open the slides in your browser.
-
-
- - timeq in hausaufgabe verlinken als bonus.
-
-
- Teil der go stdlib:
-
- ```
- type workType struct {
-	full  lfstack          // lock-free list of full blocks workbuf
-	_     cpu.CacheLinePad // prevents false-sharing between full and empty
-	empty lfstack          // lock-free list of empty blocks workbuf
-	_     cpu.CacheLinePad // prevents false-sharing between empty and nproc/nwait
-}
- ```

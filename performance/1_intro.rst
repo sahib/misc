@@ -242,20 +242,40 @@ We try to answer these questions:
 What can you do with it?
 ========================
 
-.. code-block::
 
-    // Old SQLite based queue:
-    BenchmarkDequeue/sqlite3-16  4878 μs/op  1239961 B/op  62167 allocs/op
-    BenchmarkEnqueue/sqlite3-16  2420 μs/op   688887 B/op  32034 allocs/op
+.. list-table::
+   :widths: 40 10 10 15 25
+   :header-rows: 1
+   :class: list-table
 
-    // New mmap based queue:
-    BenchmarkPopSyncFull-16        35 μs/op      232 B/op      4 allocs/op
-    BenchmarkPushSyncFull-16       61 μs/op       98 B/op      3 allocs/op
+   * - ``go bench``
+     - μs/op
+     - B/op
+     - allocs/op
+     - speedup
+   * - ``sqlite3-Pop``
+     - 4.878
+     - 1.239.961
+     - 6.217
+     - 1x
+   * - ``sqlite3-Push``
+     - 2.420
+     - 688.887
+     - 32.034
+     - 1x
+   * - ``timeq-Pop``
+     - 35
+     - 232
+     - 4
+     - 136x
+   * - ``timeq-Push``
+     - 61
+     - 98
+     - 3
+     - 39x
 
-    Pop: 136x speedup
-    Push: 39x speedup
 
-    OP = Push/Pop 2k Items with 40 Bytes each.
+OP = Push/Pop 2k Items with 40 Bytes each.
 
 https://github.com/sahib/timeq
 
@@ -272,6 +292,24 @@ https://github.com/sahib/timeq
     By the way, this doesn't mean that SQLite is bad. It's a general purpose database
     that was forced into being a priority queue. There are obviously some assumptions
     that allow better performance.
+
+----
+
+Was it worth it?
+================
+
+* Choosing SQLite is an absolutely sane decision.
+* Building your own database probably not so much.
+* Designing/testing a production-grade DB is hard.
+* Handling edgecases & errors gracefully is even worse.
+* It's 50x faster, but it took 50x the work.
+* Still, you should know how, if you have to.
+
+.. note::
+
+   At time of writing, timeq has roughly 1.5k lines of code.
+   The amount of testcode is about the same amount. However,
+   SQLite has
 
 ----
 
