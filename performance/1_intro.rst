@@ -450,6 +450,10 @@ When not to optimize?
 
 | (Donald Knuth)
 
+.. image:: images/knuth.jpg
+   :width: 35%
+   :class: knuth
+
 .. note::
 
    I used the full quote here, since it's often abbreviated as "premature optimization is the root of all evil" which
