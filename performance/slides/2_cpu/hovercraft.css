@@ -371,3 +371,9 @@ tt, th > p, td > p {
 tr:nth-child(even) {
   background-color: #f2f2f2;
 }
+
+.knuth {
+    position: absolute;
+    bottom: -40%;
+    right: 31%;
+}
