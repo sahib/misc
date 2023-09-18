@@ -306,7 +306,7 @@ th, td {
 }
 
 #impress-help {
-    background-color: black;
+    background-color: black !important;
     width: 400px;
 	font-family: Roboto Slab;
     font-weight: 400;
@@ -329,10 +329,12 @@ th, td {
 #impress-help>table>tbody>tr>:nth-child(odd) {
     text-align: left !important;
     font-weight: 600;
+    background-color: black !important;
 }
 
 #impress-help>table>tbody>tr>:nth-child(even) {
     text-align: right !important;
+    background-color: black !important;
 }
 
 .big-text {
@@ -360,4 +362,12 @@ th, td {
     max-width: 100%;
     font-size: 30px;
     line-height: 30pt;
+}
+
+tt, th > p, td > p {
+    font-size: 33px !important;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
 }
