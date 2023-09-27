@@ -815,7 +815,7 @@ Detour: ``pprof``
     $ go tool pprof localhost:3000/debug/pprof/profile
     $ go tool pprof localhost:3000/debug/pprof/heap
 
-`Profile of firmware's telemetry service <https://raw.githubusercontent.com/sahib/misc/master/performance/images/telemetry_pprof.svg>`_
+`Profile of firmware's analytics service <https://raw.githubusercontent.com/sahib/misc/master/performance/images/analytics_profile_10min.png>`_
 
 .. note::
 
