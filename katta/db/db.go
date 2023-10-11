@@ -14,8 +14,8 @@ import (
 )
 
 // XXX: Range queries are not implemented at the moment.
-//      Think about it! What needs to be changed to support it?
-//      Is there maybe aleady code that does something similar?
+//      Think about it: What needs to be changed to support it?
+//      Is there maybe already code that does something similar?
 //
 //      Range queries could have an API that looks like this:
 //
@@ -26,11 +26,11 @@ import (
 
 // XXX: We also have no way to support transactions yet.
 //      How can a caller make sure to retrieve a bunch of related
-//      values without changing in between?
+//      values (i.e. several Get() calls) without changing in between?
 //      And how can a caller write several related values and make
-//      sure that not some of them are overwritten in between?
+//      sure that none of them are overwritten in between?
 //
-//      Hint: This is a very hard problem to solve fully.
+//      Hint: This is a very hard problem to solve completely.
 
 var (
 	// ErrKeyNotFound is returned by the API if no such

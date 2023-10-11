@@ -12,6 +12,10 @@
 
 A walk through the world of optimization. ⚡
 
+.. note::
+
+   Jetzt geht jeder nochmal auf's Klo und dann reiten wir los (F4)
+
 ----
 
 Agenda

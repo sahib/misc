@@ -35,7 +35,7 @@ func indexPath(dir string, id ID) string {
 func LoadSegment(dir string, id ID) (*Segment, error) {
 	// XXX: A good improvement in terms of safety would be to
 	//      regenerate the index if it was not found/could not be read.
-	//      The data in the segment is sufficient to build a new index.
+	//      The data in the segment is sufficient to build a new index!
 	idxFd, err := os.Open(indexPath(dir, id))
 	if err != nil {
 		return nil, err

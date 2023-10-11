@@ -99,27 +99,17 @@ Performance inflation
    No joke: This electron based terminal took 700M (!) of residual memory.
    This is absolutely insane and should not have been released.
 
-----
+   You could argue now: Well, we would care more about performance but in todays world
+   we don't have time to time because we're agile and have to produce feature after feature.
+   We care only once we get into troubles. This also leads to developers never learning about
+   writing software that has to fulfill some performance criterias.
 
-.. class:: quote
+   There is some truth about that. Product management usually is not that much aware of Performance
+   if it's not a hard product requirement. But that's your job - you're supposed to measure performance
+   and predict that it will be an issue. If you think it will be an issue, then you should fight for
+   the time to fix it.
 
-    Software is easy, given infinite time.
-
-| - Linux Lemur, ca. 2023
-
-.. note::
-
-    You could argue now: Well, we would care more about performance but in todays world
-    we don't have time to time because we're agile and have to produce feature after feature.
-    We care only once we get into troubles. This also leads to developers never learning about
-    writing software that has to fulfill some performance criterias.
-
-    There is some truth about that. Product management usually is not that much aware of Performance
-    if it's not a hard product requirement. But that's your job - you're supposed to measure performance
-    and predict that it will be an issue. If you think it will be an issue, then you should fight for
-    the time to fix it.
-
-    Anyways, in this workshop we will enter a fantasy world, where we have infinite amounts of time.
+   Anyways, in this workshop we will enter a fantasy world, where we have infinite amounts of time.
 
 ----
 
@@ -129,11 +119,14 @@ Performance inflation
 .. code-block:: python
 
     # Read in a line, print the line without whitespaces.
+    # Most complexity here is hidden.
     import sys
     print(sys.stdin.readline().strip())
 
 
 .. note::
+
+    Complexity is often hidden, without you noticing, often with the intent to "make things simple".
 
     Simple can mean different things.
     "simple" can mean "small cognitive load", i.e. programs that are simple to understand.
@@ -204,6 +197,7 @@ We try to answer these questions:
 
 - Why is performance important?
 - How does the machine we program on work?
+- How do we notice this as developers?
 - Are there ways to exploit this machine?
 
 *Remember:* **Work** shop.
@@ -287,8 +281,6 @@ https://github.com/sahib/timeq
     At the end of the workshop you should be able to understand why it is fast
     and why it's designed that way. Maybe you can even improve it!
 
-    This is your first contact with the go bench suite
-
     By the way, this doesn't mean that SQLite is bad. It's a general purpose database
     that was forced into being a priority queue. There are obviously some assumptions
     that allow better performance.
@@ -309,7 +301,7 @@ Was it worth it?
 
    At time of writing, timeq has roughly 1.5k lines of code.
    The amount of testcode is about the same amount. However,
-   SQLite has
+   SQLite has 173x times the amount of test code and is readily packaged.
 
 ----
 

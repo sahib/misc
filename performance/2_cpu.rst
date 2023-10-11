@@ -769,8 +769,8 @@ Binary sizes per language
 
 ----
 
-Detour: `perf` command
-======================
+perf
+====
 
 .. code-block:: bash
 
@@ -791,8 +791,8 @@ Detour: `perf` command
 
 ----
 
-Detour: ``pprof``
------------------
+pprof
+=====
 
 .. image:: images/dashboard_pprof_preview.png
    :width: 100%
@@ -826,8 +826,8 @@ Detour: ``pprof``
 
 ----
 
-Detour: Flame graphs
-====================
+Flame graphs
+============
 
 .. image:: images/brig_flamegraph.png
     :width: 80%

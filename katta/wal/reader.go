@@ -15,6 +15,9 @@ import (
 //
 //      A great alternative would be to use mmap() on the file
 //      and rewrite the API below to use that. Make sure to benchmark!
+//
+// You might find some inspiration here:
+// https://github.com/sahib/timeq/blob/main/vlog/vlog.go#L69
 
 // Entry is one entry in a write ahead log.
 type Entry struct {

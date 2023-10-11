@@ -8,7 +8,7 @@ import (
 )
 
 // XXX: We use Cap'n'Proto, not because it's the fastest or most compact
-//      alternative, but it's impelemented very fast and quite easy.
+//      alternative, but it's implemented very quickly and quite easy to use.
 //      Can you imagine how you would design your own binary representation
 //      of a WAL? What if you need to support compression or data integrity
 //      features like checksums (or even encryption)?
