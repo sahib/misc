@@ -377,3 +377,7 @@ tr:nth-child(even) {
     bottom: -40%;
     right: 31%;
 }
+
+.notes {
+    font-size: 15px;
+}
