@@ -486,9 +486,14 @@ Huh, premature?
 
 ----
 
+The mantra
+==========
+
 1. Make it correct.
 2. Make it beautiful.
 3. Make it fast.
+
+In that order. Don't jump.
 
 .. note::
 
@@ -552,10 +557,10 @@ Example: Go
 How to optimize?
 ================
 
-* Do less work
-* Do the same work faster
-* Do the work at the same time
-* Do it in another order
+* Do less work.
+* Do the same work faster.
+* Do the work at the same time.
+* Do it in another order.
 
 .. note::
 
@@ -592,8 +597,8 @@ Requires a strong understanding of your program and experience.
 
 ----
 
-Critical path
-=============
+Hot section
+===========
 
 .. code-block:: go
    :number-lines: 1
@@ -618,7 +623,7 @@ Critical path
 
 .. note::
 
-    The critical path is the path through your programs that is taken
+    The Hot section is the path through your programs that is taken
     most often. This path defines the order in which you should optimize.
     If you optimize some edge case that is only taken 1% of the time,
     then the speedup of your optimization is also only worth 1%, because
@@ -626,9 +631,9 @@ Critical path
 
     How to find the path? Tools like pprof can find it, but also coverage
     tools or even debuggers can help you find them. Chances are that you
-    the critical path for your module anyways.
+    the Hot section for your module anyways.
 
-    Other related terms are "hot path" or "tight loop".
+    Other related terms are "Hot section" or "tight loop".
 
     A related term is "slow path". This is often the path taken by a program
     that hits some edge case. Edge cases are often (purposefully) not optimized
@@ -643,7 +648,7 @@ A rule of thumb 👍
 
 1. Do the obvious implementation first.
 2. Check if your requirements are met.
-3. If not, find the **biggest** critical path.
+3. If not, find the **biggest** hot section.
 4. Optimize it and repeat from step 1.
 
 .. note::
@@ -651,7 +656,7 @@ A rule of thumb 👍
     1. "obvious" depends a lot on experience. Example: Open a CSV file 10k times
        to extract a single row because you have a convenience function.
        Do not use this as excuse for bad software.
-    2. If you don't have concrete performance requirements, make some.
+    2. If you don't have concrete functional/performance requirements, make some.
     3. We are incredible bad at guessing! Never ever skip this step!
     4. Never mix up this order.
 
@@ -869,12 +874,28 @@ Sideproject
 
 ----
 
-Memory only
-===========
+Memory only #1
+==============
 
 .. code-block:: go
 
     type KV map[string][]byte
+
+    func (kv *KV) Get(key string) []byte {
+        return kv[key]
+    }
+
+    func (kv *KV) Set(key string, val []byte) {
+        return kv[key] = val
+    }
+
+----
+
+Memory only #2
+==============
+
+
+.. code-block:: go
 
     func (kv *KV) sync() {
         var b bytes.Buffer
@@ -892,19 +913,28 @@ Memory only
 
 .. note::
 
-    You could use a bigh in-memory hash table and sync that to disk sometimes.
+   Obvious issue: It's all in the memory. If you need more entries than you have RAM
+   you're in for a bad time.
 
-    When do you call sync()? After every write? Inefficient.
-    Less often? Then you will suffer data loss on power loss or crash.
+   You could use a big in-memory hash table and sync that to disk sometimes.
 
-    Sounds impractical, but surprise: Redis actually works this way.
-    They do not use a hash map internally though, but a tree structure as index.
-    Oh, and they perform most work in a single thread. Still fast.
+   When do you call sync()? After every write? Inefficient.
+   Less often? Then you will suffer data loss on power loss or crash.
+
+   Sounds impractical, but surprise: Redis actually works this way. They do not
+   use a hash map internally though, but a tree structure as index. Oh, and
+   they perform most work in a single thread. Still fast, but you have to
+   consider its drawbacks.
+
+   Technical detail: Redis relies on the OS' paging mechanism, assuming that not every key
+   in the database is used all the time. This allows to allocate a lot of memory, but to let
+   the OS do the heavy lifting in the background to actually use a small portion of it only.
+   This will be covered more in the memory chapter under "virtual memory".
 
 ----
 
 Append only
-=====================
+============
 
 .. code-block:: bash
 
@@ -923,7 +953,7 @@ Append only
 
 .. note::
 
-    Simple append only write, get reads only the last value.
+    Simple append only write, get() reads only the last value.
     Every update of an existing key writes it again.
 
     Terribly slow because get needs to scan the whole db, but
@@ -933,16 +963,16 @@ Append only
 ----
 
 Indexed
-=================
+========
 
 .. code-block:: go
 
     type KV map[string]int64
 
     func (kv *KV) Set(key string, val []byte) {
-        // 1. Build entry with key and value
-        // 2. Append entry to end of db file
-        // 3. Update kv index with new offset.
+        // 1. Build entry with key and value.
+        // 2. Append entry to end of db file.
+        // 3. Update key-value index with offset.
     }
 
     func (kv *KV) Get(key string) []byte {
@@ -952,7 +982,8 @@ Indexed
 
 .. note::
 
-    This is actually already quite nice!
+    This is actually already quite nice and I would be happy if you guys can
+    implement it like that already.
 
     This approach is called "log structured", because values are handled
     like a stream of logs, just timestamped (or offset stamped) data.
