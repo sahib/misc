@@ -343,6 +343,13 @@ A binary semaphore.
         // defer mu.Unlock()
     }
 
+.. note::
+
+   Variants:
+
+   - recursive mutex: can be locked several times, if unlocked the same time.
+   - rw-mutex: Allows one writer, but many readers.
+
 ----
 
 Primitive: Semaphor

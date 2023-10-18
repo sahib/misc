@@ -215,7 +215,7 @@ https://go.dev/doc/asm
 
     Effects that may play a role
 
-    * Not every instruction takes the same amount of cycles (MOV 1 cycle,
+    * Not every instruction takes the same amount of cycles (AND = 1 cycle, MOV = 1-6+)
     * Pipelining
     * Superscalar Execution
     * Branch prediction / Cache prefetching
@@ -263,6 +263,9 @@ Single instruction pipeline
 
 .. note::
 
+    The location of the next instruction is stored in the PC register.
+    (program counter)
+
     This would need 5 cycles per instruction.
     You kinda assumed, that one cycle is one instruction, did you?
 
@@ -288,7 +291,7 @@ Pipelining, OoO, Superscalar, wtf?
     * They can be also re-ordered by the CPU! (think of a queue that gets reordered)
     * This can lead to issues when an instruction depends on results of another instructions! (branches!)
     * It can even happen that we do unncessary work!
-      This made the SPECTRE and MELTDOWN security issues possible that made cloud computing 20% slower over night.
+      This made the SPECTRE and MELTDOWN security issues possible that made cloud computing 20% slower "over night" (well, it got better after a few months)
     * CPUs can also execute more than one instruction per cycle (e.g. one MOV, ADD, CMP, as they all use different parts of the CPU)
       (Superscalar CPUs)
     * This is the reason why focussing on reducing the number of instructions alone is not
@@ -329,7 +332,7 @@ Branch prediction
 .. note::
 
     Modern cpus guess what branch is taken due to pipelining. The accuracy is done to 96%,
-    they even use neural networks for that.
+    they even use neural networks for that. Branch mispredictions are costly: Roughly 10-30 cycles lost.
 
     No likely() in Go, compiler tries to insert those hints automayically.
     Not much of an important optimization nowadays though as CPUs get a lot better:
@@ -642,7 +645,7 @@ Caches misses
 
 .. class:: example
 
-   Example: code/counter (1-3)
+   Example: code/counter
 
 .. code-block:: bash
 
@@ -1168,7 +1171,7 @@ Rough Rules to take away
 1. Watch out for cache misses.
 2. Keep your structs small (< 64B).
 3. Check if you need padding (false sharing).
-4. Place often accessed data close (true sharing).
+4. Place commonly accessed data close (true sharing).
 5. Design your access patterns cache friendly.
 6. Avoid virtual methods and inheritance.
 7. Do not overuse pointers over values.

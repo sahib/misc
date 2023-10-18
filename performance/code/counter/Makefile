@@ -1,6 +1,8 @@
+perf_fields =  cache-misses,context-switches,cpu-migrations,cycles,instructions,branch-misses
 all:
 	@go build -o counter counter.go
-	@printf "%20s %15.0f\n" "mutex" "$$(./counter mutex)"
-	@printf "%20s %15.0f\n" "atomic" "$$(./counter atomic)"
-	@printf "%20s %15.0f\n" "strided" "$$(./counter strided)"
-	@printf "%20s %15.0f\n" "strided-pad" "$$(./counter strided-pad)"
+	@rm -f counts
+	@perf stat -e $(perf_fields) ./counter mutex >> counts
+	@perf stat -e $(perf_fields) ./counter atomic >> counts
+	@perf stat -e $(perf_fields) ./counter strided >> counts
+	@perf stat -e $(perf_fields) ./counter strided-pad >> counts

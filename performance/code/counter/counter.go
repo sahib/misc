@@ -138,6 +138,6 @@ func main() {
 		go counter.StartAdding(n)
 	}
 
-	time.Sleep(10 * time.Second)
-	fmt.Println(counter.Count() / 10.0)
+	time.Sleep(5 * time.Second)
+	fmt.Println(counter.Count() / 5.0)
 }
