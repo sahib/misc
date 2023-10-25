@@ -1026,6 +1026,8 @@ Segmented
     * Range queries are kinda impossible.
     * We can't delete stuff.
 
+    TODO(FEEDBACK): Insert another step here to explain that we can replace the map ("memory segment") with a btree. Also explain roughly what a btree is.
+
 ----
 
 Deletion

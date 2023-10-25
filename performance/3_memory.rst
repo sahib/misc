@@ -12,6 +12,12 @@
 
 Bookkeeping is hard 📝
 
+.. note::
+
+   Most stuff in this session is related to this PDF:
+
+   https://people.freebsd.org/~lstewart/articles/cpumemory.pdf
+
 ----
 
 Agenda
@@ -44,7 +50,10 @@ Two major types in use today:
 .. note::
 
    SDRAM = Synchronous DRAM
+
    DDR-SDRAM = Double Data Rate SDRAM
+
+   (and DDR2 doubles that and so on)
 
 ----
 
@@ -82,7 +91,8 @@ SRAM - one bit, please
 
 .. note::
 
-   * Very fast. 10x speed of DRAM
+   * Very fast. (10x or more)
+   * Used in L1/L2/L3 caches in the CPU.
    * No refresh required.
    * Low power consumption
    * Expensive, not so high density
@@ -131,6 +141,10 @@ ECC Memory
 
 .. image:: images/ecc.png
    :width: 100%
+
+.. note::
+
+   ECC comes with a price & performance tag.
 
 ----
 
@@ -181,9 +195,10 @@ Inside a process
 ================
 
 * Each process may allocate certain amounts of memory on-demand.
-* Memory inside the process can be managed in two ways: *Stack* and *Heap.*
-* *Stack:* For short-lived memory.
-* *Heap:* For long-lived memory.
+* Memory inside the process can be managed in three ways: *Data*, *Stack*, *Heap.*
+* *Data:* Readonly data known at compile time.
+* *Stack:* For short-lived memory & automatic.
+* *Heap:* For long-lived memory & manual.
 
 ----
 
@@ -205,17 +220,16 @@ The stack: Growth
     // Output:
     0xc000070e70 -> diff: 80 bytes due to:
     0xc000070e20 -> stack pointer, frame pointer
-    0xc000070dd0 -> registers, params, ...
+    0xc000070dd0 -> registers, params, local vars
     ...
 
 .. note::
-
-    Stack grows downwards.
 
     More details on calling a function:
 
     https://eli.thegreenplace.net/2011/09/06/stack-frame-layout-on-x86-64
 
+    Stack grow direction: Depends on OS / your programming language.
 
 ----
 
@@ -223,22 +237,38 @@ The stack: LIFO Layout
 ======================
 
 .. image:: images/stack_layout.svg
-    :width: 80%
+    :width: 120%
 
 .. note::
 
-    Registers:
+   Every function calls causes a so called "frame" to be placed on
+   top of the stack. Each frame contains parameters, local variables,
+   but also a return link to the previous frame.
 
-    ebp: Base pointer. Points to start of function. Cell at adress contains "return link to last function" (i.e. pointer to instruction offset)
-    esp: Initially the base pointer, but grows with each variable put on the stack.
-    eip: Pointer that points to current instruction.
+   The program knows in which frame we are by looking at a thing
+   called "base pointer". A special pointer kept in a fixed register
+   and changed on each function call. There's also a pointer that points
+   to the current end of the stack, so using this we know how big a frame
+   is. When a function returns we can simply change those two registers
+   using the "return link". The current stack frame is then deallocated
+   and will be overwritten when another function is called.
 
-    Stack origin:  ebp.
-    Stack pointer: esp.
+   Malicious software sometimes is able to overwrite the return link to somewhere
+   else, e.g. using a buffer overflow. This leads the program to execute some other
+   other data as code, potentially doing evil things.
 
-    https://en.wikipedia.org/wiki/Stack-based_memory_allocation
+   Registers:
 
-    Good explanation here too: https://people.cs.rutgers.edu/~pxk/419/notes/frames.html
+   ebp: Base pointer. Points to start of function. Cell at adress contains "return link to last function" (i.e. pointer to instruction offset)
+   esp: Initially the base pointer, but grows with each variable put on the stack.
+   eip: Pointer that points to current instruction (not on the stack, but your code is somewhere else in memory)
+
+   Stack origin:  ebp.
+   Stack pointer: esp.
+
+   https://en.wikipedia.org/wiki/Stack-based_memory_allocation
+
+   Good explanation here too: https://people.cs.rutgers.edu/~pxk/419/notes/frames.html
 
 ----
 
@@ -249,7 +279,8 @@ Why not use the Stack for everything?
 
 1. Stack size is limited to 8MB (default on Linux).
 2. Memory is bound to your call hierarchy.
-3. Stack is per-thread, sharing requires heap.
+3. The memory lives only until your function returns.
+4. Stack is per-thread, sharing requires heap.
 
 .. note::
 
@@ -330,8 +361,6 @@ The Heap: Allocations
 
    Heap memory must be cleaned up after use. Go does this with a GC.
 
-   Heap grows upwards.
-
 ----
 
 The Heap: ``malloc()``
@@ -350,8 +379,9 @@ The Heap: ``malloc()``
 
 .. note::
 
-   malloc() is a function that returns N bytes of memory, if available.
-   It is a syscall of the kernel, but implemented as library in userspace.
+   malloc() is a function that returns N bytes of memory, if available. It uses
+   a syscall of the kernel (sbrk()), but most of the logic is a library in
+   userspace.
 
    malloc() manages internally a pool of memory internally, from which it
    slices of the requested portions. Whenever the pool runs out of fresh
@@ -389,10 +419,13 @@ The Heap: Freelist
    Once allocated, a free block is taken out of the list and added to the "allocated"
    list. This means that every allocation has a small space and time overhead.
 
-   On free(), the opposite happens: The block is put back into the freelist
-   and out of the "allocated" list.
+   On free(), the opposite happens: The block is put back into the freelist and
+   out of the "allocated" list. (i.e. an allocation is O(log n), instead of
+   O(1) as with the stack)
 
-   (i.e. an allocation is O(log n), instead of O(1) as with the stack)
+   It is interesting to note that there are different implementations of this,
+   with different advantages and drawbacks. One very high performant implementatin
+   is jemalloc.
 
    Useful Links:
 
@@ -477,6 +510,16 @@ The Heap: Summary
 
 ----
 
+Ways to optimize
+================
+
+* Allocate less bytes.
+* Allocate less often.
+* Prefer cheap stack over heap, if possible.
+* Make the life of your GC easier.
+
+----
+
 Garbage collector (GC)
 ======================
 
@@ -557,6 +600,8 @@ GC: Escape Analysis
     * Avoid using pointers and refactor to make it allocate-able on the stack.
     * Prefer pass & return by value if value is small (< 64 byte ~= cache line)
     * Use sync.Pool to save allocations.
+    * Sometimes inlining can make stack allocations possible.
+    * Sometimes use of interfaces can force heap allocations (cost_of_interface example!)
 
     Good guide for the details: https://tip.golang.org/doc/gc-guide#Eliminating_heap_allocations
 
@@ -584,6 +629,16 @@ GC: Pre-Allocate
 .. class:: example
 
    Example: code/prealloc
+
+.. note::
+
+   This helps the GC in two ways:
+
+   * Slices by default only plan with a very small additional space
+     regarding allocations. If a slice grows it has to repeatedly copied
+     to a bigger memory chunk. Old chunks have then to be cleaned up.
+     Same goes with map, just a little more complicated.
+   * It is easier to clean up one big memory slice instead of many small ones.
 
 ----
 
@@ -645,10 +700,7 @@ GC: Internment #1
 
 .. code-block:: go
 
-    // type StringHeader struct {
-    //         Data uintptr
-    //         Len  int
-    // }
+    // type StringHeader struct { Data uintptr, Len  int }
     func stringptr(s string) uintptr {
         return (*reflect.StringHeader)(unsafe.Pointer(&s)).Data
     }
@@ -658,11 +710,13 @@ GC: Internment #1
         s2 := s1
         s3 := "1" + "2" + "3"
         s4 := "12" + strconv.FormatInt(3, 10)
+        s5 := "12" + strconv.FormatInt(3, 10)
         fmt.Printf("0x%x 0x%x 0x%x 0x%x\n",
             stringptr(s1), // 0x000049a4c2
             stringptr(s2), // 0x000049a4c2
             stringptr(s3), // 0x000049a4c2
             stringptr(s4), // 0xc000074ed0
+            stringptr(s5), // 0xc000074f80
         )
     }
 
@@ -747,6 +801,9 @@ GC: Memory Limit
 .. image:: images/deephealth_mem.png
    :width: 100%
 
+.. image:: images/gomemlimit.png
+   :width: 100%
+
 .. note::
 
     Linux only supports setting a max amount of memory that a process (or cgroup)
@@ -796,6 +853,8 @@ Exercise: Optimized Copy
     1. Pre-allocate copyItems.
     2. Pass already-allocated items from outside ("Copy(dst Items) Items")
     3. Allocate one big buffer and slice from that.
+
+    Example taken from timeq: https://github.com/sahib/timeq/blob/main/item/item.go#L80
 
 ----
 
@@ -862,6 +921,25 @@ Each process has a »*Page Table*« mapping virtual to physical memory.
 
 ----
 
+Residual memory *versus* Virtual memory
+=============================================
+
+.. image:: images/res_vs_virtual.png
+   :width: 100%
+
+.. note::
+
+   Picture above showing htop on my rather old laptop
+   with a normal workload. The amount of virtual memory for some programs
+   like signal-desktop is HUGE and only a tiny portion is actually used.
+
+   Fun fact: The program I was actively using was gimp, but the actual
+   performance hogs were all browser-based applications. Brave new world.
+
+   If you want to flex: Use `btop` for even prettier screens.
+
+----
+
 VM: Advantages
 ==============
 
@@ -905,32 +983,13 @@ VM: Swapping
    get put to swap so that memory management can make use of that space to provide less
    fragmented memory regions.
 
-   How aggressive this happens can be set using `vm.swappiness`. A value between
+   How aggressive this happens can be set using `vm.swappiness`. A value between 0 and 100.
 
    Rules:
 
    - If you want to hibernate (i.e. powerless suspend) then you need as much swap as RAM.
    - Otherwise about half of RAM is a good rule of thumb.
    - Systems that rely on low latency (i.e. anything that goes in the direction of realtime) should not swap.
-
-----
-
-Residual memory *versus* Virtual memory
-=============================================
-
-.. image:: images/res_vs_virtual.png
-   :width: 100%
-
-.. note::
-
-   Picture above showing htop on my rather old laptop
-   with a normal workload. The amount of virtual memory for some programs
-   like signal-desktop is HUGE and only a tiny portion is actually used.
-
-   Fun fact: The program I was actively using was gimp, but the actual
-   performance hogs were all browser-based applications. Brave new world.
-
-   If you want to flex: Use `btop` for even prettier screens.
 
 ----
 
@@ -1008,7 +1067,7 @@ Profiling: Pyroscope
 
 .. note::
 
-   Especially long-running memorly leaks are hard to debug
+   Especially long-running memory leaks are hard to debug
    (i.e. when memory accumulates over the course of several days e.g.)
 
    In this it can help to combine monitoring and profiling. This is sometimes
@@ -1019,6 +1078,10 @@ Profiling: Pyroscope
 
    Demo for Go:
    https://demo.pyroscope.io/?query=rideshare-app-golang.cpu%7B%7D&from=1682450314&until=1682450316
+
+   Another way to enable continuous profiling is to use eBPF - small programs that run in kernel space.
+   That's more lowlevel, but is pretty much the most powerful ever and I expect many tools to emerge in
+   the next year that make use of it.
 
 ----
 

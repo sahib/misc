@@ -3,27 +3,28 @@ package main
 import (
 	"compress/gzip"
 	"io"
-	"io/ioutil"
 	"os"
 	"sync"
 )
 
 var writerGzipPool = sync.Pool{
 	New: func() interface{} {
-		return gzip.NewWriter(ioutil.Discard)
+		return gzip.NewWriter(io.Discard)
 	},
 }
 
 func compressWithPool(r io.Reader) {
 	writer := writerGzipPool.Get().(*gzip.Writer)
-	writer.Flush()
+	writer.Reset(io.Discard)
 	io.Copy(writer, r)
+	writer.Flush()
 	writerGzipPool.Put(writer)
 }
 
 func compressWithoutPool(r io.Reader) {
-	gzipw := gzip.NewWriter(ioutil.Discard)
+	gzipw := gzip.NewWriter(io.Discard)
 	io.Copy(gzipw, r)
+	gzipw.Flush()
 }
 
 func main() {

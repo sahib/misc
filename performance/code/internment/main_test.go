@@ -31,7 +31,9 @@ func benchmarkStringCompareIntern(b *testing.B, count int) {
 func BenchmarkStringCompare1(b *testing.B)   { benchmarkStringCompare(b, 1) }
 func BenchmarkStringCompare10(b *testing.B)  { benchmarkStringCompare(b, 10) }
 func BenchmarkStringCompare100(b *testing.B) { benchmarkStringCompare(b, 100) }
+func BenchmarkStringCompare1000(b *testing.B) { benchmarkStringCompare(b, 1000) }
 
 func BenchmarkStringCompareIntern1(b *testing.B)   { benchmarkStringCompareIntern(b, 1) }
 func BenchmarkStringCompareIntern10(b *testing.B)  { benchmarkStringCompareIntern(b, 10) }
 func BenchmarkStringCompareIntern100(b *testing.B) { benchmarkStringCompareIntern(b, 100) }
+func BenchmarkStringCompareIntern1000(b *testing.B) { benchmarkStringCompareIntern(b, 1000) }
