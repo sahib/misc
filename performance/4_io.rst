@@ -300,6 +300,33 @@ Typical write I/O
 
 ----
 
+Sidenote: Allow pre-allocation
+==============================
+
+.. code-block:: go
+
+    # Don't:
+    ReadEntry() ([]byte, error) {
+        // allocate buffer, fill and return it.
+    }
+
+
+.. code-block:: go
+
+    # Do:
+    ReadEntry(buf []byte) error {
+        // use buf, append to it.
+    }
+
+.. note::
+
+   This is a reminder to the last session. Many Read()-like functions
+   get passed a buffer in, instead of allocating one. This is good practice,
+   as it allows calling ReadEntry() in a loop and re-using a buffer during that.
+   Even better is of course no copying the data at all, but that's a different story.
+
+----
+
 »Buffered« I/O
 ==============
 
