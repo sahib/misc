@@ -58,7 +58,7 @@ func (c *Counter2) Count() int64 {
 
 type Counter3 struct {
 	x      int
-	counts [8]int64
+	counts [32]int64
 }
 
 func (c *Counter3) StartAdding(n int) {
@@ -84,7 +84,7 @@ type paddedCounter struct {
 }
 
 type Counter4 struct {
-	counts [8]paddedCounter
+	counts [32]paddedCounter
 }
 
 func (c *Counter4) StartAdding(n int) {

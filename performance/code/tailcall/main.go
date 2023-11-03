@@ -17,7 +17,7 @@ func doSumTailcall(acc int, ls []int) int {
 		return 0
 	}
 
-	return doSumTailcall(ls[0], ls[1:])
+	return doSumTailcall(acc + ls[0], ls[1:])
 }
 
 func SumIterative(ls []int) int {

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"runtime"
 	"testing"
 )
 
@@ -14,10 +15,15 @@ func BenchmarkWordcount1(b *testing.B) {
 		for idx := 0; idx < b.N; idx++ {
 			wordcount(words)
 		}
+		runtime.GC()
 	})
+
+	runtime.GC()
+
 	b.Run("ptr", func(b *testing.B) {
 		for idx := 0; idx < b.N; idx++ {
 			wordcountPtr(words)
 		}
+		runtime.GC()
 	})
 }

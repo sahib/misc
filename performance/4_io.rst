@@ -221,6 +221,20 @@ Typical syscalls
 
 ----
 
+Use the `man`, Luke!
+====================
+
+.. code-block:: bash
+
+   $ man 2 read
+
+
+.. note::
+
+   Every man page in section refers to a system call.
+
+----
+
 Typical read I/O
 ================
 
