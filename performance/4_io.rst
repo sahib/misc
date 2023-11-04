@@ -129,6 +129,20 @@ SSD Write amplification
 
 ----
 
+Everything is a file
+====================
+
+.. image:: images/everything-is-afile.webp
+   :width: 100%
+
+.. note::
+
+   Even memory is a file: /dev/mem
+   Or a complete usb stick: /dev/sda
+   Or randomnes: /dev/urandom
+
+----
+
 Virtual File System
 ====================
 
@@ -180,18 +194,21 @@ How do syscalls work?
 
 .. note::
 
-    All available syscalls and their ids are here: https://filippo.io/linux-syscall-table/
+   Disclaimer: The 'syscall' instruction is not the only instruction and kind of deprecated
+   in favor of another one. But it's similar enough and better to explain.
 
-    Only method of userspace to talk to kernel. How to call is ISA specific.
+   All available syscalls and their ids are here: https://filippo.io/linux-syscall-table/
 
-    The syscall instruction performs a context switch: This means the current
-    state of the process (i.e. the state of all registers in the CPU) is saved
-    away, so it can be restored later. Once done, the kernel sets the register
-    to its needs, does whatever is required to serve the system call. When
-    finished, the process state is restored and execution continues.
+   Only method of userspace to talk to kernel. How to call is ISA specific.
 
-    Context switches also happen when you're not calling any syscalls.
-    Simply when the scheduler decide this process is done with execution.
+   The syscall instruction performs a context switch: This means the current
+   state of the process (i.e. the state of all registers in the CPU) is saved
+   away, so it can be restored later. Once done, the kernel sets the register
+   to its needs, does whatever is required to serve the system call. When
+   finished, the process state is restored and execution continues.
+
+   Context switches also happen when you're not calling any syscalls.
+   Simply when the scheduler decide this process is done with execution.
 
 ----
 
@@ -250,19 +267,22 @@ Typical read I/O
 
 .. note::
 
-    Looks fairly straightforward and most of you might have written something like that already.
-    Maybe even for sockets or other streams. BUT here's the thing: every read needs one syscall
-    and all bytes from the file are copied to a userspace-supplied buffer. This model is flexible,
-    but costs performance. With mmap() and io_uring we will see options that can, sometimes,
-    work with zero copies.
+   There are two costs here: Copying the data and context switching.
 
-    Sidenote: Always be nice and close your file descriptors.
-    That has two reasons:
+   Looks fairly straightforward and most of you might have written something like that already.
+   Maybe even for sockets or other streams. BUT here's the thing: every read needs one syscall
+   and all bytes from the file are copied to a userspace-supplied buffer. This model is flexible,
+   but costs performance. With mmap() and io_uring we will see options that can, sometimes,
+   work with zero copies.
 
-    * You are only allowed a certain maximum of file descriptors per process.
-      (check with  ulimit -a for soft limits and ulimit -aH for hard limits)
-    * If you write something to a file close will also flush file contents
-      that are not written to disk yet.
+   Sidenote: Always be nice and close your file descriptors.
+   That has two reasons:
+
+   * You are only allowed a certain maximum of file descriptors per process.
+     (check with  ulimit -a for soft limits and ulimit -aH for hard limits)
+   * If you write something to a file close will also flush file contents
+     that are not written to disk yet.
+
 
 ----
 
@@ -319,7 +339,7 @@ Sidenote: Allow pre-allocation
 
 .. code-block:: go
 
-    # Don't:
+    // Don't:
     ReadEntry() ([]byte, error) {
         // allocate buffer, fill and return it.
     }
@@ -327,7 +347,7 @@ Sidenote: Allow pre-allocation
 
 .. code-block:: go
 
-    # Do:
+    // Do:
     ReadEntry(buf []byte) error {
         // use buf, append to it.
     }
@@ -423,7 +443,10 @@ Making syscalls visible
    Important options:
 
    -c: count syscalls and stats at the end.
+
    -f: follow also subprocesses.
+
+   -e: Trace only specific syscalls.
 
 ----
 
@@ -520,16 +543,20 @@ Defines layout of files on disk:
 
 .. note::
 
-    Actual implementation of read/write/etc. for a single
-    filesystem like FAT, ext4, btrfs. There are different ways
-    to layout and maintain data on disk, depending on your use case.
+   Do you know what filesystems you use? What filesystems you know?
 
-    Syscalls all work the same, but some filesystems have
-    better performance regarding writes/reads/syncs or
-    are more targeted at large files or many files.
+   Actual implementation of read/write/etc. for a single
+   filesystem like FAT, ext4, btrfs. There are different ways
+   to layout and maintain data on disk, depending on your use case.
 
-    Most differences are admin related (i.e. integrity, backups,
-    snapshots etc.)
+   Syscalls all work the same, but some filesystems have
+   better performance regarding writes/reads/syncs or
+   are more targeted at large files or many files.
+
+   Most differences are admin related (i.e. integrity, backups,
+   snapshots etc.) and not so much performance related. But if you
+   need things like snapshots and don't want external tools then
+   btrfs of ZFS are incredibly fast.
 
 ----
 
@@ -594,6 +621,14 @@ Detour: FUSE
 .. image:: images/fuse.png
    :width: 100%
 
+.. note::
+
+   Examples of FUSE filesystems:
+
+   * s3fs
+   * sshfs
+   * ipfs / brig
+
 ----
 
 ``mmap()``
@@ -613,7 +648,12 @@ Detour: FUSE
     );
 
     // copy string to file with offset
-    strcpy(&map[20], "Hello World!");
+    map[20] = 'H'; map[21] = 'e'; map[22] = 'l'; map[23] = ';';
+    map[24] = 'W'; map[25] = 'o'; map[26] = 'r'; map[27] = 'd';
+
+.. class:: example
+
+    Example: code/mmap
 
 ----
 
@@ -671,6 +711,14 @@ To sync or to async? 🤔
 
    https://unixism.net/loti/async_intro.html
 
+   The image below can be achieved using special system calls like epoll(), poll() or select():
+   They "multiplex" between several files. Basically they work all the same: You given them
+   a list of files and once invoked epoll() waits until one of the files are ready to be read from.
+   This minimizes polling on userspace side and keeps the wait between I/O as low as possible.
+
+   This is however only possible for network I/O - normal files cannot be polled.
+   Beyond the scope of this talk however.
+
 ----
 
 ``io_uring``
@@ -679,10 +727,21 @@ To sync or to async? 🤔
 .. image:: images/iouring.png
    :width: 100%
 
+.. note::
+
+   A technique to introduce polling mechanisms to files too and benefit from it.
+
+   SQ: Submission Queue: Commands like read file 123 at offset 42.
+   CQ: Completion Queue: Here is the dat aof file 123 at offset 42.
+
+   Advantage: Does only need syscalls during the setup of the interface, but not
+   during operation as the data transfer is done via a memory mapping that has been
+   set up during the setup phase.
+
 ----
 
-``O_DIRECT``
-============
+Myth: ``O_DIRECT`` 👎
+=====================
 
 .. code-block:: c
 
@@ -714,8 +773,8 @@ To sync or to async? 🤔
 
 ----
 
-I/O scheduler 👎
-================
+Myth: I/O scheduler 👎
+======================
 
 .. image:: images/io_scheduler_perf.svg
    :width: 100%
@@ -829,6 +888,11 @@ Reduce number of copies
 * Use CoW reflinks if possible.
 * ``sendfile()`` to copy files to Network.
 * ``copy_file_range()`` to copy between files.
+
+.. note::
+
+   Not copying: using mmap, io_uring. If using read() file API
+   then try to minimize copying in your application.
 
 ----
 

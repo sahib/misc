@@ -11,7 +11,6 @@ import (
 )
 
 type MmapLog struct {
-	path     string
 	fd       *os.File
 	mmap     []byte
 	size     int64
@@ -20,10 +19,8 @@ type MmapLog struct {
 }
 
 func OpenMmapLog(path string, size int64) (*MmapLog, error) {
-	l := &MmapLog{path: path}
-
 	flags := os.O_APPEND | os.O_CREATE | os.O_RDWR
-	fd, err := os.OpenFile(l.path, flags, 0600)
+	fd, err := os.OpenFile(path, flags, 0600)
 	if err != nil {
 		return nil, fmt.Errorf("log: open: %w", err)
 	}
@@ -48,10 +45,11 @@ func OpenMmapLog(path string, size int64) (*MmapLog, error) {
 	// give OS a hint that we will likely need that memory soon:
 	_ = unix.Madvise(mmap, unix.MADV_WILLNEED)
 
-	l.size = size
-	l.fd = fd
-	l.mmap = mmap
-	return l, nil
+	return &MmapLog{
+		size: size,
+		fd:   fd,
+		mmap: mmap,
+	}, nil
 }
 
 func (l *MmapLog) Append(num uint64) error {

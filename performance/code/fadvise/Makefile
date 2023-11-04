@@ -4,7 +4,7 @@ compile:
 	gcc fadvise.c -o fadvise -Wall -Wextra -O2
 
 2G:
-	dd if=/dev/urandom of=./2G bs=1M count=2048
+	dd if=/dev/urandom of=./2G bs=1M count=512
 
 drop_cache:
 	sync; echo 3 | sudo tee /proc/sys/vm/drop_caches
@@ -43,4 +43,14 @@ time_backwards: all
 		--prepare 'make drop_cache' './fadvise advice_random   read_backwards ./2G'   \
 		--prepare 'make drop_cache' './fadvise advice_willneed read_backwards ./2G'   \
 		--prepare 'make drop_cache' './fadvise advice_dontneed read_backwards ./2G'   \
+		--cleanup 'rm -f 2G'
+
+time_directions: all
+	@sudo hyperfine \
+		--export-markdown bench_directions.md \
+		--export-json bench_directions.json \
+		--setup 'make 2G && make compile' \
+		--prepare 'make drop_cache' './fadvise advice_normal   read_seq       ./2G'   \
+		--prepare 'make drop_cache' './fadvise advice_normal   read_random    ./2G'   \
+		--prepare 'make drop_cache' './fadvise advice_normal   read_backwards ./2G'   \
 		--cleanup 'rm -f 2G'
