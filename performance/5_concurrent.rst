@@ -55,6 +55,15 @@ the use of resources with minimal overhead.«*
     * Being very experienced and having made a lot of mistakes.
     * Being fearless and not be aware of the possible problems.
 
+
+----
+
+There's always a xkcd
+=====================
+
+.. image:: images/xkcd_parallel.webp
+   :width: 100%
+
 ----
 
 Rule of thumb 👍
