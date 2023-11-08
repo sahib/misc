@@ -442,7 +442,7 @@ Making syscalls visible
 
    Important options:
 
-   -c: count syscalls and stats at the end.
+   -C: count syscalls and stats at the end.
 
    -f: follow also subprocesses.
 
@@ -876,6 +876,33 @@ Why is `cp` faster?
 
     Find out using `strace cp src dst`.
     If no trick is possible it falls back to normal buffered read/write.
+
+----
+
+Find resource hogs 🐷
+=============================
+
+.. code-block:: bash
+
+    # Show programs with most throughput:
+    $ iotop
+
+Finding max throughput:
+
+.. code-block:: bash
+
+   # Write:
+   $ dd if=/dev/zero of=./file bs=32k count=10000
+   # Read:
+   $ sync; echo 3 | sudo tee /proc/sys/vm/drop_caches && \
+        dd if=./file of=/dev/null bs=32k
+
+.. note::
+
+   NOTE: dd can be nicely used to benchmark the throughput of your disk!
+   Just dd from /dev/zero for write perf and to /dev/null for read perf.
+   But you have to use conv=fdatasync for both and clear the page cache (see below)
+   in case.
 
 ----
 
