@@ -115,8 +115,8 @@ SSD Write amplification
 
    Source: http://databasearchitects.blogspot.com/2021/06/what-every-programmer-should-know-about.html?m=1
 
-   SSDs are divided into blocks (seveal MB), which are divided into pages (often 4K).
-   Pages cannot be erased, only blocks can be. Updates of a pages are written to new blocks.
+   SSDs are divided into blocks (512kb), which are divided into pages (often 4K).
+   Pages can be read or overwritten. Pages cannot be erased, only blocks can be. Updates of a pages are written to new blocks.
    If space runs out, old blocks with many stale pages are erased and can be re-used.
    The number of physical writes is therefore higher than the number of logical writes.
    The more space is used, the higher the write amplication factor though.
@@ -654,6 +654,11 @@ Detour: FUSE
 .. class:: example
 
     Example: code/mmap
+
+.. note::
+
+     Benchmarking IO is especially hard: Often you just benchmark the speed of your page cache
+     for reading/writing. Always clear your cache and use fsync() during benchmarking extensivey!
 
 ----
 

@@ -59,6 +59,7 @@ func (l *MmapLog) Append(num uint64) error {
 
 	binary.BigEndian.PutUint64(l.mmap[l.writeOff:], num)
 	l.writeOff += 8
+	l.fd.Sync()
 	return nil
 }
 
