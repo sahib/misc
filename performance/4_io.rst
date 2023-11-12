@@ -2,6 +2,14 @@
 :data-transition-duration: 950
 :css: hovercraft.css
 
+
+.. note::
+
+    IMPROVEMENT IDEA:
+
+    Maybe cut a bit content and do more of the useful stuff. Do more examples,
+    maybe one big example that grows with time?
+
 ----
 
 :data-x: r2500
@@ -83,7 +91,7 @@ Hardware: HDDs
 
 ----
 
-Hardware: SDDs
+Hardware: SSDs
 ==============
 
 .. image:: images/ssd.jpg
@@ -126,6 +134,28 @@ SSD Write amplification
 
    Also enable TRIM support if your OS did not yet, but nowadways always enabled.
    This makes it possible for the OS to tell the SSD additional blocks that are not needed anymore.
+
+----
+
+Kill it with Hardware: RAID0
+============================
+
+.. image:: images/raid0.png
+   :width: 50%
+
+.. note::
+
+   Let's be honest: I/O is one of the cases where it's the easiest to kill the problem
+   by throwing a lot of hardware on it. The easiest way to increase the available bandwidth
+   is using a RAID0, i.e. coupling several disk to build one logical unit out of them.
+   Depending on your usecase you can of course use other raid levels:
+
+   https://en.wikipedia.org/wiki/Standard_RAID_levels
+
+   But that's not the point of this workshop. The point is how you can increase the throughput
+   of your applications so you're able to reach this bandwidth (and maybe also on how you can
+   defer having to buy more hard disks).
+
 
 ----
 
@@ -252,6 +282,13 @@ Use the `man`, Luke!
 
 ----
 
+Prayer of Syscalls
+==================
+
+»Reduce the number of syscalls and thou shalt be blessed!«
+
+----
+
 Typical read I/O
 ================
 
@@ -334,21 +371,29 @@ Typical write I/O
 
 ----
 
-Sidenote: Allow pre-allocation
-==============================
+Sidenote: APIs are important
+=============================
 
 .. code-block:: go
 
-    // Don't:
-    ReadEntry() ([]byte, error) {
+    // Don't: No pre-allocation possible
+    func ReadEntry() ([]byte, error) {
         // allocate buffer, fill and return it.
     }
 
 
 .. code-block:: go
 
-    // Do:
-    ReadEntry(buf []byte) error {
+    // Better: buf can be pre-allocated.
+    func ReadEntry(buf []byte) error {
+        // use buf, append to it.
+    }
+
+.. code-block:: go
+
+    // Do: Open the reader only once to
+    // reduce number of syscalls
+    func ReadEntry(r io.Reader, buf []byte) error {
         // use buf, append to it.
     }
 
@@ -629,6 +674,9 @@ Detour: FUSE
    * sshfs
    * ipfs / brig
 
+   FUSE gives you very decent performance,
+   as most of the logic still runs in kernel space.
+
 ----
 
 ``mmap()``
@@ -795,8 +843,8 @@ Myth: I/O scheduler 👎
 
 ----
 
-``ionice`` 👎
-=============
+Myth: ``ionice`` 👎
+===================
 
 .. code-block:: c
 
@@ -973,39 +1021,41 @@ I/O performance checklist: *The sane part*
 ===========================================
 
 1. Avoid I/O. (🤡)
-2. Use a sane buffer size with ``read()``/``write()``.
-3. Use append only writes if possible.
-4. Read files sequential, avoid seeking.
-5. Batch small writes, as they evict caches.
-6. Avoid creating too many small files.
-7. Make use of ``mmap()`` where applicable.
-8. Reduce copying (``mmap``, ``sendfile``, ``splice``).
-9. Compress data if you can spare the CPU cycles.
+2. Reduce the number of system calls.
+3. Use a sane buffer size with ``read()``/``write()``.
+4. Use append only writes if possible.
+5. Read files sequential, avoid seeking.
+6. Batch small writes, as they evict caches.
+7. Avoid creating too many small files.
+8. Make use of ``mmap()`` where applicable.
+9. Reduce copying (``mmap``, ``sendfile``, ``splice``).
+10. Compress data if you can spare the CPU cycles.
 
 .. note::
 
     1. In many cases I/O can be avoided by doing more things in memory
        or avoiding duplicate work.
-    2. Anything between 1 and 32k is mostly fine. Exact size depends
+    2. If you write/read a file several times, then do not open and close it every time.
+    3. Anything between 1 and 32k is mostly fine. Exact size depends
        on your system and might vary a little. Benchmark to find out.
-    3. Appending to a file is a heavily optimized flow in Linux. Benefit
+    4. Appending to a file is a heavily optimized flow in Linux. Benefit
        from this by designing your software accordingly.
-    4. Reading a file backwards is much much slower than reading it
+    5. Reading a file backwards is much much slower than reading it
        sequentially in forward direction. This is also a heavily optimized
        case. Avoid excessive seeking, even for SSDs (syscall overhead +
        page cache has a harder time what you will read next)
-    5. Small writes of even a single byte will mark a complete page
+    6. Small writes of even a single byte will mark a complete page
        from the page cache as dirty, i.e. it needs to be written.
        If done for many pages this will have an impact.
-    6. Every file is stored with metadata and some overhead. Prefer to
+    7. Every file is stored with metadata and some overhead. Prefer to
        join small files to bigger ones by application logic.
-    7. mmap() can be very useful, especially in seek-heavy applications.
+    8. mmap() can be very useful, especially in seek-heavy applications.
        It can also be used to share the same file over several processes
        and it has a zero-copy overhead.
-    8. Specialized calls can help to avoid copying data to userspace and
+    9. Specialized calls can help to avoid copying data to userspace and
        do a lot of syscalls by shifting the work to the kernel. In general,
        try to avoid copying data in your application as much as possible.
-    9. If you have really slow storage (i.e. SD-cards) but a fast CPU,
+    10. If you have really slow storage (i.e. SD-cards) but a fast CPU,
        then compressing data might be an option using a fast compression
        algorithm like lz4 or snappy.
 
