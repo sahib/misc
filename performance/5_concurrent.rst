@@ -28,6 +28,7 @@ Agenda
    Examples in this workshop will be in Go. Reason: It's rather simple there. C
    requires pthreads, which is a bit of an arcane library. Python has threads,
    but they suck greatly (GIL). Other languages like Javascript are single threaded
+
    by nature (well, there are web workers, but that's embarassing). Parallel
    programming in bash would be fun, but you might not share my sense of humor.
 
@@ -112,9 +113,7 @@ What's the difference again?
     Concurrent = execution might be interrupted at an time.
     Parallel = several instructions get executed at the same time.
 
-----
-
-.. image:: images/event-loop-concurrent.jpg
+    All parallel programs are also concurrent.
 
 ----
 
@@ -163,14 +162,19 @@ What are coroutines?
 
 ----
 
-Summary
-=======
+CPU Perspective
+===============
 
 .. image:: images/time_sharing_threads.png
 
+.. note::
+
+   Note: Diagram is only for a single core.
+   Several cores of course can do the same.
+
 ----
 
-A word of warning ⚠
+No magic bullets 🔫
 ====================
 
 .. image:: images/epoll_vs_othersz.png
@@ -261,14 +265,18 @@ Critical Section
     var count int
 
     func inc() {
-        // critical section start
-        count++
-        // critical section end
+        for idx := 0; idx < 100000; idx++ {
+            // critical section start
+            count++
+            // critical section end
+        }
     }
 
     func main() {
         go inc()
         go inc()
+        time.Sleep(time.Second)
+        fmt.Println(count)
     }
 
 .. note::
@@ -278,6 +286,8 @@ Critical Section
     Question for you: What synchronisation primitives do you know?
 
     If you don't mention "sleep" then you're a little dishonest ;-)
+
+    Why does this not happen if we reduce the 100000 to e.g. 1000?
 
 ----
 
@@ -343,11 +353,13 @@ A binary semaphore.
     var mu sync.Mutex
 
     func inc() {
-        mu.Lock()
-        count++
-        mu.Unlock()
+        for idx := 0; idx < 100000; idx++ {
+            mu.Lock()
+            count++
+            mu.Unlock()
+        }
 
-        // or better:
+        // or better if a complete function is locked:
         // mu.Lock()
         // defer mu.Unlock()
     }
@@ -358,6 +370,62 @@ A binary semaphore.
 
    - recursive mutex: can be locked several times, if unlocked the same time.
    - rw-mutex: Allows one writer, but many readers.
+
+----
+
+Primitive: Channel
+==================
+
+.. code-block:: go
+
+   // buffered channel with 10 items
+   c1 := make(chan int, 10)
+   c1 <- 1 // send
+   fmt.Println(<-c1) // recv
+
+   // unbuffered channel:
+   c2 := make(chan int)
+   c2 <- 1 // send
+   // deadlock!
+
+.. note::
+
+    Might be called prioq, fiber or something in other languages.
+    Basically a slice or linked list protected with a mutex (in case of a buffered channel)
+    or a single data field (in case of unbuffered channel)
+
+    Channels can be buffered or unbuffered:
+
+    * unbuffered: reads and writes block until the other end is ready.
+    * buffer: blocks only when channel is full.
+
+    Channels can be closed, which can be used as signal to stop.
+    A send to a closed channel panics.
+    A recv from a closed channel blocks forever.
+
+    A nil channel panics when something is send.
+    A nil channel block forever on receiving.
+
+    We will see channels later in action.
+
+----
+
+Channel rules
+=============
+
+.. code-block:: go
+
+   c1 := make(chan int) // unbuffered
+   c2 := make(chan int, 10) // buffered
+
+   // A send on c1 would block until another go routine
+   // will receive from it. On ch2 we can send 10 times
+   // until the same happens.
+
+   // channel are open or closed.
+   // send on a closed channel panics
+   // recv on a closed channel takes forever
+   close(c1)
 
 ----
 
@@ -395,6 +463,38 @@ Primitive: Semaphor
 
 ----
 
+Primitive: Select
+=================
+
+.. code-block:: go
+
+    select {
+        case <-c1:
+            // executed when c1 has
+            // incoming data.
+        case result := <-c2:
+            // executed when c2 has
+            // incoming data.
+
+        default:
+            // executed when nothing
+            // on both channels. If no
+            // 'default' given then
+            // select blocks.
+            // Without default, we block.
+    }
+
+.. note::
+
+   select exists to be multiplex between several channels
+   and to figure out if we way send or receive from a channel.
+
+   This feature does not exactly exist in most other languages.
+   Usually condition variables are used for this outside of Go
+   or something like await/asnyc in languages that have it.
+
+----
+
 Primitive: Barrier
 ==================
 
@@ -421,6 +521,10 @@ Primitive: Barrier
     All threads have to arrive a certain point before any can continue.
 
     Alternative names: Wait Groups, Latch.
+
+    Question: Would it still be correct if we move the wg.Add(1) to the go routine?
+    No! There's a chance that wg.Wait() would not wait yet, because no go routine
+    did start yet.
 
 ----
 
@@ -467,73 +571,6 @@ Primitive: Cond Var
 
     Context is a pattern that can be used in a similar way
     (although rather exclusively for cancellation)
-
-----
-
-Primitive: Channel
-==================
-
-.. code-block:: go
-
-   // buffered channel with 10 items
-   c1 := make(chan int, 10)
-   c1 <- 1 // send
-   fmt.Println(<-c1) // recv
-
-   // unbuffered channel:
-   c2 := make(chan int)
-   c2 <- 1 // send
-   // deadlock!
-
-.. note::
-
-    Might be called prioq or something in other languages.
-    Basically a slice or linked list protected with a mutex (in case of a buffered channel)
-    or a single data field (in case of unbuffered channel)
-
-    Channels can be buffered or unbuffered:
-
-    * unbuffered: reads and writes block until the other end is ready.
-    * buffer: blocks only when channel is full.
-
-    Channels can be closed, which can be used as signal to stop.
-    A send to a closed channel panics.
-    A recv from a closed channel blocks forever.
-
-    A nil channel panics when something is send.
-    A nil channel block forever on receiving.
-
-    We will see channels later in action.
-
-----
-
-Primitive: Select
-=================
-
-.. code-block:: go
-
-    select {
-        case <-c1:
-            // executed when c1 has
-            // incoming data.
-        case result := <-c2:
-            // executed when c2 has
-            // incoming data.
-
-        default:
-            // executed when nothing
-            // on both channels. If no
-            // 'default' given then
-            // select blocks.
-    }
-
-.. note::
-
-   select exists to be multiplex between several channels.
-
-   This feature does not exactly exist in most other languages.
-   Usually condition variables are used for this outside of Go
-   or something like await/asnyc in languages that have it.
 
 ----
 
@@ -718,11 +755,44 @@ Contention & Starvation
 
 ----
 
+Patterns
+========
+
+Several primitives combined build a pattern.
+
+----
+
+Pattern: Pool
+=============
+
+Classical producer-consumer problem.
+
+1. Start a limited number of goroutines.
+2. Pass each a shared channel.
+3. Let each goroutine receive on the channel.
+4. Producer sends jobs over the channel.
+5. Tasks are distributed over the go routines.
+
+.. note::
+
+   Pools often use a queue (i.e. a channel or some other prioq). I.e. you can
+   produce more to some point than you consume. Can be a problem.
+
+.. class:: example
+
+   Example: code/producer_consumer
+
+----
+
 Tracing
 =======
 
 .. image:: images/tracer_goroutines.png
    :width: 100%
+
+.. class:: example
+
+   Example: code/producer_consumer
 
 .. note::
 
@@ -752,31 +822,6 @@ Tracing
     * Run `go tool trace <path>` to start the web ui.
 
     A bit more background: https://blog.gopheracademy.com/advent-2017/go-execution-tracer
-
-----
-
-Patterns
-========
-
-Several primitives combined build a pattern.
-
-----
-
-Pattern: Pool
-=============
-
-Classical producer-consumer problem.
-
-1. Start a limited number of goroutines.
-2. Pass each a shared channel.
-3. Let each goroutine receive on the channel.
-4. Producer sends jobs over the channel.
-5. Tasks are distributed over the go routines.
-
-.. note::
-
-   Pools often use a queue (i.e. a channel or some other prioq). I.e. you can
-   produce more to some point than you consume. Can be a problem.
 
 ----
 
@@ -883,13 +928,12 @@ Problem: Race conditions
 Solution: Race conditions
 =========================
 
-* Avoid shared state.
-* Prefer copy over references.
-* Limit scope where possible.
-* Use proper synchronisation.
+* Use synchronisation primitives.
+* Avoid shared state (no globals e.g.)
+* Prefer copies over references.
 * Use a race detector. (``helgrind``, ``go test -race``)
 * Write tests that are multithreaded.
-* Use Rust.
+* Use Rust. 😛
 
 .. note::
 
@@ -900,8 +944,6 @@ Solution: Race conditions
     smaller than false sharing. This also means though: Do not send pointers
     over channels, as the pointer value itself is copied but of course not the
     value it points to.
-
-    Scope:
 
     Less scope is better. If a variable is only visible to a single thread
     or goroutine, then it cannot have issues. Avoid global state anyways.
@@ -954,8 +996,8 @@ Tool: Race detector
 
 ----
 
-Problem: Deadlocks
-==================
+Problem: Deadlock #1
+====================
 
 .. code-block:: go
 
@@ -979,8 +1021,8 @@ Problem: Deadlocks
 
 ----
 
-Problem Deadlock #2
-===================
+Problem: Deadlock #2
+=====================
 
 .. code-block:: go
 
@@ -1003,8 +1045,8 @@ Problem Deadlock #2
 
 ----
 
-Problem Deadlock #3
-===================
+Problem: Deadlock #3
+=====================
 
 .. code-block:: go
 
@@ -1048,6 +1090,10 @@ Solution: Deadlocks
    Tip: In Go progamms you can press Ctrl+\ or send SIGABRT or SIGTERM
    to the program to make it print a stack trace.
    Or use a debugger.
+
+.. class:: example
+
+   Example: code/deadlock
 
 ----
 
@@ -1119,9 +1165,6 @@ Solution: `Context`
     timeout := 5 * time.Second
     ctx, cancel := context.WithTimeout(parentCtx, timeout)
 
-    // Cancellation:
-    cancel()
-
     // Check for cancellation:
     select {
         case <-ctx.Done():
@@ -1131,11 +1174,35 @@ Solution: `Context`
             // we land here.
     }
 
+    // Cancellation:
+    cancel()
+
 .. note::
 
     Especially useful for HTTP request handlers.
     In Go, each of them has a context that is cancelled
     when the request is not needed anymore.
+
+----
+
+Context Tree
+============
+
+.. image:: images/context.avif
+   :width: 80%
+
+----
+
+Takeaways
+=========
+
+* Benchmarks before committing your atrocities.
+* Always make sure to use proper synchronization.
+* Don't use more go routines than you need.
+* Avoid false sharing.
+* Avoid contention & starvation.
+* Write tests that use several go routines (`-race`).
+* Don't be clever.
 
 ----
 

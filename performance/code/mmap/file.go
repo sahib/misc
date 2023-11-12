@@ -26,6 +26,7 @@ func (fl *FileLog) Append(num uint64) error {
 	var buf [8]byte
 	binary.BigEndian.PutUint64(buf[:], num)
 	_, err := fl.fd.Write(buf[:])
+	fl.fd.Sync()
 	return err
 }
 
