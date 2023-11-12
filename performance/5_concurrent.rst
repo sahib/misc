@@ -28,9 +28,11 @@ Agenda
    Examples in this workshop will be in Go. Reason: It's rather simple there. C
    requires pthreads, which is a bit of an arcane library. Python has threads,
    but they suck greatly (GIL). Other languages like Javascript are single threaded
-
    by nature (well, there are web workers, but that's embarassing). Parallel
    programming in bash would be fun, but you might not share my sense of humor.
+
+   We will not talk about GPU Programming, which is something that is also part of parallel
+   programming but it's seldom enough that you have to do that yourself.
 
 .. image:: images/thread.jpg
    :width: 40%
@@ -172,6 +174,29 @@ CPU Perspective
    Note: Diagram is only for a single core.
    Several cores of course can do the same.
 
+-----
+
+Preemption
+==========
+
+.. image:: images/preemption.png
+    :width: 100%
+
+.. note::
+
+    Linux' scheduling is preemptive. This means that a high priority task
+    can be worked on by interrupting a task with lower priority.
+
+    Preemption points: The scheduler can interrupt a process at pretty much
+    any point in time. Normally this happens in any of those cases:
+
+    * Process used up their time share.
+    * Process made a syscall. While execution happens in kernel, other
+      cores can work up on other tasks (especially for things like recv(),
+      or read() where the kernel also just waits on hardware)
+    * When the process calls sched_yield() (or sleep())
+
+
 ----
 
 No magic bullets 🔫
@@ -187,7 +212,7 @@ No magic bullets 🔫
     * forking: Spawn a new process per request.
     * preforking: Use a pool of worker process.
     * threaded: Spawn a new thread per request.
-    * prethreaded: Use a pool of woerk threads.
+    * prethreaded: Use a pool of work threads.
     * poll: Single threaded using the poll() syscall.
     * epoll: Single threaded using the epoll() syscall.
 
@@ -211,29 +236,6 @@ No magic bullets 🔫
 
     The contents in this part of the workshop are best applied with the understanding
     of the CPU and Memory chapters.
-
-----
-
-Preemption
-==========
-
-.. image:: images/preemption.png
-    :width: 100%
-
-.. note::
-
-    Linux' scheduling is preemptive. This means that a high priority task
-    can be worked on by interrupting a task with lower priority.
-
-    Preemption points: The scheduler can interrupt a process at pretty much
-    any point in time. Normally this happens in any of those cases:
-
-    * Process used up their time share.
-    * Process made a syscall. While execution happens in kernel, other
-      cores can work up on other tasks (especially for things like recv(),
-      or read() where the kernel also just waits on hardware)
-    * When the process calls sched_yield() (or sleep())
-
 
 ----
 
