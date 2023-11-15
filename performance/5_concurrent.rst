@@ -51,13 +51,20 @@ the use of resources with minimal overhead.«*
 
 .. note::
 
+    Today I won't give you tips on how to optimize the shit out of your parallel programs.
+    Parallel programs are a big and rather obvious speed-up by their own and I don't think
+    I have to prove that programs that uses several cores are faster than a single core, if
+    the task at hand can be splitted up in indepdendet subtasks. For parallel programs the
+    same principles as the CPU talk apply - especially true and false sharing. Correct use
+    of the cache is the most important thing here.
+    Today we will rather focus on how to achieve parallel programs in a safe way.
+
     It really is an art, since there are no easy guidelines.
 
     There are two ways to be comfortable writing parallel code:
 
     * Being very experienced and having made a lot of mistakes.
     * Being fearless and not be aware of the possible problems.
-
 
 ----
 
@@ -112,10 +119,13 @@ What's the difference again?
 
 .. note::
 
-    Concurrent = execution might be interrupted at an time.
-    Parallel = several instructions get executed at the same time.
+    Concurrent = concurrency is the composition of independently executing routines (execution might be interrupted at an time, how can me make it design code to allow that?)
+    Parallel = parallelism is the simultaneous execution of (possibly related) computations (several instructions get executed at the same time).
 
     All parallel programs are also concurrent.
+
+    Why is the difference important?
+    See here: https://go.dev/blog/waza-talk
 
 ----
 
@@ -127,37 +137,45 @@ What are processes?
 - Processes focus on memory isolation - memory can only be shared via IPC (unix sockets, pipes, shared memory, network...)
 - Processes have their own ID (PID)
 
+.. note::
+
+   How can we achieve parallel execution? We have to use several cores
+   and an easy way to do that without any real extra work is to use several processes.
+   The OS scheduler will take care that the usage of cores gets maxed out.
+
 ----
 
 What are threads?
 =================
 
 - Threads are lightweight processes (again?)
-- Threads get started by ``pthread_create()`` (except first thread, which exists implicitly)
+- Threads get started by ``clone()`` (except first thread, which exists implicitly)
 - Threads share the heap of the process but have each their own stack
 - Threads have their own ID (TID)
 
 .. note::
 
    Threads are scheduled like processes by the kernel. No real difference is made between
-   processes and threads in that regard.
+   processes and threads in that regard. In fact, the kernel does not really handle them
+   much differently. The only real difference is that they share the same memory.
 
 ----
 
 What are coroutines?
 ====================
 
-- Coroutines are lightweight threads (oh come on)
-- Coroutines are implemented completely in user space using a scheduler
-- Every detail depends on the individual programming languages' implementation
+- Coroutines are lightweight threads (oh come on now)
+- Coroutines are implemented completely in user space using a scheduler runtime (e.g. Go).
+- Every detail depends on the individual programming languages' implementation.
 - »Goroutines« are one example of a coroutine implementation. »Fibers« are another often used term.
-- Not a kernel concept, kernel scheduler does not care.
+- Not a kernel concept, several coroutines can be executed by one tread and/or process.
 
 .. note::
 
-   Good example of software evolution. Old concepts are never cleaned up. Just new concepts
-   get added that enhance (in the best case) the old concepts. I call this toilet paper development:
-   If it stinks, put another layer over it.
+   Coroutines are actually a much different concept than the other two (processes and threads) as it's
+   not something that's powered by the operating system and differes wildly between implementation.
+   Coroutines can be seen as concurrent routines, i.e. routines that can be halted and continued at any given time
+   and can be composed to build parallel programs.
 
    In case of Go, there is a scheduler that is started inside every program written in Go. It starts
    a number of threads (see GOMAXPROCS) and schedules the set of go routines over the set of threads.
@@ -171,8 +189,10 @@ CPU Perspective
 
 .. note::
 
-   Note: Diagram is only for a single core.
-   Several cores of course can do the same.
+   Note: Diagram is only for a single core. Several cores of course can do the
+   same. There are no coroutines in this picture since the CPU does not see
+   them. Technically it doesn't figure the difference between threads and
+   processes either.
 
 -----
 
@@ -183,6 +203,10 @@ Preemption
     :width: 100%
 
 .. note::
+
+    How can be actually manage to have a function that can be interrupted? Well,
+    we already know how: Context switches! And those happen all the time, even
+    if your program is not multithreaded.
 
     Linux' scheduling is preemptive. This means that a high priority task
     can be worked on by interrupting a task with lower priority.
@@ -285,11 +309,13 @@ Critical Section
 
     Keep critical sections as small as possible - for performance & sanity.
 
-    Question for you: What synchronisation primitives do you know?
+    Question for you:
+    * Why does this not happen if we reduce the 100000 to e.g. 1000?
+    * Why is there a sleep in main()?
+    * What synchronisation primitives do you know?
 
     If you don't mention "sleep" then you're a little dishonest ;-)
 
-    Why does this not happen if we reduce the 100000 to e.g. 1000?
 
 ----
 
@@ -299,7 +325,6 @@ Parallel code smell #1 👃
 .. class:: quote
 
     Never start a goroutine/thread/process without knowing how it will stop.
-
 
 | - **Dave Cheney**
 
@@ -347,8 +372,6 @@ Just kidding. **Don't!**
 Primitive: Mutex
 =================
 
-A binary semaphore.
-
 .. code-block:: go
 
     var count int
@@ -367,6 +390,8 @@ A binary semaphore.
     }
 
 .. note::
+
+   Question: Would it still work if I would move the mutex into the function?
 
    Variants:
 
@@ -387,8 +412,12 @@ Primitive: Channel
 
    // unbuffered channel:
    c2 := make(chan int)
-   c2 <- 1 // send
-   // deadlock!
+
+   go func() {
+       c2 <- 1 // send, locks until recv
+   }()
+   fmt.Println(<-c2)
+
 
 .. note::
 
@@ -403,7 +432,7 @@ Primitive: Channel
 
     Channels can be closed, which can be used as signal to stop.
     A send to a closed channel panics.
-    A recv from a closed channel blocks forever.
+    A recv from a closed channel returns the zero value immediately.
 
     A nil channel panics when something is send.
     A nil channel block forever on receiving.
@@ -426,8 +455,14 @@ Channel rules
 
    // channel are open or closed.
    // send on a closed channel panics
-   // recv on a closed channel takes forever
+   // recv on a closed channel returns the zero value.
    close(c1)
+   _, ok := c1 // ok would be false.
+
+.. note::
+
+   The good thing on channels: The values you send over it are (shallowly) copied, not referenced!
+   This means that the other thread can safely use it
 
 ----
 
@@ -453,6 +488,8 @@ Primitive: Semaphor
 
 .. note::
 
+    A semaphor is generalization of a mutex (which is also called binary semaphore)
+
     Very easy way to limit the number of go routines.
     Basically a lightweight pool - good for one-time jobs.
 
@@ -477,7 +514,6 @@ Primitive: Select
         case result := <-c2:
             // executed when c2 has
             // incoming data.
-
         default:
             // executed when nothing
             // on both channels. If no
@@ -538,19 +574,19 @@ Primitive: Cond Var
     // Init:
     m := sync.Mutex{}
     c := sync.NewCond(&m)
-    // ...
+
     // Sender:
     c.L.Lock() // c.L == m
-    newJobReceived = true
+    condition = true
     c.Broadcast() // or c.Signal() for a single go routine.
     c.L.Unlock()
-    // ...
-    // Receiver:
+
+    // Receivers:
     c.L.Lock()
-    for !newJobReceived {
+    for !condition {
         c.Wait()
     }
-    // Do something here.
+    // React on condition change here.
     c.L.Unlock()
 
 .. note::
@@ -629,12 +665,19 @@ Primitive: Atomics
     n.Swap(val int64) (old int64)
     n.CompareAndSwap(old, new int64) (swapped bool)
 
+.. class:: example
+
+   Example: code/counter
+
 .. note::
 
     Atomic: A thing that happens in one go. Either it fails completely and
     leaves no trace or it work fully. Some operations can be executed on the
     CPU atomically with guarantees of never being interrupted by another
     thread, signal or ISR. Those are the above operations.
+
+    This works by having special instructions to execute those that inform the CPU
+    that this operation has to be atomic.
 
     If you chain several atomic operations (e.g. Store+Load) they
     are of course not atomic together!
@@ -646,16 +689,19 @@ Primitive: CAS
 
 .. code-block:: go
 
-    func (cd countdown) Stop() {
-        cas := atomic.CompareAndSwapInt32
-        if !cas(&cd.isStopped, 0, 1) {
-            // do not stop code twice if
-            // Stop() called more than once.
-            return
-        }
+   type countdown struct { isStopped int32 }
 
-        // Do actual stopping here.
-    }
+   func (cd countdown) Stop() {
+       cas := atomic.CompareAndSwapInt32
+       if !cas(&cd.isStopped, 0, 1) {
+           // cd.isStopped is already 1!
+           // do not stop code twice if
+           // Stop() called more than once.
+           return
+       }
+
+       // Do actual stopping here.
+   }
 
 .. note::
 
@@ -684,20 +730,16 @@ Primitive: Lockfree data structures
 
 .. code-block:: go
 
+    // Pop has to do two things:
+    // read the next elem and change the queue's head.
+    // How to do this without locking?
     func (q *Queue) Pop() *Elem {
-        for {
-            p := q.head
-            if p.next == nil {
-                return nil
-            }
-
-            // Is `p` still the value that
-            // we expect it to be?
-            if cas(q.head, p, p.next) {
-                // value was swapped!
-                return p.next.elem
-            }
+        oldHead := q.head
+        for !cas(q.head, oldHead, oldHead.next) {
+            // value was swapped - reload!
+            oldHead = q.head
         }
+        return oldHead
     }
 
 .. note::
@@ -881,8 +923,8 @@ Pattern: Parallel Iterator
 
 .. code-block:: go
 
-   func iter() chan Elem {
-        ch := make(chan Elem, 10)
+   func fibonacci() chan int {
+        ch := make(chan int, 10)
         go func() {
             a, b := 1, 1
             for {
@@ -1089,7 +1131,7 @@ Solution: Deadlocks
 
 .. note::
 
-   Tip: In Go progamms you can press Ctrl+\ or send SIGABRT or SIGTERM
+   Tip: In Go progamms you can press Ctrl+\\ or send SIGABRT or SIGTERM
    to the program to make it print a stack trace.
    Or use a debugger.
 
@@ -1125,6 +1167,9 @@ Solution: Livelock
 * Avoid circular dependencies.
 * Use an arbitrator.
 * Use exponential backoff.
+
+.. image:: images/backoff.png
+   :width: 70%
 
 .. note::
 
@@ -1200,6 +1245,7 @@ Takeaways
 
 * Benchmarks before committing your atrocities.
 * Always make sure to use proper synchronization.
+* Avoid having to synchronize by not sharing memory.
 * Don't use more go routines than you need.
 * Avoid false sharing.
 * Avoid contention & starvation.
@@ -1234,7 +1280,19 @@ Brainfuck time 🧠
 
 .. note::
 
-    Bonus: If you can name all philosophers pictured above.
+    We won't solve it today - possible solutions are on wikipedia:
+    https://en.wikipedia.org/wiki/Dining_philosophers_problem
+
+    But please don't look and better go and talk to me to see if you
+    figured out a valid solution!
+
+    Bonus: If you can name all philosophers pictured above:
+
+    - Descartes
+    - Aristoteles (or Socrates?)
+    - Konfuzius
+    - ?
+    - ?
 
     Two problems that can occur:
 
@@ -1264,3 +1322,20 @@ Fynn!
 .. class:: next-link
 
     **Next:** `Bookmark the GitHub repo! <https://github.com/sahib/misc/tree/master/performance>`_
+
+.. note::
+
+   Final words:
+
+   Hope you had some fun and learned something. After all you endured 15 hours
+   of me trying to talk english. I'm aware that most of you did not do your
+   homework yet. I will and can not force you to do it, but in my opinion it is
+   *very* essential that you do some practice yourself. It's like in school
+   where the math teachins seemed obvious until you go and have a try yourself.
+   So please make me proud. ;-)
+
+   There is a calendar entry in December where you can show your approach, if you want. It's totally optional,
+   but if you want feedback by me or the others, then this is a good time for it.
+
+   Feedback time! How did you like the workshop? What could have been done better or differently?
+   What did you like, what didn't you like? You can also give me feedback via Slack or in the December meeting.
