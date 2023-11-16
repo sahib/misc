@@ -1098,15 +1098,15 @@ Problem: Deadlock #3
         mu1.Lock()
         mu2.Lock()
         // ...
-        defer mu1.Lock()
-        defer mu2.Lock()
+        defer mu1.Unlock()
+        defer mu2.Unlock()
     }
     func bar() error {
         mu2.Lock()
         mu1.Lock()
         // ...
-        defer mu2.Lock()
-        defer mu1.Lock()
+        defer mu2.Unlock()
+        defer mu1.Unlock()
     }
 
 .. note::
