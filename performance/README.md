@@ -5,6 +5,12 @@ After publishing it is available here:
 
 https://sahib.github.io/misc/performance/slides/0_toc/index.html
 
+## Video Recording
+
+The workshop was given end of 2023 and there is a recording available here:
+
+https://vimeo.com/888379442
+
 ## Tools used
 
 * ``hovercraft`` to build the slides from rST.
