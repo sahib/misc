@@ -8,7 +8,7 @@ class:
 
 # How to choose a hash function
 
-With flowcharts and 5 blockchains!
+With flowcharts and blockchain!
 
 ![bg right width:1200px](./images/choosing.jpg)
 
@@ -31,33 +31,21 @@ Agenda:
 
 ![bg right width:600px](./images/injective.png)
 
-<!--
----
-
-# What is an inverse function?
-
-* $f^{-1}(x) = x$
-* $f^{-1}(x) = \frac{x}{2}$
-* $f^{-1}(x) = \frac{7x+6}{2-3x}$
-
----
-
-# Does this work for all functions?
-
-* $f(x) = sin(x)$ ![w:300 grayscale](sin.png)
-* $f^{-1}(x) = arcsin(x)$ ![h:300 grayscale](arcsin.png)
-
--->
-<!-- sin(x) can only be inverted between pi/2 and -pi/2 -->
-<!-- If f(x) yields the same value several times for x, then we cannot fully reverse it -->
-
 ---
 
 # What is a hash (code)?
 
 <!-- in our context at least, hash can also mean hash brownies or minced meat... -->
 
-Number with a fixed number of bits.
+Number with a fixed number of bits. Example:
+
+`da39a3ee5e6b4b0d3255bfef95601890afd80709`
+
+<!-- That above is the sha1 hash of an empty file
+     Maybe one of the very few hash codes worth to recognize!
+-->
+
+![bg right width:700px](./images/hash.png)
 
 ---
 
@@ -67,13 +55,15 @@ $h(x)$ maps arbitrarily sized numbers to a fixed number of bits...
 
 * ...with minimum number of collisions.
 * ...as uniform as possible.
-* ...is not invertable, except by brute-force (»preimage resistance«)
+* ...is not invertible, except by brute-force (»preimage resistance«)
 
 ---
 
 ![flow chart](./images/flowchart.svg)
 
 <!--
+Source for the diagram:
+
 https://app.diagrams.net/#G11rSwTBF6jc5VIC4bXvHTUVJ2IJZM7aDa
 -->
 
@@ -110,7 +100,6 @@ var h uint64
 for _, c := range data {
     h += uint64(c)
 }
-
 ```
 
 ![bg right width:600px](./distplot/image_crosstotal.png)
@@ -130,7 +119,6 @@ for _, c := range data {
 ![bg right width:900px](./distplot/image_fibonacci.png)
 
 ---
-
 
 # Uniformity: crc32
 
@@ -152,11 +140,18 @@ for _, c := range data {
 
 # Bit-size
 
-Can be used to control number of collisions.
+Can be used to control the probability of collisions.
 
-Cryptographic hash functions usually have a lot more.
 
 ![bg right width:1200px](./images/bitsize.webp)
+
+<!--
+Cryptographic hash functions usually have a lot more.
+Lowest is 128 bit (md5), sha1 is 160, most are bigger than 256.
+
+Non cryptographic have usually <= 128 bit. Very often 32 bit or 64 bit
+since they are often used in hash tables or algorithms.
+-->
 
 ---
 
@@ -177,21 +172,20 @@ Usecases:
 
 Full list [here](https://rurban.github.io/smhasher/doc/table.html).
 
+<style scoped>
+table {
+  font-size: 17px;
+}
+</style>
 
-Algorithm    |   MiB/sec
--------------|---------:
-MeowHash     | 29969.40
-xxh128       | 18802.16
-fibonacci    | 16878.32
-crc32        | 8403.09
-Murmur3F     | 7623.44
-blake3_c     | 1288.84
-FNV1a        | 760.52
-sha1_64      | 575.68
-md5_64       | 351.01
-sha2-256     | 231.70
-sha3-256     | 125.35
-argon2       | <0.1
+| Algorithm    |   MiB/sec  | Algorithm    | MiB/sec  |
+| -------------|------------|--------------|--------- |
+| MeowHash     | 29969.40   | FNV1a        | 760.52   |
+| xxh128       | 18802.16   | sha1_64      | 575.68   |
+| fibonacci    | 16878.32   | md5_64       | 351.01   |
+| crc32        | 8403.09    | sha2-256     | 231.70   |
+| Murmur3F     | 7623.44    | sha3-256     | 125.35   |
+| blake3_c     | 1288.84    | argon2       | <0.1     |
 
 ![bg right width:1300px](./images/performance.jpg)
 
@@ -218,8 +212,8 @@ argon2       | <0.1
 Important aspects:
 
 * Is it standard? (NIST)
-* Are there known attacks beyond brute force? (md5 †, SHA1 †)
-* Collision resistant
+* Are there known attacks beyond brute force? (`MD5` †, `SHA1` †)
+* High collision resistance
 * High-enough bit size
 * Cannot be (easily) inverted
 * Can it be keyed/seeded?
@@ -230,6 +224,7 @@ Important aspects:
 
 * Good libraries available?
 * Matches reference implementation?
+* Is it supported in other environments? (`sha1sum` in bash)
 * Streaming interface available?
 
     ```go
@@ -248,7 +243,10 @@ Important aspects:
 # Special case: Rolling Hash
 
 <!--
-rolling hashing: hash functions for data windows (data can be removed!)
+Data that was added can be efficiently removed from the hash.
+
+Programs like rsync use it to detect diffs in files and are thus
+able to transfer only the parts of a file that actually changed.
 --->
 
 ![](./images/rolling_hash.webp)
