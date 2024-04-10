@@ -8,7 +8,7 @@ class:
 
 # How to choose a hash function
 
-With flowcharts and blockchain!
+With flowchart and blockchains!
 
 ![bg right width:1200px](./images/choosing.jpg)
 
@@ -31,11 +31,34 @@ Agenda:
 
 ![bg right width:600px](./images/injective.png)
 
+<!--
+
+The first three functions have something in common:
+You can get the input value easily by applying the inverse function to the output value.
+For sin(x) that's not really possible, for larger numbers, as they always map to the same one.
+
+Hash functions are not easily invertable and they map a big input set to a small output set.
+They are surjective, but that's something you can forget easily.
+
+-->
+
 ---
 
 # What is a hash (code)?
 
-<!-- in our context at least, hash can also mean hash brownies or minced meat... -->
+<!--
+in our context at least, hash can also mean hash brownies or minced meat...
+On the right side you'll see what Google image search thinks a "hash" is.
+-->
+
+<style scoped>
+h1 {
+  font-size: 40px !important;
+}
+p {
+  font-size: 20px !important;
+}
+</style>
 
 Number with a fixed number of bits. Example:
 
@@ -51,17 +74,25 @@ Number with a fixed number of bits. Example:
 
 # What is a hash function?
 
+<!-- Now that we know what a function and what a hash is...
+Since every data can be represented as number, we can see it as
+mathematical function
+-->
+
 $h(x)$ maps arbitrarily sized numbers to a fixed number of bits...
 
 * ...with minimum number of collisions.
 * ...as uniform as possible.
-* ...is not invertible, except by brute-force (»preimage resistance«)
+* ...is not invertible, except by brute-force (*»preimage resistance«*)
 
 ---
 
 ![flow chart](./images/flowchart.svg)
 
 <!--
+We will come back to this image, since we first need to understand
+the decisions we need to make.
+
 Source for the diagram:
 
 https://app.diagrams.net/#G11rSwTBF6jc5VIC4bXvHTUVJ2IJZM7aDa
@@ -87,6 +118,18 @@ https://app.diagrams.net/#G11rSwTBF6jc5VIC4bXvHTUVJ2IJZM7aDa
 How well are the hash codes distributed?
 
 ![bg right width:900px](./distplot/image_random.png)
+
+<!--
+
+Graphic: On the right side every pixel has an ID.
+If you choose 5 million random values and light up every
+pixel with that ID, then you get roughly that image.
+
+The rainbow color is only to make it easier to see patterns
+and because rainbows are cool
+
+As you see, there are no patterns.
+-->
 
 ---
 
@@ -129,6 +172,8 @@ for _, c := range data {
 # Uniformity: fnv1a
 
 ![bg right width:900px](./distplot/image_fnv1a.png)
+
+<!-- that's the one we use for protobeef -->
 
 ---
 
@@ -212,11 +257,18 @@ table {
 Important aspects:
 
 * Is it standard? (NIST)
-* Are there known attacks beyond brute force? (`MD5` †, `SHA1` †)
-* High collision resistance
-* High-enough bit size
-* Cannot be (easily) inverted
+* Are there any known attacks beyond brute force? (`MD5` 2011 †, `SHA1` 2017 †)
+* Very high collision resistance.
+* High-enough bit size (`> 256`)
 * Can it be keyed/seeded?
+
+
+<!--
+In summary: If unsure: Make the hash string include the algorithm, so
+you can easily switch it later. The big mistake of git.
+-->
+
+![bg right width:700px](./images/crypto.jpg)
 
 ---
 
@@ -260,6 +312,10 @@ perfect hash: specially constructed hash function for a known data set with no c
 -->
 
 ![width:800px](./images/perfect_hash.png)
+
+---
+
+![flow chart](./images/flowchart.svg)
 
 ---
 
