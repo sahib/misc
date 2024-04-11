@@ -9,13 +9,14 @@ class:
 <style>
 h1 {
     font-family: Roboto Slab;
+    color: #056210;
 }
 p {
     font-family: Roboto Slab;
 }
 </style>
 
-# How to choose a hash function
+# How to choose the right hash function?
 
 With flowchart and blockchains!
 
