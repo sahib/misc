@@ -6,6 +6,15 @@ class:
 
 <!-- _class: lead -->
 
+<style>
+h1 {
+    font-family: Roboto Slab;
+}
+p {
+    font-family: Roboto Slab;
+}
+</style>
+
 # How to choose a hash function
 
 With flowchart and blockchains!
