@@ -31,7 +31,7 @@ It's an easy language, right?
 
 <p id="author">🄯 Chris Pahl 2024</p>
 
-![bg right width:600px](./gopher.png)
+![bg right width:600px](./images/gopher.png)
 
 <!--
 Let's explore some dark corners of our favorite language (or language that will become the favorite).
