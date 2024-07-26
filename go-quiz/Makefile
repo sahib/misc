@@ -9,6 +9,7 @@ publish: build
 	rm -rf /tmp/slides
 	mkdir -p /tmp/slides
 	cp -r ./images/   /tmp/slides
+	cp -r ./favicon.ico   /tmp/slides
 	cp ./slides.html  /tmp/slides/index.html
 
 	git checkout gh-pages
