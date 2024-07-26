@@ -1,6 +1,9 @@
 ---
 marp: true
 style: |
+  /* Make sure the font is there */
+  @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap');
+
   .columns {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -16,12 +19,17 @@ style: |
   #author, .small {
     font-size: 20px;
   }
+
+  /* other highlight theme */
+  @import url("highlight.css");
 theme: gaia
 title: Go Quiz
 author: Chris Pahl
 class:
   - uncover
 ---
+
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
 
 <!-- _class: lead -->
 
@@ -31,7 +39,7 @@ It's an easy language, right?
 
 <p id="author">🄯 <a href="https://sahib.github.io">Chris Pahl</a> 2024</p>
 
-![bg right width:600px](./gopher.png)
+![bg right width:600px](./images/gopher.png)
 
 <!--
 Let's explore some dark corners of our favorite language (or language that will become the favorite).
@@ -162,7 +170,9 @@ Each rune is a unicode codepoint.
 
 ```go
 func main() {
-  fmt.Println(strings.TrimRight("oxoxo", "xo"))
+  fmt.Println(
+    strings.TrimRight("oxoxo", "xo"),
+  )
 }
 ```
 
