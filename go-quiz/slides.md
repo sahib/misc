@@ -19,9 +19,6 @@ style: |
   #author, .small {
     font-size: 20px;
   }
-
-  /* other highlight theme */
-  @import url("highlight.css");
 theme: gaia
 title: Go Quiz
 author: Chris Pahl
@@ -904,7 +901,7 @@ func main() {
 </div>
 <div>
 
-**How many heap bytes are alloc'd from start until `HERE`?**
+**How many bytes are still allocated at `HERE` by `main()`?**
 
 1. 50184 Bytes
 2. 234 Bytes
