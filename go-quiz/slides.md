@@ -125,8 +125,6 @@ The range syntax is valid since Go 1.22, but I did not use `i` so it fails to co
 <div class="columns">
 <div>
 
-<https://go.dev/play/p/aj1a3vPJRWv>
-
 ```go
 func main() {
   s := "🙀"
@@ -468,7 +466,7 @@ fmt.Println(x, y)
 
 1. `5 10`
 2. `0 9`
-3. 3 9
+3. `3 9`
 
 <!--
 Answer 2. The trick is just variable shadowing. x is re-defined in the if body.
@@ -757,6 +755,7 @@ A.M() has a pointer receiver which is automatically picked. The values survives 
 
 ```go
 ch := make(chan int)
+close(ch)
 for {
   select {
   case <-ch:
