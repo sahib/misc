@@ -1,6 +1,9 @@
 ---
 marp: true
 style: |
+  /* Make sure the font is there */
+  @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap');
+
   .columns {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -13,9 +16,12 @@ style: |
   p {
       font-family: Roboto Slab;
   }
-  #author {
+  #author, .small {
     font-size: 20px;
   }
+
+  /* other highlight theme */
+  @import url("highlight.css");
 theme: gaia
 title: Go Quiz
 author: Chris Pahl
@@ -23,13 +29,15 @@ class:
   - uncover
 ---
 
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+
 <!-- _class: lead -->
 
 # Go Quiz
 
 It's an easy language, right?
 
-<p id="author">🄯 Chris Pahl 2024</p>
+<p id="author">🄯 <a href="https://sahib.github.io">Chris Pahl</a> 2024</p>
 
 ![bg right width:600px](./images/gopher.png)
 
@@ -56,7 +64,7 @@ We'll do this as a proper quiz, so in the end there will be a winner!
 
 ----
 
-# Testing the rules
+# 1. Testing the rules
 
 <div class="columns">
 <div>
@@ -86,7 +94,7 @@ Everyone who guessed it right gets one point.
 
 ----
 
-# Range Loop
+# 2. Range Loop
 
 <div class="columns">
 <div>
@@ -120,7 +128,7 @@ The range syntax is valid since Go 1.22, but I did not use `i` so it fails to co
 
 ----
 
-# String Iteration
+# 3. String Iteration
 
 <div class="columns">
 <div>
@@ -140,9 +148,9 @@ func main() {
 
 **What will this print?**
 
-1. `LEN 1` and just one run of the loop.
-2. `LEN 4` and each byte of s.
-3. `LEN 4` and just one run of the loop.
+1. `LEN 1` and one run of the loop.
+2. `LEN 3` and each byte of s.
+3. `LEN 4` and one run of the loop.
 
 [Playground Link](<https://go.dev/play/p/xSebkXAzRHY?v=goprev>)
 
@@ -155,14 +163,16 @@ Each rune is a unicode codepoint.
 
 ----
 
-# Stdlib pitfalls
+# 4. Trimpoline
 
 <div class="columns">
 <div>
 
 ```go
 func main() {
-  fmt.Println(strings.TrimRight("oxoxo", "xo"))
+  fmt.Println(
+    strings.TrimRight("oxoxo", "xo"),
+  )
 }
 ```
 
@@ -188,7 +198,7 @@ It often gets confused with TrimSuffix.
 
 ----
 
-# Integer overflows
+# 5. Integer overflows
 
 <div class="columns">
 <div>
@@ -220,7 +230,7 @@ For int32 it's harder to visualize, but imagine it as (-2**31 + 2**31)
 
 -----
 
-# Floating point
+# 6. Floating point
 
 <div class="columns">
 <div>
@@ -254,7 +264,7 @@ Different to python by the way!
 
 ----
 
-# Map Iteration Order
+# 7. Map Iteration Order
 
 <div class="columns">
 <div>
@@ -292,7 +302,7 @@ You would need to use a btree if you need that.
 
 ----
 
-# Map deletion during iteration
+# 8. Map Deletion during iteration
 
 <div class="columns">
 <div>
@@ -333,7 +343,7 @@ but rather sets a flag that this values can be cleaned up later.
 
 ----
 
-# Map insertion during iteration
+# 9. Map insertion during iteration
 
 <div class="columns">
 <div>
@@ -371,7 +381,7 @@ The number of loops therefore vary between 3 and 6.
 
 ----
 
-# `map[any]any`
+# 10. The `any` key
 
 <div class="columns">
 <div>
@@ -407,7 +417,7 @@ Just the middle one works. In an any map, the type is important and part of the 
 
 ----
 
-# `any`
+# 11. What are interfaces?
 
 <div class="columns">
 <div>
@@ -442,7 +452,7 @@ to another variables. Since that pointer is not nil by itself it prints false.
 
 ----
 
-# Oh no, not again
+# 12. Oh no, not again math
 
 <div class="columns">
 <div>
@@ -478,7 +488,7 @@ Answer 2. The trick is just variable shadowing. x is re-defined in the if body.
 
 ----
 
-# Embedding
+# 13. Embedding
 
 <div class="columns">
 <div>
@@ -506,7 +516,7 @@ func main() {
 **What will this print?**
 
 1. Compilation error
-2. Runtime error (ambiguous selector c.M)
+2. Runtime error (`ambiguous selector c.M`)
 3. `A`
 4. `B`
 
@@ -520,7 +530,7 @@ It's number 1. The compiler can't decided which method to call. (`ambiguous sele
 
 ----
 
-# Slice values
+# 14. Slice a `nil`
 
 <div class="columns">
 <div>
@@ -540,7 +550,7 @@ func main() {
 
 1. `true false`
 2. `false true`
-3. `false false`
+3. `true true`
 
 [Playground Link](<https://go.dev/play/p/Tdv5Kar6egO>)
 
@@ -555,7 +565,7 @@ Sometimes annoying with json, where it prints null nstead of [].
 
 ----
 
-# Slice magic
+# 15. Slice Confusion
 
 <div class="columns">
 <div>
@@ -591,7 +601,7 @@ The syntax with the two colons is the cap syntax. It can be used to re-cap a sli
 
 ----
 
-# Loop Variables
+# 16. Loop Variables
 
 <div class="columns">
 <div>
@@ -613,7 +623,7 @@ func main() {
 
 **What will this print?**
 
-1. In Go1.22 `1 2 3`, in Go1.21 `4 4 4`
+1. Depends on the Go version.
 2. `1 2 3`
 3. `4 4 4`
 
@@ -628,7 +638,7 @@ Now, a new loop variable is created, which it works as expected.
 
 ----
 
-# Modulo
+# 17. Modulo
 
 <div class="columns">
 <div>
@@ -665,7 +675,7 @@ For Go, it's Answer 2.
 
 ----
 
-# `defer` order
+# 18. `defer` Order
 
 <div class="columns">
 <div>
@@ -705,7 +715,7 @@ The f(1) is called immediately. Otherwise defer calls are stacked. They are exec
 
 ----
 
-# Receiver / Deceiver
+# 19. Receiver / Deceiver
 
 <div class="columns">
 <div>
@@ -748,7 +758,7 @@ A.M() has a pointer receiver which is automatically picked. The values survives 
 
 ----
 
-# Closed Channels
+# 20. Closed Channels
 
 <div class="columns">
 <div>
@@ -784,7 +794,7 @@ Therefore the program loops forever.
 
 ----
 
-# Coco Channel
+# 21. Coco Channel
 
 <div class="columns">
 <div>
@@ -828,7 +838,7 @@ But not always since this is a race condition. Therefore answer 2.
 
 ----
 
-# GO(TO)?
+# 22. GO(TO)?
 
 <div class="columns">
 <div>
@@ -868,7 +878,7 @@ we break out of it when x = 1 - that's the termination condition anyways so noth
 
 ----
 
-# Memory Mischief
+# 23. Memory Mischief
 
 <div class="columns">
 <div>
@@ -894,7 +904,7 @@ func main() {
 </div>
 <div>
 
-**How many heap bytes are allocated at `HERE`?**
+**How many heap bytes are alloc'd from start until `HERE`?**
 
 1. 50184 Bytes
 2. 234 Bytes
@@ -926,3 +936,5 @@ Since we store it in slice we have 24 bytes more.
 
 That's all I have.
 Hope you had fun.
+
+<p class="small">Now go brag with your score!</p>
