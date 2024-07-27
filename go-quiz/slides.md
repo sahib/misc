@@ -55,7 +55,7 @@ We'll do this as a proper quiz, so in the end there will be a winner!
 
 # Rules
 
-* There are 23 questions.
+* There are 25 questions.
 * Every correct answer gets **one** point.
 * Each question is discussed **AFTER** being answered by everyone.
 * Please raise your hand when you decided on an answer.
@@ -601,7 +601,48 @@ The syntax with the two colons is the cap syntax. It can be used to re-cap a sli
 
 ----
 
-# 16. Loop Variables
+# 16. Yoda
+
+<div class="columns">
+<div>
+
+```go
+const (
+  A = iota * 3
+  B
+  C = 1 << iota
+)
+
+const (
+  D = iota * iota
+)
+
+func main() {
+  fmt.Println(A, B, C, D)
+}
+```
+
+</div>
+<div>
+
+**What will this print?**
+
+1. `0 3 4 0`
+2. `0 3 4 9`
+3. `3 6 8 16`
+
+[Playground Link](https://go.dev/play/p/lZgDq8qczrm)
+
+<!--
+iota works only inside const blocks. It always starts with zero. When a constant does not have an explicit calculation attached to it,
+then the previous one is continued (as for B). It starts with zero for each const block anew.
+-->
+
+</div>
+
+----
+
+# 17. Loop Variables
 
 <div class="columns">
 <div>
@@ -638,7 +679,7 @@ Now, a new loop variable is created, which it works as expected.
 
 ----
 
-# 17. Modulo
+# 18. Modulo
 
 <div class="columns">
 <div>
@@ -675,7 +716,7 @@ For Go, it's Answer 2.
 
 ----
 
-# 18. `defer` Order
+# 19. `defer` Order
 
 <div class="columns">
 <div>
@@ -715,7 +756,7 @@ The f(1) is called immediately. Otherwise defer calls are stacked. They are exec
 
 ----
 
-# 19. Receiver / Deceiver
+# 20. Receiver / Deceiver
 
 <div class="columns">
 <div>
@@ -758,17 +799,49 @@ A.M() has a pointer receiver which is automatically picked. The values survives 
 
 ----
 
-# 20. Closed Channels
+# 21. Bare select
 
 <div class="columns">
 <div>
 
 ```go
-ch := make(chan int)
-for {
-  select {
-  case <-ch:
-    fmt.Println("new item")
+func main() {
+  select {}
+}
+```
+
+</div>
+<div>
+
+**What will happen?**
+
+1. Compilation error
+2. The program will block forever.
+3. The program immediately exits.
+
+[Playground Link](<https://go.dev/play/p/FOYaetjwCfv>)
+
+<!--
+It simply blocks forever without busy polling.
+-->
+
+</div>
+
+----
+
+# 22. Closed Channels
+
+<div class="columns">
+<div>
+
+```go
+func main() {
+  ch := make(chan int)
+  for {
+    select {
+    case <-ch:
+      fmt.Println("new item")
+    }
   }
 }
 ```
@@ -793,7 +866,7 @@ Therefore the program loops forever.
 
 ----
 
-# 21. Coco Channel
+# 23. Coco Channel
 
 <div class="columns">
 <div>
@@ -837,7 +910,7 @@ But not always since this is a race condition. Therefore answer 2.
 
 ----
 
-# 22. GO(TO)?
+# 24. GO(TO)?
 
 <div class="columns">
 <div>
@@ -877,7 +950,7 @@ we break out of it when x = 1 - that's the termination condition anyways so noth
 
 ----
 
-# 23. Memory Mischief
+# 25. Memory Mischief
 
 <div class="columns">
 <div>
