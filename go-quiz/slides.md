@@ -19,9 +19,6 @@ style: |
   #author, .small {
     font-size: 20px;
   }
-
-  /* other highlight theme */
-  @import url("highlight.css");
 theme: gaia
 title: Go Quiz
 author: Chris Pahl
@@ -476,7 +473,7 @@ fmt.Println(x, y)
 
 1. `5 10`
 2. `0 9`
-3. 3 9
+3. `3 9`
 
 <!--
 Answer 2. The trick is just variable shadowing. x is re-defined in the if body.
@@ -817,12 +814,13 @@ func main() {
 
 1. Compilation error
 2. The program will block forever.
-3. The program immediately exits.
+3. The program immediately panics.
 
-[Playground Link](<https://go.dev/play/p/FOYaetjwCfv>)
+[Playground Link](<https://go.dev/play/p/P8xdJOH_USj>)
 
 <!--
-It simply blocks forever without busy polling.
+Answer 3.
+select{} simply blocks forever without busy polling. Since it's a single go routine we panic because and deadlock is detected.
 -->
 
 </div>
@@ -837,6 +835,7 @@ It simply blocks forever without busy polling.
 ```go
 func main() {
   ch := make(chan int)
+  close(ch)
   for {
     select {
     case <-ch:
@@ -976,7 +975,7 @@ func main() {
 </div>
 <div>
 
-**How many heap bytes are alloc'd from start until `HERE`?**
+**How many bytes are still allocated at `HERE` by `main()`?**
 
 1. 50184 Bytes
 2. 234 Bytes
