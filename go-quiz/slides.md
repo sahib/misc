@@ -21,7 +21,7 @@ style: |
     font-size: 20px;
   }
   #author {
-    margin-top: 1.5cm;
+    margin-top: 4.5cm;
   }
   .handwritten {
     font-family: "Kalam", cursive;
@@ -59,7 +59,7 @@ class:
 
 It's an <span id="strikethrough"><span id="strikethrough-inner">&hairsp;silly&hairsp;</span></span><span id="easy" class="handwritten">easy</span> language, right?
 
-<p id="author">🄯 <a href="https://sahib.github.io">Chris Pahl</a> 2024</p>
+<p id="author">🄯 <a href="https://sahib.github.io">Chris Pahl</a> 2024 (<a href="https://github.com/sahib/misc/tree/master/go-quiz">source</a>)</p>
 
 ![bg right width:600px](./images/gopher.png)
 
