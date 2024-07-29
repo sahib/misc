@@ -3,6 +3,7 @@ marp: true
 style: |
   /* Make sure the font is there */
   @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&display=swap');
 
   .columns {
     display: grid;
@@ -19,6 +20,30 @@ style: |
   #author, .small {
     font-size: 20px;
   }
+  #author {
+    margin-top: 1.5cm;
+  }
+  .handwritten {
+    font-family: "Kalam", cursive;
+    font-weight: 600;
+    font-style: normal;
+  }
+
+  #strikethrough  {
+    color: #cc0030;
+    text-decoration: line-through;
+    text-decoration-thickness: 0.1cm;
+  }
+  #strikethrough-inner  {
+    color: #455a64;
+  }
+  #easy {
+    position: relative;
+    bottom: -0.75cm;
+    margin-left: -2cm;
+    font-size: 35px;
+    color: #455a64;
+  }
 theme: gaia
 title: Go Quiz
 author: Chris Pahl
@@ -32,7 +57,7 @@ class:
 
 # Go Quiz
 
-It's an easy language, right?
+It's an <span id="strikethrough"><span id="strikethrough-inner">&hairsp;silly&hairsp;</span></span><span id="easy" class="handwritten">easy</span> language, right?
 
 <p id="author">🄯 <a href="https://sahib.github.io">Chris Pahl</a> 2024</p>
 
@@ -52,12 +77,17 @@ We'll do this as a proper quiz, so in the end there will be a winner!
 
 # Rules
 
-* There are 25 questions.
+* There are **25** questions.
 * Every correct answer gets **one** point.
-* Each question is discussed **AFTER** being answered by everyone.
-* Please raise your hand when you decided on an answer.
-* You have ~1 minute at most for each question.
+* Each question is discussed **after** being answered by everyone.
+* Please **raise your hand** when you decided on an answer.
+* You have **~1 minute** at most for each question.
+* The questions are getting more and more difficult.
 * Have fun. You will be wrong often.
+
+<!---
+Take a guess how often you will be right.
+-->
 
 ----
 
@@ -111,12 +141,12 @@ func main() {
 
 1. Compilation error.
 2. Prints `blub` 10 times.
-3. Something else.
+3. Prints `blub` just once.
 
 <!--
 Trick question.
 
-The range syntax is valid since Go 1.22, but I did not use `i` so it fails to compile.
+The range syntax is valid since Go 1.22, but I did not use `i` so it fails to compile in any case.
 -->
 
 [Playground Link](<https://go.dev/play/p/k4GTgoil2V-?v=goprev>)
@@ -299,7 +329,7 @@ You would need to use a btree if you need that.
 
 ----
 
-# 8. Map Deletion during iteration
+# 8. Map Deletion during Iteration
 
 <div class="columns">
 <div>
@@ -340,7 +370,7 @@ but rather sets a flag that this values can be cleaned up later.
 
 ----
 
-# 9. Map insertion during iteration
+# 9. Map Insertion during Iteration
 
 <div class="columns">
 <div>
@@ -437,7 +467,7 @@ func main() {
 
 1. `true`
 2. `false`
-3. undefined
+3. Depends on Go version.
 
 [Playground Link](<https://go.dev/play/p/t5etHZSamnC>)
 
@@ -1005,7 +1035,9 @@ Since we store it in slice we have 24 bytes more.
 
 <!-- _class: lead -->
 
+![bg right width:600px](./images/zombiegopher.png)
+
 That's all I have.
 Hope you had fun.
 
-<p class="small">Now go brag with your score!</p>
+<p class="small handwritten">Now go brag with your score!</p>
