@@ -3,6 +3,7 @@ marp: true
 style: |
   /* Make sure the font is there */
   @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&display=swap');
 
   .columns {
     display: grid;
@@ -19,6 +20,30 @@ style: |
   #author, .small {
     font-size: 20px;
   }
+  #author {
+    margin-top: 4.5cm;
+  }
+  .handwritten {
+    font-family: "Kalam", cursive;
+    font-weight: 600;
+    font-style: normal;
+  }
+
+  #strikethrough  {
+    color: #cc0030;
+    text-decoration: line-through;
+    text-decoration-thickness: 0.1cm;
+  }
+  #strikethrough-inner  {
+    color: #455a64;
+  }
+  #easy {
+    position: relative;
+    bottom: -0.75cm;
+    margin-left: -2cm;
+    font-size: 35px;
+    color: #455a64;
+  }
 theme: gaia
 title: Go Quiz
 author: Chris Pahl
@@ -32,9 +57,9 @@ class:
 
 # Go Quiz
 
-It's an easy language, right?
+It's an <span id="strikethrough"><span id="strikethrough-inner">&hairsp;silly&hairsp;</span></span><span id="easy" class="handwritten">easy</span> language, right?
 
-<p id="author">🄯 <a href="https://sahib.github.io">Chris Pahl</a> 2024</p>
+<p id="author">🄯 <a href="https://sahib.github.io">Chris Pahl</a> 2024 (<a href="https://github.com/sahib/misc/tree/master/go-quiz">source</a>)</p>
 
 ![bg right width:600px](./images/gopher.png)
 
@@ -52,12 +77,17 @@ We'll do this as a proper quiz, so in the end there will be a winner!
 
 # Rules
 
-* There are 25 questions.
+* There are **25** questions.
 * Every correct answer gets **one** point.
-* Each question is discussed **AFTER** being answered by everyone.
-* Please raise your hand when you decided on an answer.
-* You have ~1 minute at most for each question.
+* Each question is discussed **after** being answered by everyone.
+* Please **raise your hand** when you decided on an answer.
+* You have **~1 minute** at most for each question.
+* The questions are getting more and more difficult.
 * Have fun. You will be wrong often.
+
+<!---
+Take a guess how often you will be right!
+-->
 
 ----
 
@@ -81,8 +111,8 @@ fmt.Println(1 + 1)
 3. 2
 
 <!--
-The answer is surprisingly two.
-Everyone who guessed it right gets one point.
+The answer is surprisingly three (i.e. 2).
+Everyone who guessed it right gets one point. Oh wow.
 -->
 
 [Playground Link](https://go.dev/play/p/QFEMFhCYc9h)
@@ -111,12 +141,12 @@ func main() {
 
 1. Compilation error.
 2. Prints `blub` 10 times.
-3. Something else.
+3. Prints `blub` just once.
 
 <!--
 Trick question.
 
-The range syntax is valid since Go 1.22, but I did not use `i` so it fails to compile.
+The range syntax is valid since Go 1.22, but I did not use `i` so it fails to compile in any case.
 -->
 
 [Playground Link](<https://go.dev/play/p/k4GTgoil2V-?v=goprev>)
@@ -299,7 +329,7 @@ You would need to use a btree if you need that.
 
 ----
 
-# 8. Map Deletion during iteration
+# 8. Map Deletion during Iteration
 
 <div class="columns">
 <div>
@@ -340,7 +370,7 @@ but rather sets a flag that this values can be cleaned up later.
 
 ----
 
-# 9. Map insertion during iteration
+# 9. Map Insertion during Iteration
 
 <div class="columns">
 <div>
@@ -437,7 +467,7 @@ func main() {
 
 1. `true`
 2. `false`
-3. undefined
+3. Depends on Go version.
 
 [Playground Link](<https://go.dev/play/p/t5etHZSamnC>)
 
@@ -476,7 +506,7 @@ fmt.Println(x, y)
 3. `3 9`
 
 <!--
-Answer 2. The trick is just variable shadowing. x is re-defined in the if body.
+Answer 2. The trick is just variable shadowing. x (but not y) is re-defined in the if body.
 -->
 
 [Playground Link](<https://go.dev/play/p/CQXCFqb49_s>)
@@ -553,7 +583,7 @@ func main() {
 
 <!--
 Number one again. A nil slice is slightly different than an empty slice.
-Always check with len() to see if it's empty.
+Always check with len() to see if it's empty. A nil slice can be useful because it does not allocate any memory.
 
 Sometimes annoying with json, where it prints null nstead of [].
 -->
@@ -572,7 +602,8 @@ func main() {
   s1 := []int{1, 2, 3}
   s2 := s1[2:3:3]
   s2[0] = 4
-  s3 := append(s2, 5)
+  s3 := append(s2, 6)
+  s3[0] = 5
   fmt.Println(s1, s2, s3)
 }
 ```
@@ -583,13 +614,16 @@ func main() {
 **What will this print?**
 
 1. Compilation error
-2. Panic!
-3. `[1 2 4] [4] [4 5]`
-3. `[1 2 3] [4] [4 5]`
+2. It will panic.
+3. `[1 2 4] [5] [5 6]`
+4. `[1 2 3] [5] [5 6]`
+5. `[1 2 4] [4] [5 6]`
 
-[Playground Link](<https://go.dev/play/p/9IwSS89I62O>)
+[Playground Link](<https://go.dev/play/p/xhlmiBbwESg>)
 
 <!--
+Answer 5
+
 Slices share the same underlying memory. Therefore the change to s2 will also show to the other ones.
 The syntax with the two colons is the cap syntax. It can be used to re-cap a slice.
 -->
@@ -747,6 +781,7 @@ func main() {
 
 <!--
 The f(1) is called immediately. Otherwise defer calls are stacked. They are executed in reverse order then - last in, first out.
+So Answer 3.
 -->
 
 </div>
@@ -789,7 +824,7 @@ func main() {
 Answer 3 (3 0)
 
 The method B.M() has a value receiver. Therefore the change is not carried out and gets lost after the execution is done.
-A.M() has a pointer receiver which is automatically picked. The values survives therefore.
+A.M() has a pointer receiver which is automatically picked even though the value we call it on is not a pointer. Here the values survives therefore.
 -->
 
 </div>
@@ -820,7 +855,8 @@ func main() {
 
 <!--
 Answer 3.
-select{} simply blocks forever without busy polling. Since it's a single go routine we panic because and deadlock is detected.
+
+select{} simply blocks forever without busy polling. Since it's a single go routine we panic because an deadlock is detected.
 -->
 
 </div>
@@ -857,8 +893,8 @@ func main() {
 [Playground Link](<https://go.dev/play/p/FOYaetjwCfv>)
 
 <!--
-A closed channel always returns the zero value in a select (and also when doing `v, ok := <-ch`).
-Therefore the program loops forever.
+A closed channel always returns the zero value in a select (and also when doing `v, ok := <-ch // when ok=false`).
+Therefore the program loops forever. Classic mistake that can really grind the cpu.
 -->
 
 </div>
@@ -893,14 +929,14 @@ func main() {
 **What will happen?**
 
 1. The program will panic.
-2. The behavior is undefined.
+2. The behavior is unpredictable.
 3. It will print the numbers 0-5 then exit.
 
 [Playground Link](<https://go.dev/play/p/lGpi31pWsjB>)
 
 <!--
 We put 10 items into `ch` (a buffered channel with 5 items) in a separate go routine.
-In the main routine we pull 7 items out of it and then close the channel.
+In the main routine we pull 5 items out of it and then close the channel.
 Since we might close the channel before the write is finished, we  might panic.
 But not always since this is a race condition. Therefore answer 2.
 -->
@@ -1005,7 +1041,9 @@ Since we store it in slice we have 24 bytes more.
 
 <!-- _class: lead -->
 
+![bg right width:500px](./images/wtfgopher.png)
+
 That's all I have.
 Hope you had fun.
 
-<p class="small">Now go brag with your score!</p>
+<p class="small handwritten">Now go brag with your score!</p>
