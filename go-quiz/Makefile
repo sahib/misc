@@ -13,6 +13,8 @@ publish: build
 	cp ./slides.html  /tmp/slides/index.html
 
 	git checkout gh-pages
+	git fetch
+	git reset --hard origin/gh-pages
 	rm -rf images index.html
 	cp -r /tmp/slides/* .
 	git add --force .
