@@ -10,7 +10,7 @@ style: |
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
   }
-  h1 {
+  h1, a {
       font-family: Roboto Slab;
       color: #1870A2;
   }
@@ -40,6 +40,7 @@ style: |
   #easy {
     position: relative;
     bottom: -0.75cm;
+    left: -0.2cm;
     margin-left: -2cm;
     font-size: 35px;
     color: #455a64;
