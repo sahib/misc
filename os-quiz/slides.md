@@ -61,7 +61,11 @@ class:
 
 <!-- _class: lead -->
 
-# An esoteric (but useful) Linux quiz
+# An <span id="strikethrough"><span id="strikethrough-inner">&hairsp;useful&hairsp;</span></span></span><span id="easy" class="handwritten">obscure</span> Linux quiz
+
+<p id="author">🄯 <a href="https://sahib.github.io">Chris Pahl</a> 2024 (<a href="https://github.com/sahib/misc/tree/master/os-quiz">source</a>)</p>
+
+![bg right width:750px](./images/tux.jpeg)
 
 ----
 
@@ -70,7 +74,8 @@ class:
 # Rules
 
 <!--
-TODO: Idea: Get to know some less known features, although no guarantee on being completed.
+Idea this time:
+Get to know some less known features, although no guarantee on being completed.
 -->
 
 - There are **25** questions.
@@ -80,6 +85,7 @@ TODO: Idea: Get to know some less known features, although no guarantee on being
 - You have **~30 seconds** at most for each question.
 - The questions are getting more and more difficult.
 - Don't take yourself too serious.
+- Solution are in the presenter notes.
 
 ----
 
@@ -101,11 +107,16 @@ tar $X archive.tar.bz2
 
 **What are the correct options for `$X`?**
 
-1. `xf`
+1. `xfJ`
 1. `xfv`
 1. `xfvz`
 
 </div>
+
+<!--
+Answer 2. It let's tar decide which compression to use.
+All other answers force either gzip or xz. Don't even specify it.
+-->
 
 ----
 
@@ -131,6 +142,11 @@ sh -c 'A=1; echo $A'
 
 </div>
 
+<!--
+Answer 1. The expansion works normally. The single quotes don't have an effect here,
+as the variable definition is inside of the shell.
+-->
+
 ----
 
 # Variable Expansion II
@@ -141,7 +157,7 @@ sh -c 'A=1; echo $A'
 <div>
 
 ```bash
-A=1 sh -c 'echo $A'
+A=1 sh -c "echo $A"
 ```
 
 </div>
@@ -155,6 +171,12 @@ A=1 sh -c 'echo $A'
 
 </div>
 
+<!--
+Answer 2. Due to the double quotes the variable gets expanded immediately, not in the subprocess.
+The `A=1` prefix just passes the variable to the subprocess, but it is not defined in the bash process
+therefore not being available during expansion.
+-->
+
 ----
 
 # Variable Expansion III
@@ -165,7 +187,7 @@ A=1 sh -c 'echo $A'
 <div>
 
 ```bash
-B= C=1 echo "${A:-${B:-C}}"
+B= C=4 echo "${A:-${B:-C}}"
 ```
 
 </div>
@@ -174,10 +196,16 @@ B= C=1 echo "${A:-${B:-C}}"
 **What does it print?**
 
 - (empty)
-- `1`
+- `4`
 - `C`
 
 </div>
+
+<!--
+Answer 3.
+The `:-` is the default syntax. If the first variable is empty or non-existing, it tries the expansion after the dash.
+Since A does not exist and B is empty we go through to C. We don't have a $ here, so it's just prints the literal `C`.
+-->
 
 ----
 
@@ -203,6 +231,16 @@ cat < /dev/zero > /dev/null
 1. Exits immediately.
 
 </div>
+
+<!--
+Answer 2.
+/dev/zero produces an endless stream of zero bytes. It redirects those to /dev/null which behaves like a black hole.
+`cat` will however grind some CPU because it is still copying those bytes for no particular reason.
+Since just a single buffer is used, the memory usage doe not increase.
+
+This is useful if you have a program that just processes data streams and you want to measure how quick it is.
+This depends on memory speed only, no filesystem involved.
+-->
 
 ----
 
@@ -234,6 +272,12 @@ wait
 
 </div>
 
+<!--
+Answer 1. The {} syntax allows us to put several commands in a process group. The & will send this group to the background.
+The order of execution is not guaranteed, but since there's a sleep in the code it is very likely that the order is correct.
+The wait at the end waits all background jobs are done.
+-->
+
 ----
 
 # cgroups
@@ -246,9 +290,13 @@ wait
 1. They allow grouping connections into firewall chains.
 1. They are self-help groups for C programmers.
 
+<!--
+Answer 1. Docker uses this a lot.
+-->
+
 ----
 
-# What happens if you do this?
+# To root and beyond
 
 <p class="spice">🌶</p>
 
@@ -262,6 +310,8 @@ cd /..
 </div>
 <div>
 
+**What happens?**
+
 1. Errors out.
 1. You change directory to `/`
 1. System crash.
@@ -269,9 +319,14 @@ cd /..
 
 </div>
 
+<!--
+Answer 2. The `..` reference is actually the very same inode as /.
+This is implemented in the VFS layer of linux.
+-->
+
 ----
 
-# What should be in every script?
+# Guidelines
 
 <p class="spice">🌶</p>
 
@@ -279,7 +334,7 @@ cd /..
 <div>
 
 ```bash
-set -eu            # 1.
+set -eua           # 1.
 set -euo pipefail  # 2.
 set -x             # 3.
 #!/bin/bash        # 4.
@@ -289,6 +344,8 @@ set -n             # 5.
 </div>
 <div>
 
+**What should be in every script?**
+
 - 1 & 4
 - 2 & 4
 - 2, 3 & 4
@@ -296,6 +353,18 @@ set -n             # 5.
 - 1, 2, 3 & 4
 
 </div>
+
+<!--
+Answer 2 (2 & 4).
+
+I hope most of you know already. ;-)
+
+-e: Exit on errors (exit code != 0)
+-u: Exit when variable is undefined (otherwise just evals to empty string)
+-o pipefail: Like -e, but does not mask errors in a pipe.
+
+The shebang is for executing the script directly and making sure that we had bash in mind when developing.
+-->
 
 ----
 
@@ -320,6 +389,13 @@ set -n             # 5.
 1. `hi` & `ih`
 
 </div>
+
+<!--
+Answer 3 (both).
+
+The first command has a negative exit code, therefore we execute `hi`.
+The `&&` does not behave like a `else` but executes when the first echo was executed right - which is the case.
+-->
 
 ----
 
@@ -350,6 +426,12 @@ rm -fr  $PREFIX/usr/bin  # 3.
 
 </div>
 
+<!--
+Answer 1.
+
+People had installer scripts where the prefix container spaces. This made `rm` delete all of `/usr` which sucked a lot.
+-->
+
 ----
 
 # Imaginary Oneliner
@@ -362,7 +444,7 @@ rm -fr  $PREFIX/usr/bin  # 3.
 ```bash
 # Imagine you write a oneliner to recursively
 # delete all empty directories in your home directory.
-# 
+#
 # There are several ways to do it, but only one
 # answer here is correct.
 ```
@@ -380,19 +462,12 @@ rm -fr  $PREFIX/usr/bin  # 3.
 </div>
 
 <!--
+Answer 1.
+
+The most straightforward way:
 find ~ -type d -empty -exec rmdir {} \;
--->
 
-<!--
-TODO: Not good enough probably.
-----
-
-# Which one of the following directories actually have physically files in them? 🌶
-
-- /var
-- /dev
-- /tmp
-- /proc
+If somebody finds a way with the other commands: That gets one point too.
 -->
 
 ----
@@ -421,9 +496,19 @@ getfattr -n user.gbs.key file
 
 </div>
 
+<!--
+Answer 1.
+
+xattr are (in theory) a useful feature, as they allow embeding metadata directly in the file itself.
+This would make implementing an object store with only a filesystem very easy and also with decent performance.
+
+The tricky part is just that the info usually gets lost when transfering files to other filesystems (e.g. using rsync)
+Also, they do not work on all filesystems. Still a good feature to remember for embedded use cases.
+-->
+
 ----
 
-# Knife, Fork, Light
+# Knife, Fork, Scissor & Light
 
 <p class="spice">🌶</p>
 
@@ -446,6 +531,14 @@ getfattr -n user.gbs.key file
 
 </div>
 
+<!--
+Answer 1.
+
+Well, it's a fork bomb.
+It does not print anything, it just destroys your computer.
+If you executed it: Well, that's how you learn.
+-->
+
 ----
 
 # Wildcards
@@ -456,7 +549,8 @@ getfattr -n user.gbs.key file
 <div>
 
 ```bash
-mkdir a b c; cp -r {a,b,c}
+mkdir a b c
+cp -r {a,b,c}
 ```
 
 </div><div>
@@ -468,6 +562,11 @@ mkdir a b c; cp -r {a,b,c}
 1. Error: Missing destination
 
 </div>
+
+<!--
+Answer 1.
+That just evaluates to `cp -r a b c`. No tricks here.
+-->
 
 ----
 
@@ -493,6 +592,18 @@ chmod 0432 file
 
 </div>
 
+<!--
+Answer 1.
+
+Bit 3 = 4: read
+Bit 2 = 2: write
+Bit 1 = 1: exec
+
+4 = read
+3 = write + exec
+2 = write
+-->
+
 ----
 
 # Permissions II
@@ -513,27 +624,17 @@ cd dir
 
 **What happens?**
 
-1. Working dir is changed to `dir`.
+1. Working directory is changed to `dir`.
 1. `Permission denied`
 1. You need to use `sudo cd`.
 
 </div>
 
-----
+<!--
+Answer 2.
 
-# Logins
-
-<!---
-TODO: Maybe rather do the sudo 3-times entered reset trick?
+For directories the permission flag means "you shall not pass".
 -->
-
-<p class="spice">🌶</p>
-
-**Where are Linux logins stored?**
-
-1. `/etc/shadow`
-1. `/etc/passwd`
-1. `/etc/group`
 
 ----
 
@@ -559,11 +660,18 @@ sleep 5 | echo "It's a me, Mario\!"
 
 </div>
 
+<!--
+Answer 1.
+
+echo does nothing with stdin, it cannot block on it therefore.
+The string is printed immediately.
+-->
+
 ----
 
 # What does this print?
 
-<p class="spice">🌶🌶</p>
+<p class="spice">🌶🌶🌶</p>
 
 <div class="columns">
 <div>
@@ -585,9 +693,16 @@ unshare --user whoami
 
 </div>
 
+<!--
+Answer 1, surprisingly.
+
+A newly created namespace has no users, not even root.
+We first to create a new user before we can continue
+-->
+
 ----
 
-# HUP Guessing
+# Orphanage
 
 <p class="spice">🌶🌶</p>
 
@@ -610,6 +725,13 @@ exit
 1. The file does not get created.
 
 </div>
+
+<!--
+Answer 1.
+nohup lets the cmd passed as its input ignore the SIGHUP signal.
+This signal is send to a process if it's parent has died. If we ignore it, we just continue to live.
+Since our parent process  died we get reparanted to be a child of PID 1 (which is usually systemd).
+-->
 
 ----
 
@@ -636,6 +758,15 @@ cat <(yes)
 
 </div>
 
+<!--
+This trick is called process subsitution. It is *very* powerful.
+With normal piping (|) you can connect one process to another. If you want to
+do the same with several processes (e.g. have a command that takes in the output of 5 other programs)
+then you either have to rely on tricks like `tee` or this syntax here.
+
+https://tldp.org/LDP/abs/html/process-sub.html
+-->
+
 ----
 
 # Brains and Bits
@@ -657,6 +788,16 @@ cat <(yes)
 1. ...have exited before but still continue to run because some threads are not finished.
 
 <!--
+Answer 2.
+
+Despite the name, they are usually not dangerous and do not need to be killed.
+Killing them might even trigger bugs, as the process that created them might still
+want to retrieve the result of this child.
+
+They get created when a parent process creates a child, let it run and exit but does
+not wait() on it's result. Only when this is done the kernel can be sure that the result
+of this process is not required anymore.
+
 NOTE: Unkillable processes are usually in D (Uninterruptable sleep), usually when 
 the process called into the kernel and e.g. a driver does not return a result.
 -->
@@ -688,6 +829,13 @@ echo "${!var}"
 
 </div>
 
+<!--
+Answer 2.
+
+The ! part allows indirection in reading variables, effectively behaving like pointers.
+Not really like C, but still allows dynamic referencing.
+-->
+
 ----
 
 # The `setuid` bit
@@ -712,6 +860,20 @@ chmod u+s ./some/binary
 
 </div>
 
+<!--
+Answer 1.
+
+This is a terrible relict from old times, but it is still good to know it exists.
+On my system there are ~50 of them still:
+
+sudo find /usr /bin /sbin -perm -4000
+
+Most of them are processes that require to be run with elevated right,
+even if they are executed as regular users. (`su` for example).
+
+If you think you need this: You probably don't.
+-->
+
 ----
 
 # Symlinks I
@@ -732,11 +894,22 @@ cat a
 
 **What error will this get you?**
 
-- `No such file or directory`
-- `Too many levels of symbolic links`
-- `b is a directory`
+1. `No such file or directory`
+1. `Too many levels of symbolic links`
+1. `b is a directory`
 
 </div>
+
+<!--
+Answer 2.
+
+Since they point to each other they build a loop.
+Most syscalls that deal with symlinks have a protection for this,
+but this can happen in user space as well. If you handle symbolic links
+you should always prepared to have edge cases where you managed to have loops.
+
+This kind of bug can easily bring servers down.
+-->
 
 ----
 
@@ -766,6 +939,16 @@ realpath batman
 
 </div>
 
+<!--
+Answer 3.
+
+That's a weird one. There are two entries with the name `Na`: `/tmp/Na` and `/tmp/Na/Na` (which is pointing to `/tmp/`). If we enter `/tmp/Na/Na` we get back to `/tmp/` - like in a portal. If we
+repeat that we go into `/tmp/Na` and doing it another time it's `/tmp/` again.
+The file is therefore created in `/tmp`.
+
+What might be misleading: You probably though it would have worked like `ln -s . Na`
+-->
+
 ----
 
 # Segmentation fault
@@ -783,10 +966,20 @@ realpath batman
 **What happens when a program ignores a SIGSEGV?**
 
 1. It gets killed anyways.
-1. It gets killed on receciving the second one.
-1. It continues to run. (actually this one)
+1. It gets killed on receiving the second one.
+1. It continues to run, but defunct.
+1. It continues to run normally.
 
 </div>
+
+<!--
+Answer 3.
+
+The handler can ignore the signal, but after running the signal handler you're
+just thrown back to where you came before. This means that the signal is emitted again
+as the same instruction will crash again. Even trying to fix the crash reason in the
+handler does not seem to work as seen in sigsegv.c
+-->
 
 ----
 
@@ -811,3 +1004,19 @@ chattr +i ./file
 1. You just made this up.
 
 </div>
+
+<!--
+Answer 1.
+
+Technically, root can change it, but one has to run `chmod -i ./file` first.
+-->
+
+----
+
+<!-- _class: lead -->
+
+![bg right width:450px](./images/ninja-tux.png)
+
+That's all I have.
+
+<p class="small handwritten">Hope you feel a bit more ninja now.</p>
