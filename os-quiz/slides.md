@@ -120,7 +120,38 @@ All other answers force either gzip or xz. Don't even specify it.
 
 ----
 
-# Variable Expansion I
+# Passwords
+
+<p class="spice">🌶</p>
+
+<div class="columns">
+<div>
+
+```
+1. export CP_BASIC_AUTH="rrX_$uY%s"
+2. task dev
+3. # trying to log-in with that password - it doesn't work!
+```
+
+</div>
+<div>
+
+**What might have happened?**
+
+1. Application does not handle all passwords.
+1. Application did not receive the right password.
+1. The wrong password was copied to the browser.
+
+</div>
+
+<!--
+Answer 2. Since we had double quotes and the password had a $u it was replaced before passing it
+to the application.
+-->
+
+----
+
+# Variable Expansion II
 
 <p class="spice">🌶</p>
 
@@ -593,7 +624,7 @@ chmod 0432 file
 </div>
 
 <!--
-Answer 1.
+Answer 2.
 
 Bit 3 = 4: read
 Bit 2 = 2: write
@@ -669,38 +700,38 @@ The string is printed immediately.
 
 ----
 
-# What does this print?
-
-<p class="spice">🌶🌶🌶</p>
-
-<div class="columns">
-<div>
-
-```bash
-# Hint: the `unshare` util
-# starts programs in a new namespace.
-unshare --user whoami
-```
-
-</div>
-<div>
-
-**What will this print?**
-
-- `nobody`
-- `root`
-- Your current user.
-
-</div>
-
-<!--
-Answer 1, surprisingly.
-
-A newly created namespace has no users, not even root.
-We first to create a new user before we can continue
--->
-
-----
+<!-- # What does this print? -->
+<!---->
+<!-- <p class="spice">🌶🌶🌶</p> -->
+<!---->
+<!-- <div class="columns"> -->
+<!-- <div> -->
+<!---->
+<!-- ```bash -->
+<!-- # Hint: the `unshare` util -->
+<!-- # starts programs in a new namespace. -->
+<!-- unshare --user whoami -->
+<!-- ``` -->
+<!---->
+<!-- </div> -->
+<!-- <div> -->
+<!---->
+<!-- **What will this print?** -->
+<!---->
+<!-- - `nobody` -->
+<!-- - `root` -->
+<!-- - Your current user. -->
+<!---->
+<!-- </div> -->
+<!---->
+<!-- <!-- -->
+<!-- Answer 1, surprisingly. -->
+<!---->
+<!-- A newly created namespace has no users, not even root. -->
+<!-- We first to create a new user before we can continue -->
+<!-- --> -->
+<!---->
+<!-- ---- -->
 
 # Orphanage
 
@@ -759,6 +790,8 @@ cat <(yes)
 </div>
 
 <!--
+Answer 4
+
 This trick is called process subsitution. It is *very* powerful.
 With normal piping (|) you can connect one process to another. If you want to
 do the same with several processes (e.g. have a command that takes in the output of 5 other programs)
@@ -1009,6 +1042,46 @@ chattr +i ./file
 Answer 1.
 
 Technically, root can change it, but one has to run `chmod -i ./file` first.
+-->
+
+----
+
+# Sleep & Suspend
+
+<p class="spice">🌶🌶🌶</p>
+
+<div class="columns">
+<div>
+
+```go
+  // Assume this runs on a system with
+  // a real time clock.
+  now := time.Now()
+  time.Sleep(time.Minute)
+  // immediately `systemctl suspend` for 1m
+  fmt.Println(time.Since(now))
+```
+
+</div>
+<div>
+
+**What time is printed?**
+
+1. Roughly 2m.
+1. Roughly 1m.
+1. A negative value.
+1. It is undefined.
+
+</div>
+
+<!--
+Answer 1.
+
+When resuming from suspend the rtc is read, informing us about the correct time.
+However, sleep does not know about this and works by checking how many cpu cycles
+have passed (i.e. a monotonic clock see man 2 nanosleep)
+
+Therefore, the sleep is only active... while not being asleep.
 -->
 
 ----
