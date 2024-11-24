@@ -105,7 +105,7 @@ tar $X archive.tar.bz2
 </div>
 <div>
 
-**What are the correct options for `$X`?**
+**What are correct options for `$X`?**
 
 1. `xfJ`
 1. `xfv`
@@ -129,7 +129,7 @@ All other answers force either gzip or xz. Don't even specify it.
 
 ```
 1. export CP_BASIC_AUTH="rrX_$uY%s"
-2. task dev
+2. task dev # start backend
 3. # trying to log-in with that password - it doesn't work!
 ```
 
@@ -311,21 +311,22 @@ The wait at the end waits all background jobs are done.
 
 ----
 
-# cgroups
-
-<p class="spice">🌶</p>
-
-**What are `cgroups`?**
-
-1. They allow setting resource limits for users and processes.
-1. They allow grouping connections into firewall chains.
-1. They are self-help groups for C programmers.
-
-<!--
-Answer 1. Docker uses this a lot.
--->
-
-----
+<!---->
+<!-- # cgroups -->
+<!---->
+<!-- <p class="spice">🌶</p> -->
+<!---->
+<!-- **What are `cgroups`?** -->
+<!---->
+<!-- 1. They allow setting resource limits for users and processes. -->
+<!-- 1. They allow grouping connections into firewall chains. -->
+<!-- 1. They are self-help groups for C programmers. -->
+<!---->
+<!-- <!-- -->
+<!-- Answer 1. Docker uses this a lot. -->
+<!-- --> -->
+<!---->
+<!-- ---- -->
 
 # To root and beyond
 
@@ -375,7 +376,7 @@ set -n             # 5.
 </div>
 <div>
 
-**What should be in every script?**
+**What should be on top of every script?**
 
 - 1 & 4
 - 2 & 4
