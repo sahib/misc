@@ -214,12 +214,11 @@ p {
 <h1 id="rules">Rules</h1>
 
 <ul>
-<li>There are <strong>25</strong> questions.</li>
+<li>There are <strong>28</strong> questions.</li>
 <li>Every correct answer gets <strong>one</strong> point.</li>
 <li>Each question is discussed <strong>after</strong> being answered by everyone.</li>
 <li>Please <strong>raise your hand</strong> when you decided on an answer.</li>
 <li>You have <strong>~30 seconds</strong> at most for each question.</li>
-<li>The questions are getting more and more difficult.</li>
 <li>Don't take yourself too serious.</li>
 <li>Solution are in the presenter notes.</li>
 </ul>
@@ -834,7 +833,7 @@ p {
 </code></pre>
 </div>
 <div>
-<p><strong>What should be on top of every script?</strong></p>
+<p><strong>What should be on top of every bash script?</strong></p>
 <ul>
 <li>1 &amp; 4</li>
 <li>2 &amp; 4</li>
@@ -1922,7 +1921,8 @@ p {
 <p class="spice">🌶🌶🌶</p>
 <div class="columns">
 <div>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash"><span class="hljs-built_in">mkdir</span> -p Na; <span class="hljs-built_in">cd</span> Na
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash"><span class="hljs-built_in">cd</span> /tmp
+<span class="hljs-built_in">mkdir</span> -p Na; <span class="hljs-built_in">cd</span> Na
 <span class="hljs-built_in">ln</span> -s .. Na
 <span class="hljs-built_in">cd</span> Na; <span class="hljs-built_in">cd</span> Na; <span class="hljs-built_in">cd</span> Na
 <span class="hljs-built_in">touch</span> batman
@@ -1994,6 +1994,7 @@ p {
 <div class="columns">
 <div>
 <p><img src="images/sigsegv.png" alt="" style="width:400px;" /></p>
+<p><a href="https://github.com/sahib/misc/blob/master/os-quiz/segfault.c">(Example)</a></p>
 </div>
 <div>
 <p><strong>What happens when a program ignores a SIGSEGV?</strong></p>
@@ -2326,9 +2327,7 @@ The shebang is for executing the script directly and making sure that we had bas
 The first command has a negative exit code, therefore we execute `hi`.
 The `&amp;&amp;` does not behave like a `else` but executes when the first echo was executed right - which is the case.</p></div><div class="bespoke-marp-note" data-index="12" tabindex="0"><p>What happens when &quot;$PREFIX&quot; is empty or has a space in it?</p><p>Answer 1.
 
-People had installer scripts where the prefix container spaces. This made `rm` delete all of `/usr` which sucked a lot.</p></div><div class="bespoke-marp-note" data-index="13" tabindex="0"><p>Answer 1.
-
-The most straightforward way:
+People had installer scripts where the prefix container spaces. This made `rm` delete all of `/usr` which sucked a lot.</p></div><div class="bespoke-marp-note" data-index="13" tabindex="0"><p>All of them work. Answer 1. is the most straightforward way:
 find ~ -type d -empty -exec rmdir {} \;
 
 If somebody finds a way with the other commands: That gets one point too.</p></div><div class="bespoke-marp-note" data-index="14" tabindex="0"><p>Answer 1.
