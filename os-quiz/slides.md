@@ -78,12 +78,11 @@ Idea this time:
 Get to know some less known features, although no guarantee on being completed.
 -->
 
-- There are **25** questions.
+- There are **28** questions.
 - Every correct answer gets **one** point.
 - Each question is discussed **after** being answered by everyone.
 - Please **raise your hand** when you decided on an answer.
 - You have **~30 seconds** at most for each question.
-- The questions are getting more and more difficult.
 - Don't take yourself too serious.
 - Solution are in the presenter notes.
 
@@ -376,7 +375,7 @@ set -n             # 5.
 </div>
 <div>
 
-**What should be on top of every script?**
+**What should be on top of every bash script?**
 
 - 1 & 4
 - 2 & 4
@@ -494,9 +493,7 @@ People had installer scripts where the prefix container spaces. This made `rm` d
 </div>
 
 <!--
-Answer 1.
-
-The most straightforward way:
+All of them work. Answer 1. is the most straightforward way:
 find ~ -type d -empty -exec rmdir {} \;
 
 If somebody finds a way with the other commands: That gets one point too.
@@ -955,6 +952,7 @@ This kind of bug can easily bring servers down.
 <div>
 
 ```bash
+cd /tmp
 mkdir -p Na; cd Na
 ln -s .. Na
 cd Na; cd Na; cd Na
@@ -994,6 +992,7 @@ What might be misleading: You probably though it would have worked like `ln -s .
 
 ![width:400px](images/sigsegv.png)
 
+[(Example)](https://github.com/sahib/misc/blob/master/os-quiz/segfault.c)
 </div>
 <div>
 
