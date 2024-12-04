@@ -1054,34 +1054,58 @@ Technically, root can change it, but one has to run `chmod -i ./file` first.
 <div>
 
 ```go
+func main() {
   // Assume this runs on a system with
   // a real time clock.
   now := time.Now()
   time.Sleep(time.Minute)
   // immediately `systemctl suspend` for 1m
   fmt.Println(time.Since(now))
+}
 ```
 
 </div>
 <div>
 
-**What time is printed?**
+**What duration is printed?**
 
 1. Roughly 2m.
 1. Roughly 1m.
 1. A negative value.
-1. It is undefined.
+1. It depends.
 
 </div>
 
 <!--
-Answer 1.
+Answer 2.
 
-When resuming from suspend the rtc is read, informing us about the correct time.
-However, sleep does not know about this and works by checking how many cpu cycles
-have passed (i.e. a monotonic clock see man 2 nanosleep)
+We spend 2m in total, but print only 1m.
 
-Therefore, the sleep is only active... while not being asleep.
+as far as I can tell. It mostly prints 1 minute for me, though.
+I would count Answer 2 as well therefore.
+
+When resuming, the rtc (if present) is read (or NTP time is requested, with
+delay though). Therefore `time.Now()` reports the correct time pretty much
+immediately. This is usually called "wall clock", as it needs to be
+synchronized in some cases (think: DST)
+
+However, time.Since() will use monotonic time if it can,
+in order to be resistant against time resets.
+https://cs.opensource.google/go/go/+/refs/tags/go1.23.4:src/time/time.go;l=943
+
+The other clock that we have in the system is the monotonic clock (see man 2
+nanosleep). It is derived from the cpu cycles done since system start and
+calibrated at startup. During suspend there are no cpu cycles though, therefore
+the monotonic clock is halted.
+
+Since sleep also uses the monotonic clock (despite sleeping for 2m) we print 1m in total.
+
+The rationale here in Go also helps:
+https://cs.opensource.google/go/go/+/refs/tags/go1.23.4:src/time/time.go;l=10
+For time-measuring operations the monotonic clock is used (i.e. for things that
+produce a duration), for time telling operations the wall clock is used.
+
+Confusing, eh?
 -->
 
 ----
