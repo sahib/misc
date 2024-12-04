@@ -45,6 +45,7 @@ style: |
     font-size: 35px;
     color: #455a64;
   }
+
 theme: gaia
 title: Go Quiz
 author: Chris Pahl

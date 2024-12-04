@@ -3,3 +3,6 @@ __pycache__
 *.pyo
 build/
 360
+performance/videos/academy_assets/thumbnail
+performance/videos/shotcut/academy
+os-quiz/segfault
