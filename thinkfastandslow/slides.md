@@ -61,28 +61,6 @@ class:
 
 ...in software development.
 
-----
-
-Intro:
-
-- Braaaiiiiins
-- I feel qualified to do this talk because I have a brain which I sometimes use to think and I also often do do software development.
-- and I've read a book: Thinking fast and slow.
-
------
-
-<!--
-Agenda:
-
-Format:
-
-- Anfangssektion: Accept defeat
-
-- Jede Sektion dreiteilig:
-  * Einen bestimmten Effekt erleben (Experiment)
-  * Erklärung
-  * Relation zum Berufsleben, Auswirkung.
-
 - Summary: What can we do about it? Not so much. Read the book.
   Make it a habit watching your mind. You will still make false decisions
   but you might be more careful and delay decisions.
@@ -91,24 +69,19 @@ Format:
 
 Globale Quellen:
 
-- https://en.wikipedia.org/wiki/Cognitive_bias
+- <https://en.wikipedia.org/wiki/Cognitive_bias>
 
 Themensammlung:
 
 - statistisches Denken
 - Intuition (= langjährige übung)
-- Vorstellung System 1/2 (läuft 2 ist man praktisch blind und sieht keine Gorillas und kann nicht laufen und multiplizieren, System 1 kann man geradeauslaufen und denken oder blinker setzen)
-  -> übung mit Publikum: Um Tisch laufen und Rechenaufgaben beantworten
   Häufiger Aufgabenwechsel ist sehr fordernd.
 - Fragenersetzung
 - Selbstüberschätzung
-- Intelligenz vs Rationalität (Intelligenz -> System 1 sehr fit, Rationalität -> übernimmt System 2 ausreichend schnell?)
 - Geschichtenerzähler System 1 ("Bananen" und "Erbrechen")
 - Priming (Wahlen in einem Schulgebäude: Viel sozialere Wahl! Wahl in einem Bürgerbüro: Viel mehr Protestwahl)
-  Kann auch genutzt werden um ruhig zu werden, da ruhige Gedanken beruhigen.
   Beispiel mit Vertrauenskasse S.78
-- Kognitive Leichtigkeit (je leichter die Info abgerufen werden kann, desto eher ann man )
-- Halo Effekt
+- Kognitive Leichtigkeit (je leichter die Info abgerufen werden kann, desto eher wird eine Information eingebracht)
 - Stimmung (schlechte Stimmung: analytisch, aber auch eher einlenkend - gute Stimmung: kreativ, aber leichtgläubig)
 - Überraschung
   (Wie viele Tiere nahm Moses mit in die Arche? -> fehlende überraschung)
@@ -127,72 +100,46 @@ Complexity & Simplicity Bias
 
 - Complexity in software development is the enemy.
 
-Status Quo Bias / Endowment Effect
-
-- Dinge werden als wertvoller eingeschätzt wenn man sie besitzt.
-- Beispiel: Existierende Infrastruktur wird zu Unrecht als gut dargestellt, auch wenn
-- Quelle: https://en.wikipedia.org/wiki/Status_quo_bias
-
-Affinity Bias:
-
-- Überbewertung von Meinungen von Leuten denen wir grundsätzlich vertrauen oder die uns ähnlich sind.
-  (aka Mini-Me-Bias)
-- Beispiel: Man mag Senior X und vertraut aber dem gut befreundeten Kollegen.
-- Quelle: https://en.wikipedia.org/wiki/Affinity_bias
-
 Hindsight Bias:
-
-- Negative Ereignisse werden im Nachhinein oft als leicht erklärbar ausgewiesen.
-- War man selbst an dem Ereignisse mit einer Entscheidung beteiligt werden Zweifel bei der
-  Entscheidung vernachlässigt, als ob es sie nie gegäben hätte.
-- Beispiele: Architekturentscheidungen werden im Nachhinein als "klar falsch" eingeschätzt sobald
-  man an ihre Grenzen kommt, selbst wenn sie zum ursprünglichen Zeitpunkt mit den verfügbaren Daten
-  valide war. Das führt bei neuen Projekten oft dazu "es gleich richtig zu machen" und einer sehr
-  selbstischeren Tendenz viel zu große Tools einzusetzen (looking at you k8s) weil das ja "schon mal ein Problem war".
-
-  Anderes Beispiel: Die Zeit, die man für ein Bugfix gebraucht hat wird nach dem Lösen anhand der
-  Komplexität der Lösung eingeschätzt, nicht anhand der Länge der tatsächlichen Fehlersuche.
-
-- Quelle: https://en.wikipedia.org/wiki/Hindsight_bias
 
 Curse of Knowledge:
 
-* Beispiel: Senior soll Junior etwas beibringen -> tut sich schwer, weil "Das weiß man doch". 
+- Beispiel: Senior soll Junior etwas beibringen -> tut sich schwer, weil "Das weiß man doch".
   Oder: Code wird nicht dokumentiert weil es zum Zeitpunkt des Schreibens "offensichtlich" wirkt.
   Später hat man aber den Kontext selbst nicht mehr und blickt nicht mehr durch.
-* Quellen:
+- Quellen:
 
-  - https://en.wikipedia.org/wiki/Curse_of_knowledge
+  - <https://en.wikipedia.org/wiki/Curse_of_knowledge>
 
 New is shiny:
 
-* Beispiel: Neue Tools (damals MongoDB) statt gut abgehangene Software. Lieber neue Features bauen
+- Beispiel: Neue Tools (damals MongoDB) statt gut abgehangene Software. Lieber neue Features bauen
   als Infrastruktur erhalten (Brücken ;-)
   Gute historische Beispiele: Blockchain, NFTs, Machine Learning.
-* Quelle: 
-  - https://en.wikipedia.org/wiki/Shiny_object_syndrome
-  - https://en.wikipedia.org/wiki/Appeal_to_novelty
+- Quelle:
+  - <https://en.wikipedia.org/wiki/Shiny_object_syndrome>
+  - <https://en.wikipedia.org/wiki/Appeal_to_novelty>
 
 Experten:
 
-* Experten nutzen System1 statt mühsam mit System2 eine Lösung zu finden.
-* Experten gehen von abstrakt zu konkret. Sie vesuchen immer die
+- Experten nutzen System1 statt mühsam mit System2 eine Lösung zu finden.
+- Experten gehen von abstrakt zu konkret. Sie vesuchen immer die
   darüberliegenden Prinzipien zu erkennen, versuchen aber immer durch Beispiele konkret zu werden.
   Beginner versuchen oft Dinge sehr konkret zu erklären.
-* Problem solving skills apply only to a specific domain.
+- Problem solving skills apply only to a specific domain.
   Being good at debugging does not make you good writing software in the first place (well, you
   could say the worse you are at writing software the better you should be at debugging...)
-* Beispiel: Schachspieler erkennen Konstellationen auf dem Brett anstatt sie zu
+- Beispiel: Schachspieler erkennen Konstellationen auf dem Brett anstatt sie zu
   durchdenken.
-* Reading code can be very benefitial to train this pattern matching machinery.
+- Reading code can be very benefitial to train this pattern matching machinery.
 
-https://cacm.acm.org/research/10-things-software-developers-should-learn-about-learning/
+<https://cacm.acm.org/research/10-things-software-developers-should-learn-about-learning/>
 
 Verlustaversion
 
-* Menschen verhalten sich (unter anderem) bei ökonomischen Entscheidungen nicht rational.
-* Verluste werden sehr viel stärker gewichtet als Gewinne. (todo: grafik)
-* Ausnahme: Möglichkeitseffekt (zB bei Losen - da ist die Chance egal, hauptsache man kann etwas gewinnen,
+- Menschen verhalten sich (unter anderem) bei ökonomischen Entscheidungen nicht rational.
+- Verluste werden sehr viel stärker gewichtet als Gewinne. (todo: grafik)
+- Ausnahme: Möglichkeitseffekt (zB bei Losen - da ist die Chance egal, hauptsache man kann etwas gewinnen,
   der Verlust ist der Kaufpreis des Loses und dafür kauft man sich die Hoffnung auf einen Gewinn)
 
   - 95% Wahrscheinlichkeit um 10k zu gewinnen. -> Angst vor Enttäuschung, viel Einsatz um die restlichen 5% abzusichern.
@@ -200,24 +147,24 @@ Verlustaversion
   - 5%  Wahrscheinlichkeit um 10k zu gewinnen. -> Hoffnung auf großen Gewinn, stabilere Wetten werden abgelehnt.
   - 5%  Wahrscheinlichkeit um 10k zu verlierne -> Furcht vor Verlust, lieber Annahme eines Vergleichs vor Gericht zB.
 
-* Quelle: https://en.wikipedia.org/wiki/Loss_aversion (<- Grafik hier zeigen!)
+- Quelle: <https://en.wikipedia.org/wiki/Loss_aversion> (<- Grafik hier zeigen!)
   
 Sunken Cost Fallacy
 
-* Es werden oft Projekte fortgesetzt die eigentlich schon verloren sind, "da man ja schon so viel investiert hat".
+- Es werden oft Projekte fortgesetzt die eigentlich schon verloren sind, "da man ja schon so viel investiert hat".
   Diese Verzerrung führt häufig zu irrationalen Verhalten und weiteren Kosten. Die bereits investierten Kosten sind präsenter
   und "schmerzen" mehr als Kosten die noch anfallen werden.
 
 Framing & Format
 
-* Format: Die Präsentation von Daten hat starken Einfluss auf Entscheidungen:
+- Format: Die Präsentation von Daten hat starken Einfluss auf Entscheidungen:
 
   - Option 1: Patienten wie John begehen mit etwa 10% Wahrscheinlichkeit Straftaten nach der Entlassung.
   - Option 2: Von 100 Patienten wie John begehen ca. 10 Straftaten.
   - Option 2 wurde von Ärzten viel öfters als gefährlicher Patient eingestuft.
 
-* Framing: Einordnung von Daten: Schädlichkeit von E-Autos muss mit Verbrennern verglichen werden.
-* Weites und enges Framing. Entscheidungen hängen stark von der "Distanz" ab mit  der man sie trifft.
+- Framing: Einordnung von Daten: Schädlichkeit von E-Autos muss mit Verbrennern verglichen werden.
+- Weites und enges Framing. Entscheidungen hängen stark von der "Distanz" ab mit  der man sie trifft.
 
   - Beispiel: Vorstande mit 25 Managern und einem obersten Chef. Jede Sparte soll eine riskante Option evaluieren
     bei der 25% des Kapitals jeder Sparte verloren geht oder das Kapital verdoppelt wird (50/50 Chance). Jeder einzelne Manager entscheidet sich dagegen (enges Framing),
@@ -225,30 +172,30 @@ Framing & Format
     todo: Beispiel ist doof.
   - Enges Framing = Seriel von Teilentscheidungen. Weites Framing = Alle Entscheidungen auf einen Haufen.
 
-* Verluste können oft als "entgangene Gewinne" geframed werden:
-  - Option1: Lotterie mit 10% Chance 95EUR zu gewinnen und 90% Chance 5 Doller zu verlieren. 
+- Verluste können oft als "entgangene Gewinne" geframed werden:
+  - Option1: Lotterie mit 10% Chance 95EUR zu gewinnen und 90% Chance 5 Doller zu verlieren.
   - Option2: Einsatz 5 Euro. Lotterie mit 10% Chance 100EUR zu gewinnen und 90% Chance nichts zu gewinnen.
 
   -> Menschen mögen Sicherheit und würden Option 2 nehmen.
 
-* Opt-in vs Opt-out: Opt-out ist deutlich effektiver - siehe die Kirche oder Organspende.
+- Opt-in vs Opt-out: Opt-out ist deutlich effektiver - siehe die Kirche oder Organspende.
 
-  -> 
+  ->
 
-* Feature Fatique
+- Feature Fatique
 
   Feature Fatigue beschreibt die Unzufriedenheit, Frustration und Überforderung der Nutzer durch zu viele und unklare Features.
   TODO:
-  - Quelle: https://www.richard-seidl.com/additive-bias/
+  - Quelle: <https://www.richard-seidl.com/additive-bias/>
 
 ---------
 
 Das Leben als eine Geschichte
 
-* Entscheidungen treffen wir anhand der Erinnerung an erlebte Ereignisse. Dabei verzerren wir stark.
-* Eine Verzerrung ist die Höchstand-Ende-Regel: Man erinnert sich viel primär an das Ende und das intensivste Ereignisse.
+- Entscheidungen treffen wir anhand der Erinnerung an erlebte Ereignisse. Dabei verzerren wir stark.
+- Eine Verzerrung ist die Höchstand-Ende-Regel: Man erinnert sich viel primär an das Ende und das intensivste Ereignisse.
   Wenn beides zum Beispiel schlecht war, kann das sogar viele glückliche Erlebnisse komplett überschatten.
-* Kaltes-Hand-Experiment:  Probanden müssen ihre Hände in einen Tank mit kaltem Wasser halten.
+- Kaltes-Hand-Experiment:  Probanden müssen ihre Hände in einen Tank mit kaltem Wasser halten.
     1. Erster Durchlauf: 60 Sekunden, konstante Temperatur.
     2. Zweiter Durchlauf: 60 Sekuden wie erster, danach 30 Sekunden mit etwas wärmeren Wasser.
 
@@ -257,19 +204,19 @@ Das Leben als eine Geschichte
 
 Zufriedenheit & Wohlbefinden:
 
-* Es gibt einen Unterschied zwischen Wohlbefinden (messbar anhand Tagesbuch) und Zufriedenheit (basiert auf erinnernde Rückschau). Letzteres ist oft stark verzerrt und entsprich selten dem tatsächlichen
+- Es gibt einen Unterschied zwischen Wohlbefinden (messbar anhand Tagesbuch) und Zufriedenheit (basiert auf erinnernde Rückschau). Letzteres ist oft stark verzerrt und entsprich selten dem tatsächlichen
   Wohlbefinden. Meist werden die negativen Dinge in Erinnerung gerufen wenn man über seine Zufriedenheit nachdenkt. Auch werden dabei Ereignisse bevorzugt die vor kurzen passiert sind.
-* Das lässt sich ausnutzen: In einem Expierment wurden Probanden befragt wie zufrieden sie mit ihrem Leben sind. Alle Probanden fragte man ob sie eine Seite vorher fotokopieren könnten.
+- Das lässt sich ausnutzen: In einem Expierment wurden Probanden befragt wie zufrieden sie mit ihrem Leben sind. Alle Probanden fragte man ob sie eine Seite vorher fotokopieren könnten.
   Die Hälfte der Probanden fanden dabei ein 10ct Stück am Kopierer (das dort hingelegt wurde). Diese Hälfte war sehr signifikant zufriedener mit ihrem Leben.
-* "Geld macht nicht glücklich" stimmt. Aber Armut macht unglücklich. Ab einem bestimmten Gehalt ist das Wohlbefinden fast exakt gleich, lediglich die selbsteingeschätzte Zufriedenheit steigt noch etwas.
-* Das parallele Erledigen von Dingen "verdünnt" lustvolles Erleben. Beim Essen kein Fernseh schauen, aber schmerzhafte Behandlungen: Podcast hören.
+- "Geld macht nicht glücklich" stimmt. Aber Armut macht unglücklich. Ab einem bestimmten Gehalt ist das Wohlbefinden fast exakt gleich, lediglich die selbsteingeschätzte Zufriedenheit steigt noch etwas.
+- Das parallele Erledigen von Dingen "verdünnt" lustvolles Erleben. Beim Essen kein Fernseh schauen, aber schmerzhafte Behandlungen: Podcast hören.
 
 Fokussierungs-Illusion:
 
-* Zufriedenheit hängt auch von den verfügbaren Alternativen ab. Ist man zufrieden aber eine bessere Alternative ist verfügbar, dann ist man nicht mehr zufrieden.
+- Zufriedenheit hängt auch von den verfügbaren Alternativen ab. Ist man zufrieden aber eine bessere Alternative ist verfügbar, dann ist man nicht mehr zufrieden.
   Beispiel: Leute die in einem sehr angenehmen Klima leben bemerken es nicht mehr und sind genauso zufrieden wie Leute mit schlechterem Klima. Trotzdem halten sich Leute mit schlechten Klima fü----------
   unzufriedener und   Menschen in guten Klima für zufriedener.
-* Querschnittsgelähmte: Menschen die keinen kennen schätzen die Zufriedenheit dieser Personen schlechter ein als diejenige die eine kennen. 
+- Querschnittsgelähmte: Menschen die keinen kennen schätzen die Zufriedenheit dieser Personen schlechter ein als diejenige die eine kennen.
   Man konzentriert sich überproportional auf negative Apsekte und lässt andere Aspekte außer acht.
 
 --->
@@ -281,8 +228,6 @@ Software development is...
 - 30% technical skills
 - 65% Psychology
 - 25% Made-up statistics
-
-<!--
 
 But for real, we talk not enough about the psychological aspects of software
 engineering, or engineering in general. I always say "complexity is the enemy"
