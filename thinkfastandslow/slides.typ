@@ -1,6 +1,9 @@
 // Get Polylux from the official package repository
 #import "@preview/polylux:0.4.0": *
 
+// TODO: Rework name of sections (some are experiments, some stoies, some effects, some solutions.)
+// TODO: Figure out way to add presenter comments.
+
 #enable-handout-mode(false)
 
 #show link: set text(blue)
@@ -103,11 +106,11 @@
 
     #toolbox.side-by-side[
       // Anything wrong in this picture?
-      #image("images/thatcher-faces-upsidedown.png", width: 90%) 
+      #image("images/thatcher-faces-upsidedown.png", width: 85%) 
     ][
       #uncover("2-")[
         // Our brain just inserted the info "there is a mouth, here are some eyes".
-        #image("images/thatcher-faces-turnedaround.png", width: 90%)
+        #image("images/thatcher-faces-turnedaround.png", width: 85%)
       ]
     ]
   ]
@@ -232,15 +235,17 @@
 
 #slide[
   #toolbox.side-by-side[
+    #set text(size: 16pt)
     #toolbox.all-sections( (sections, current) => {
       enum(..sections)
     })
   ][
-    3 slides per cognitive bias:
+    #emph[3 slides per cognitive bias:]
     
     - Experiment (Quiz, Story time, ...)
-    - Explanation (Why?)
-    - Effect (How to fix?)
+    - Explanation & Effect (Why?)
+    - Fix (How to fix?)
+    - Discussion welcome after each bias.
   ]
 ]
 
@@ -276,7 +281,7 @@
 ]
 
 #slide[
-  = Effect
+  = Fix
 
   TODO: 
   - errors?
@@ -346,7 +351,7 @@
 ]
 
 #slide[
-  = Effect
+  = Fix
 
   - Use well-tested & renowned software. // like Postgresql
   - Strategy first and stick to it. // making progress is a far better way to get dopamine.
@@ -438,6 +443,8 @@
   - Cogntitive Dissonance.
   - Illusory superiority
   - Worse-than-average-effect (for very hard tasks)
+
+  - 80% of drivers judge themselve to be better than the average - which cannot be correct.
 ]
 
 #slide[
@@ -451,7 +458,7 @@
 ]
 
 #slide[
-  = Effect
+  = Fix
 
   - If you feel like you are lacking, it might be a good sign!
   - Force overconfident people to explain.
@@ -491,7 +498,7 @@
 ]
 
 #slide[
-  = Effect
+  = Fix
 
   #toolbox.side-by-side[
   - The primary cause for #emph("Not-Invented-Here-Syndrom"). // People tend to defend tools they've written. (melon, anyone?)
@@ -538,7 +545,7 @@
 ]
 
 #slide[
-  = Effect
+  = Fix
 
   #toolbox.side-by-side[
     - Evaluate choices like you'd start freshly.
@@ -577,7 +584,7 @@
 ]
 
 #slide[
-  = Effect
+  = Fix
 
   - Knowing about it helps. Feel free to interrupt your peer. // Your peer probably does not notice he does at bad job explaining.
   - Try to see the world from your peer's perspective.
@@ -600,9 +607,10 @@
     #align(left)[
       #image("images/bike-shed-expl.png", height: 70%)
     ]
+  ]
   
   #align(center)[
-    *Discuss what trivial detail did you did give disproportional detail?*
+    *Discuss: What trivial detail did you did give disproportional detail?*
   ]
   
 
@@ -617,36 +625,162 @@
   = Explanation
 
     - We tend to decide quickly on things we do not know much about. // Hi from Dunning-Kruger!
+    - Focusing illusion shifts priorities. // The impact of details is overestimated. Example: Paraplegic people are often happier than people imagine due to their disability. Or thinking "This one promotion will make me so much more happy for a long time".
     - If we know much about a subject we tend to over discuss it.
     - We see opportunity to demonstrate our skills.
     - We forget about the greater goal.
+    - Can lead to Analysis Paralysis.
 ]
 
 #slide[
-  = Effect
+  = Fix
 
 Hard to fix, since it often masquerades as useful discussion.
 
-- Have frameworks like OKR.
+- Have frameworks like OKR for common goals.
 - Time-box meetings and give priorities.
 - Leaders should actively discussions gone wild.
-- Explain Bikeshedding.
+- Explain Bikeshedding to peers.
 ]
 
 ////////////////////////////////
 
-#new-section-slide("Confirmation & Hindsight Bias")
+// Or: The holy trinity of being an asshole.
+#new-section-slide("Confirmation, Hindsight & Attribution Bias")
+
 
 #slide[
   = Story & Experiment
+
+  #toolbox.side-by-side[
+    // When confronted with evidence, we tend to pick the part of it that confirms our existing beliefs
+    // and reject those parts that contradicts them. Often very vocally.
+    #image("images/confirmation-bias.jpg", height: 85%)
+  ][
+    // Interpreting past events in a way that it was clear
+    // Past unpredictability is cleared from our memory.
+    #image("images/hindisght-bias.jpg", height: 80%)
+  ]
 ]
 
 #slide[
   = Explanation
+
+  #toolbox.side-by-side[
+    *Confirmation bias*:
+
+    - Desire to be right & Self esteem.
+    - We like to confirm more than to refute.
+    - Mental shortcut. // Easier to process already known information.
+
+  *Hindsight bias:*
+
+  - Desire for control. // It's hard to accept that we did not have the control that lead to this situation.
+  - Reducing regret by sugarcoating. // https://en.wikipedia.org/wiki/Choice-supportive_bias
+  ][
+    #image("images/fundamental_attribution_error.png", height: 85%)
+
+    // - https://en.wikipedia.org/wiki/Fundamental_attribution_error / Correspondence Bias 
+    //    -> Deployment was successful because we're so great.
+    //    -> Sales fucked up everything because they are such bad persons.
+    //    -> The deployment failed, really a weird issue that we could not have see coming.
+    //    -> Sales meeting worked well. Eh, they did their job.
+  ]
 ]
 
 #slide[
-  = Effect
+  = Fix
+
+  - Tends to create echo chambers. // i.e. confirmation bias.
+  - Testing: Positive tests > Negative tests. // Side effect of confirmation bias: We confirm what is there already.
+  - Re-use of old solutions for new problems. // Things like: The user/sales is dumb, it's the RTC, ...
+  - When Deployment goes wrong: I had a bad feeling! // well, no. You didn't.
+  - Colleague X is such an idiot, I would have it done so much better! // Attribution bias.
+]
+
+////////////////////////////////
+
+#new-section-slide("Optimism bias")
+
+#slide[
+= Commong sayings amongst developers
+
+#place(dx: 50%, dy: 45%)[#emph("Loosing all backups is really unlikely")]
+#place(dx: 20%, dy: 90%)[#emph("Hackers target only big companies!")]
+#place(dx: 00%, dy: 30%)[#emph("I smoke way less than others")]
+#place(dx: 60%, dy: 25%)[#emph("That solution will be fast enough!")]
+#place(dx: 10%, dy: 55%)[#emph("That deadline will no issue.")]
+#place(dx: 30%, dy: 70%)[#emph("That new framework/tool/whatever will fix it all.")]
+#place(dx: 30%, dy: 10%)[#emph("It's not that hard to add 2 database columns...")]
+
+// I did say some of these already...
+]
+
+#slide[
+= Explanation
+
+
+- Representativeness heuristic // When thinking of a car accident, we do think of a bad driver and not an average driver like ourselves. We compare each other with the bad driver and think "That won't happen to me!"
+- People want to feel good. // And optimistic outcomes are more desirable. Also they want to signal "I can do that!"
+- Focus on desired end states. // Meaning that we tend to focus on things we wish for, ignoring unwanted output.
+- Missing painful experiences.
+- Good mood. // The better the mood, the more likely the effect of optimism bias.
+
+]
+
+#slide[
+= Fix
+
+Very hard to eliminate.
+
+There is no glory in prevention. // security, maintainability but also health and climate crisis - all due optimism.
+
+- Convince others of preemptive measures.
+- Use base rates // Consider past performance of similar projects.
+- Pre-Mortem it!  // i.e. imagine a negative outcome.
+- Let peers challenge your plans.
+
+
+NOTE: There is also a pessimism bias. It depends on the character which applies more.
+]
+
+////////////////////////////////
+
+
+#new-section-slide("Halo effect")
+
+#slide[
+= Story
+
+#toolbox.side-by-side[
+  TODO: Kahnemann story of student grading.
+][
+  #image("images/halo-effect.png", height: 65%)
+]
+]
+
+#slide[
+= Explanation
+
+]
+
+#slide[
+= Fix
+
+- We tend to overvalue #emph("Rockstar developers")
+- Each of us have a technology they love. // Linux, Flutter, Apple - We tend to defend it and choose tools similar to it.
+- Do not use #emph("exciting") software, but boring one. // Would you rather have a good looking but bad surgeon or a jerk that is an excellent surgeon?
+
+
+*Solution:* Accept all software sucks.
+]
+
+
+////////////////////////////////
+
+
+#slide[
+
 ]
 
 ////////////////////////////////
@@ -670,6 +804,8 @@ Hard to fix, since it often masquerades as useful discussion.
     #image("images/bias-blind-spot.jpg", height: 85%)
   ]
 ]
+
+////////////////////////////////
 
 #slide[
 = Outlook & Homework
@@ -706,8 +842,6 @@ https://minds.md/zakirullin/cognitive
   ]
 ]
 
-// NOTES:
-
 // DONE:
 // - Lack of Statistic Intuition https://en.wikipedia.org/wiki/Conjunction_fallacy and base rate fallacy
 //   (Intuition is just the experience of years)
@@ -720,34 +854,16 @@ https://minds.md/zakirullin/cognitive
 // - Affinity Bias (overestimating opinions of people similar to us)
 // - Curse of knowledge
 // - Bikeshedding - Tendency to focus on trivial things (e.g. how to structure file layout in big projects)
-
-
-// OPEN:
+//    - Focusing Illusion (overestimating of specific things impacting overall happiness:
+//          promotion, better solutions, fresher technology, misjudgement how happy people with paraplegia - happiness is relative)
+// - Confirmation Bias / Cognitive Dissonance: Tendency to interpret events in a way to confirm existing opinion
+//    - Hindsight Bias (bad events are sugar coated in retrospective, good events are attributed to skill - "Could have known that bug - sooo easy")
 // - Optimism bias 
-//    -> "Loosing all backups is reeeeeeaaaly unlikely"
-//    -> "Hackers target only big companies!"
-//    -> "It's not that hard to add 2 db columns!"
-//
 // - Halo Effect (positive feelings towards something influence future decisions about something) 
 //    - basically fanboy-ism: If you love Linux, you might feel inclined to defend its weak parts.
 //    - We tend to over-value people and their decision we have a positive image of. 
 //    - https://en.wikipedia.org/wiki/Reactive_devaluation - proposals of people we don't like are ignored.
 //    - https://en.wikipedia.org/wiki/Authority_bias - also tend to over-value authority opinions
-// - Confirmation Bias / Cognitive Dissonance: Tendency to interpret events in a way to confirm existing opinion
-//    - Hindsight Bias (bad events are sugar coated in retrospective, good events are attributed to skill - "Could have known that bug - sooo easy")
-// - Peak-End-Rule / Memory Bias (memory is dominated by the most intense & recent peak of it instead of total average)
-// - Additive Bias (tendency to add to a solution instead of removing it, even if better)
-// - Focusing Illusion (overestimating of specific things impacting overall happiness:
-//    promotion, better solutions, fresher technology, misjudgement how happy people with paraplegia - happiness is relative)
-// - Loss aversions:
-//     - Zero risk bias (tendency to build solutions that have zero perceived risk)
-//     - Analysis Paralysis
-// - https://en.wikipedia.org/wiki/Fundamental_attribution_error / Correspondence Bias 
-//    -> Deployment was successful because we're so great.
-//    -> Sales fucked up everything because they are such bad persons.
-//    -> The deployment failed, really a weird issue that we could not have see coming.
-//    -> Sales meeting worked well. Eh, they did their job.
-//
 
 // SORTED OUT:
 // 
@@ -755,10 +871,12 @@ https://minds.md/zakirullin/cognitive
 // - Survivorship Bias
 // - Complexity bias (Tendency to push towards too complex solutions) TODO: Is that a based one?
 // - Generation effect (information is easier remembered when a person reasoned it themself, same applies to humor)
-
-
-// MAYBE:
+// - Peak-End-Rule / Memory Bias (memory is dominated by the most intense & recent peak of it instead of total average)
+// - Additive Bias (tendency to add to a solution instead of removing it, even if better) -> Not strong and thin scientific proof
+// - Loss aversions:
+//     - Zero risk bias (tendency to build solutions that have zero perceived risk)
+//     - Analysis Paralysis
 // - https://en.wikipedia.org/wiki/Automation_bias - Favor of decisions made by automated systems over human decisions.
-// - Broken Windows Theory - if something is already broken, we tend to be less critical when only quick repairing it.
+// - Broken Windows Theory - if something is already broken, we tend to be less critical when only quick repairing it. // TODO: Not really based and software related.
 // - https://en.wikipedia.org/wiki/Choice-supportive_bias - Sugarcoating the own decision afterwards. "It was the right one!"
 // - Google Effect: https://en.wikipedia.org/wiki/Google_effect - Tendency to forgot things we know we can search again.
