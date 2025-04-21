@@ -6,6 +6,9 @@
 
 #enable-handout-mode(false)
 
+// Can be used to embed speaker notes:
+#let comment = toolbox.pdfpc.speaker-note
+
 #show link: set text(blue)
 #set text(font: "Andika", size: 20pt)
 #show raw: set text(font: "Fantasque Sans Mono")
@@ -62,6 +65,15 @@
 )
 
 #slide[
+  #comment(```md
+  # Welcome
+  
+  Today Im not going to talk about the hardware we run our software on,
+  but about the hardware we are running software development on. Our brain.
+
+  We start by insulting ourselves. I wrote a small poem to get us in the right mood.
+```)
+
   #set page(footer: none, header: none)
   #align(center)[
     #link("https://upload.wikimedia.org/wikipedia/commons/6/65/Cognitive_bias_codex_en.svg")[
@@ -73,6 +85,15 @@
 #new-section-slide("Intro")
 
 #slide[
+  #comment(
+    ```md
+Written by that guy over there, who was a psychologist. I can recommend the read.
+
+I want you to accept that our brain makes plenty mistakes all the time
+and we cannot really trust ourselves. This hopefully does not come as news to most of you.
+    ```
+  ) 
+
 = Intro Poem
   #toolbox.side-by-side[
     #item-by-item[
@@ -86,30 +107,46 @@
       #image("images/kahnemann.png", width: 90%)
     ]
   ]
-
-  // Accept defeat!
 ]
 
 #slide[
-= Cognitive bias
+= Cognitive biases 🪲
+  
+  #comment(
+    ```md
+There are a lot of bugs we make during thinking, and they have a name: Cognitive bias.
+
+We usually do not notice, as our brain has some mechanism to cover up its faults.
+Not all of them are covered. just those that lead to bad software. And even that list is probably not complete.
+    ```
+  ) 
 
   - Our brain was not made to write software. // (but rather to find food and quickly notice the predators)
   - We tend to think of our brain as reliable logical processor. // ("We" is our brain and it is lying)
-  - Our brain has bugs, which are called 'Cognitive bias'. // (and there are thousands of them)
+  - Our brain has bugs, which are called #emph("cognitive bias"). // (and there are thousands of them)
   - We focus on how our brain prohibits writing good software.
   - I'm qualified for this talk because I do software and have a brain.
 ]
 
 #slide[
+  #comment(
+    ```md
+    Lets look at some of those bugs. I mean, you do not need to take my word for granted when calling myself stupid.
+
+    Anything wrong in this picture?
+
+    Our brain just inserted the info "there is a mouth, here are some eyes".
+    It is used to reading faces, but not when they are up side down.
+    It is like a big pattern matching machine.
+    ```
+  ) 
   #align(center)[
     = Don't believe me?
 
     #toolbox.side-by-side[
-      // Anything wrong in this picture?
       #image("images/thatcher-faces-upsidedown.png", width: 85%) 
     ][
       #uncover("2-")[
-        // Our brain just inserted the info "there is a mouth, here are some eyes".
         #image("images/thatcher-faces-turnedaround.png", width: 85%)
       ]
     ]
@@ -117,49 +154,129 @@
 ]
 
 #slide[
-  #align(center)[Watch your thoughts:]
-  #uncover("2-")[
-    #align(center)[
-      #image("images/banana-vomit.png")
-    ]
-  ]
-  #uncover(3)[
+  #comment(
+    ```md
+    Im going to show an image with two objects and it and I want you to tell me what it did with you.
+    Watch your thoughts and emotions closely.
+
     Your brain invented a little story about bananas making you sick without being asked.
+    Even thought there was no story. Take away: It links objects together, even if there is no link.
 
     Also: You are now more likely to avoid bananas for some time subconsciously. Congratulations!
+    ```
+  ) 
+  #align(center)[*Watch your thoughts:*]
+  #uncover("2-")[
+    #align(center)[
+      #image("images/banana-vomit.png", width: 70%)
+    ]
   ]
 ]
 
 #slide[
+  #comment(
+    ```md
+    Many of you probably know this one. 
+    Even if you know, you can't see it.
+    
+    This means: Our brain cannot be made fully aware of its mistakes. It just continues to fail.
+    ```
+  ) 
+  == Which is the longest line?
+
+  #only(1)[
     #align(center)[
-      == Which is the longest line?
       #image("images/müller-lyer.png", width: 60%)
     ]
-]
-
-#slide[
+  ]
+  #only(2)[
     #align(center)[
-      == Which is the longest line? (fixed)
       #image("images/müller-lyer-fixed.png", width: 60%)
-      Even if you know, you can't see it.
     ]
-
+  ]
 ]
 
 #slide[
+  #comment(
+    ```md
+    What is written there?
+    
+    THE CAT. But the H doubles as A. How many of you did not notice it?
+    This is an example for our brain being flexible. It can interpret meaning
+    even into incomplete data. We might not be notified that the data is incomplete.
+    ```
+  ) 
   #align(center)[
+    #v(5cm)
     #image("images/the_cat.png", width: 30%)
   ]
 ]
 
 #slide[
+  #comment(
+    ```md
+    Until now you might argue: Eh, those were just optical illusions and other tricks.
+    Nothing that influences us a lot. Well, not quite true. software development means 
+    makings hundreds of small and big decisions every day.
+    
+    I will show an experiment, where most will choose the clearly worse choice reliably.
+
+    Trial 1: 60s 14C cold water.
+    Trial 2: 60s 14C cold water + 30s 15C cold water.
+    
+    Afterwards participants were asked which trial they would rather repeat.
+    What did they choose? Mostly trial 2.
+    
+    This experiment shows that people choosing more pain than they needed to.
+    It's not logical, but it's an example of the peak end rule. The slightly
+    higher temperature at the end made the experience in the memory of the participants
+    more favorable, as the end was slightly less painful.
+    
+    We do judge memories largely by how they felt at their peak (or most intense point)
+    and at its end. We do not keep book whether it was an enjoyable experience in total,
+    we remember the most joy or the most trauma and how we felt at the end. The rest is still
+    there but is not really picked as first thing when we remember the event.
+    
+    This one example of where we are not capable of making informed decisions.
+    ```
+  ) 
+  = Peak-End-Rule
+  #align(center)[
+    #image("images/peak-end-ice-water.png", width: 80%)
+  ]
+]
+
+#slide[
+  #comment(
+    ```md
+    As developers you probably asking yourself: How do those bugs happen?
+    It has to do with the "architecture" of our brain.
+    
+    There are two systems: 1 and 2. Only one of them runs at a time.
+
+    1 is automatic, fast, subconscious... and error prone.
+    It does its work by pattern matching and heuristics. It is good for finding predators.
+    If it cannot find a solution, 2 is triggered.
+
+    2 is manual, slow, effortful but reliable. It is where our logic is.
+    It is like a slow general purpose cpu. All kind of new problems can be processed here.
+    It is what makes us humans so special.
+    ```
+  )
   #align(center)[
     #image("images/system1and2.jpg")
   ]
+]
 
-// TODO: Finish notes.
-// - Vorstellung System 1/2 (läuft 2 ist man praktisch blind und sieht keine Gorillas und kann nicht laufen und multiplizieren, System 1 kann man geradeauslaufen und denken oder blinker setzen)
-// - Intelligenz vs Rationalität (Intelligenz -> System 1 sehr fit, Rationalität -> übernimmt System 2 ausreichend schnell?)
+#slide[
+  = Math
+  #item-by-item[
+    - $2+2$       // you did not have to think right? Plain pattern matching.
+    - $21 dot 13$ // now you probably have to use system 2.
+    - $77+33$     // chances are you were wrong, sometimes system1 triggers because this feels familiar (7 + 3 + 10), for some system2 triggered.
+  ]
+  // By the way: When you walk and see an equation you cannot solve immediately,
+  // you probably just stop walking. Concurrency is also not build in.
 ]
 
 #slide[
@@ -219,16 +336,6 @@
   // with 10%, but we do not really visualize it.
   //
   // This works well with negative framing ("You have to pay a fee if you are late") and positive framing ("You will get a discount if you are early") - negative is more effective here.
-]
-
-#slide[
-  #item-by-item[
-    - $2+2$       // you did not have to think right? Plain pattern matching.
-    - $21 dot 13$ // now you probably have to use system 2.
-    - $77+33$     // chances are you were wrong.
-  ]
-  // By the way: When you walk and see an equation you cannot solve immediately,
-  // you probably just stop walking. Concurrency is also not build in.
 ]
 
 #new-section-slide("Agenda")
@@ -791,7 +898,7 @@ NOTE: There is also a pessimism bias. It depends on the character which applies 
 = Summary
 
   #toolbox.side-by-side[
-  - Even if we know about bias, our brain will still experience them.
+  - Even if we know about biases, our brain will still experience them.
   - Now we can at least debug our past behavior. // and feel bad about it.
   - Make it a habit watching your mind.
   - Take time for important decisions.
@@ -864,6 +971,7 @@ https://minds.md/zakirullin/cognitive
 //    - We tend to over-value people and their decision we have a positive image of. 
 //    - https://en.wikipedia.org/wiki/Reactive_devaluation - proposals of people we don't like are ignored.
 //    - https://en.wikipedia.org/wiki/Authority_bias - also tend to over-value authority opinions
+// - Peak-End-Rule / Memory Bias (memory is dominated by the most intense & recent peak of it instead of total average)
 
 // SORTED OUT:
 // 
@@ -871,7 +979,6 @@ https://minds.md/zakirullin/cognitive
 // - Survivorship Bias
 // - Complexity bias (Tendency to push towards too complex solutions) TODO: Is that a based one?
 // - Generation effect (information is easier remembered when a person reasoned it themself, same applies to humor)
-// - Peak-End-Rule / Memory Bias (memory is dominated by the most intense & recent peak of it instead of total average)
 // - Additive Bias (tendency to add to a solution instead of removing it, even if better) -> Not strong and thin scientific proof
 // - Loss aversions:
 //     - Zero risk bias (tendency to build solutions that have zero perceived risk)
@@ -880,3 +987,8 @@ https://minds.md/zakirullin/cognitive
 // - Broken Windows Theory - if something is already broken, we tend to be less critical when only quick repairing it. // TODO: Not really based and software related.
 // - https://en.wikipedia.org/wiki/Choice-supportive_bias - Sugarcoating the own decision afterwards. "It was the right one!"
 // - Google Effect: https://en.wikipedia.org/wiki/Google_effect - Tendency to forgot things we know we can search again.
+//
+//
+
+
+// TODO: Doch noch etwas mehr Broken-Window Theory und "Ich fahr hier bloß den Bagger"-Attitüde reinbringen?
