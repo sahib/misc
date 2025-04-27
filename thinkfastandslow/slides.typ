@@ -104,7 +104,7 @@ and we cannot really trust ourselves. This hopefully does not come as news to mo
     ]
   ][
     #uncover(5)[
-      #image("images/kahnemann.png", width: 90%)
+      #image("images/kahnemann.png", width: 85%)
     ]
   ]
 ]
@@ -269,6 +269,10 @@ Not all of them are covered. just those that lead to bad software. And even that
 ]
 
 #slide[
+  #comment(```md 
+  As you can see, System 1 can think fast, but is wrong often,
+  while System2 is slow (and is more often right - eventually)
+  ```)
   = Math
   #item-by-item[
     - $2+2$       // you did not have to think right? Plain pattern matching.
@@ -280,6 +284,34 @@ Not all of them are covered. just those that lead to bad software. And even that
 ]
 
 #slide[
+  #comment(```md 
+  So System1 can do very basic math, and System2 can do math that is a bit more complex.
+
+  But most decisions we have to do daily are not basic math, they often involve a fair bit
+  of statistics. 
+
+  Here we have a description of a person. Please read it.
+  Once done, you get two options and you need to decide for the one that seems more likely to you.
+  Don't be influenced by others, try to think for yourself.
+  
+  Some of you probably picked 2, which is logically more unlikely than option 1.
+  Why? Because you build a mental model of the person Linda (how is likely a feminist)
+  and matched to the answers. This pattern matching is what makes us intelligent and adaptable.
+  Being able to reason the solution is what makes us rational and smart.
+
+  Our brain was not made for fast reasoning.
+  It's a bit like running DOOM on a toothbrush. Kinda works, but error prone.
+  In this case we just replaced the question with "Which Linda description fits more to our image?".
+  System1 did this and didn't even tell you that the question was replaced.
+
+  That's by the way the same reason why AI's appear intelligent. They do pattern matching,
+  but they do have a System2 doing the rational part yet.
+
+  System2 needs time to work and time to kick in. You need to learn triggers to question
+  your own behavior as we can't really change the way our brain works. In time pressure
+  System1 will take over and you should not be mad if you do the same mistakes over and over.
+  ```)
+
   = Intelligence vs Rationality 
   
   #emph[“Linda is 31 years old, single, outspoken and very bright. She majored in
@@ -289,39 +321,35 @@ Not all of them are covered. just those that lead to bad software. And even that
   
   #uncover(2)[
   *You have 5 seconds. Which is more likely?*
-  
-  1. Linda is a bank teller.
-  2. Linda is a bank teller and is active in the feminist movement.
-  
+
   *Raise left hand for 1, right for 2.*
   ]
+  
+  #uncover(3)[
+  1. Linda is a bank teller.
+  2. Linda is a bank teller and is active in the feminist movement.
+  ]
 
-// Some of you probably picked 2, which is logically more unlikely than option 1.
-// Why? Because you build a mental model of the person Linda (how is likely a feminist)
-// and matched to the answers. This pattern matching is what makes us intelligent and adaptable.
-// Being able to reason the solution is what makes us rational and smart.
-//
-// Our brain was not made for fast reasoning.
-// It's a bit like running DOOM on a toothbrush. Kinda works, but error prone.
-// In this case we just replaced the question with "Which Linda description fits more to our image?".
-// System1 did this and didn't even tell you that the question was replaced.
-//
-// That's by the way the same reason why AI's appear intelligent. They do pattern matching,
-// but they do have a System2 doing the rational part yet.
-//
-// System2 needs time to work and time to kick in. You need to learn triggers to question
-// your own behavior as we can't really change the way our brain works. In time pressure
-// System1 will take over and you should not be mad if you do the same mistakes over and over.
 ]
 
 #slide[
+  #comment(```md 
+  Definition.
+
+  Statistical thinking is very hard for us.
+  10 crimes just sounds like much to us. We know how to calculate
+  with 10%, but we do not really visualize it.
+  
+  This works well with negative framing ("You have to pay a fee if you are
+  late") and positive framing ("You will get a discount if you are early") -
+  negative is more effective here though.
+  ```)
   = Framing
 
   #emph("The way of presentation of information influences how it is perceived.")
 
-  #item-by-item[
   Imagine a patient with psychological issues called "Jon":
-
+  #item-by-item[
   - Patients like Jon commit crimes with a probability of 10%.
   - Out of 100 patients like Jon 10 will commit crimes.
   ]
@@ -329,18 +357,22 @@ Not all of them are covered. just those that lead to bad software. And even that
   #uncover(3)[
   *Option 2 was considered way more dangerous by psychological practitioners.*
   ]
-
-
-  // Statistical thinking is very hard for us.
-  // 10 crimes just sounds like much to us. We know how to calculate
-  // with 10%, but we do not really visualize it.
-  //
-  // This works well with negative framing ("You have to pay a fee if you are late") and positive framing ("You will get a discount if you are early") - negative is more effective here.
 ]
 
 #new-section-slide("Agenda")
 
 #slide[
+  #comment(```md 
+  Slowly but surely we will now explore connections of a wide variety of cognitive biases
+  to our daily life of engineers. Many of them are not even software related, the examples
+  I picked are of course from my memory as software engineer though.
+
+  We have N biases and we might not manage to go over all of them. We will timebox around 90m.
+  
+  Spoiler: Most of those brain bugs are not fixable. Sometimes we can work around them, but only
+  with enough time and distance.
+  ```)
+
   #toolbox.side-by-side[
     #set text(size: 16pt)
     #toolbox.all-sections( (sections, current) => {
@@ -362,37 +394,61 @@ Not all of them are covered. just those that lead to bad software. And even that
 #new-section-slide("Priming")
 
 #slide[
+  #comment(```md 
+Priming is not a cognitive bias per se, but more a
+base that powers many cognitive biases.
+
+Therefore we are going to discuss it at the start.
+  ```)
+
   = Experiment
 #toolbox.side-by-side[
     #image("images/priming-being-watched.png", height:85%)
   ][
     #item-by-item[
-      - A trust fund for coffee milk in office.
+      - A trust fund ("Bierkasse") for coffee milk in office.
       - Amount of £ was based on trust.
       - Images on the left was put above the £ box & changed weekly.
-
-      // Nicely applicable to the Bierkasse as well.
+      - Face images yielded a much higher cash flow.
     ]
   ]
 ]
 
 #slide[
+  #comment(```md 
+  Our brain is not a logical processor, but a contextual processor.
+  ```)
   = Explanation
 
+  #toolbox.side-by-side[
   #item-by-item[
-    - Feeling watched changes our behavior.
-    - Thinking of happy moments improves our mood. // Good mood: more creative but more gullible; Bad mood: more analytical but more likely to give in
+    - Feeling watched changes our behavior to more cautious.
+    - Thinking of happy moments improves our mood and makes us more gullible.
+    - Thinking of bad memories makes us more analytical (and sad).
     - Thinking of money makes us more greedy.
-    // - Not a cognitive bias by itself.
+  ]
+  ][
+    #image("images/priming.jpg", width: 85%)
   ]
 ]
 
 #slide[
+  #comment(```md 
+  But we can use priming for ourselves!
+  ```)
   = Fix
-
-  TODO: 
-  - errors?
-  - pre-mortem? Prime yourself about errors before they happen.
+  
+  #toolbox.side-by-side[
+  None. If it happens it happens. But:
+  
+    #item-by-item[
+  - *Pre-Mortem:* Prime yourself to think about possible mistakes.
+  - *Asking advice:* Do not mix explanation with opinions.
+  - *Take time:* Priming wears off over time. Sleep over it.
+  ]
+  ][
+    #image("images/premortem.png", width: 80%)
+  ]
 ]
 
 ////////////////////////////////
@@ -400,7 +456,12 @@ Not all of them are covered. just those that lead to bad software. And even that
 #new-section-slide("Cargo Cult")
 
 #slide[
-  = Cargo Cult: Story
+  #comment(```md 
+  This is a fun story and it sounds like a urban legend,
+  but it is actually true. There are several wiki articles detailing this,
+  I recommend this read.
+  ```)
+  = Story
 
   #toolbox.side-by-side[
     #image("images/cargo-cult-1.jpg", width: 80%)
@@ -411,24 +472,44 @@ Not all of them are covered. just those that lead to bad software. And even that
 ]
 
 #slide[
-  = Cargo Cult: Explanation
+  #comment(```md 
+  Basically an extreme form of dogmatism.
+  This effect is also known under the name of bandwagon effect:
+  https://en.wikipedia.org/wiki/Bandwagon_effect
 
-  Doing rituals in the hope of gaining a benefit without understanding what leads to the benefit.
+  If Google uses k8s and is succesful we have to use it too.
+  ```)
+  = Explanation
 
-  For Software: Usually emulate successful software houses.
-
-  // Basically an extreme form of dogmatism and also not a cognitive bias per se.
-  // Similar effect: https://en.wikipedia.org/wiki/Bandwagon_effect
+  #toolbox.side-by-side[
+    #item-by-item[
+  - Doing rituals in the hope of gaining a benefit, without understanding what leads to the benefit.
+  - For Software: Usually emulate successful software houses.
+  - Examples: k8s, AI, Blockchain, ...
+  - We simply tend to copy behaviors of others, without thinking twice.
+  ]
+  ][
+    #uncover(4)[
+    #image("images/lindner.jpg", height: 85%)
+    ]
+  ]
 ]
 
 #slide[
-  = Cargo Cult: Effect
+  #comment(```md 
+  Use your brain, Luke!
+  ```)
+  = Fix
+
+  *Ask:* Do I understand it and do I need it?
+
+  *Do not:*
 
   - Copy & Paste solutions that worked elsewhere without understanding.
-    (Use your brain, Luke!)
-  - Fixing applications by "Shotgun debugging".
-  - Applying tools like k8s - because Google uses it.
+  - Fixing applications by #emph("Shotgun debugging").
+  - Deploying tools like k8s - just because Google uses it.
   - Applying patterns (e.g. GoF) without limit.
+  - ...
 ]
 
 ////////////////////////////////
@@ -436,6 +517,11 @@ Not all of them are covered. just those that lead to bad software. And even that
 #new-section-slide("Shiny Object Syndrome")
 
 #slide[
+  #comment(```md 
+  Let's come to something that is closely related to Cargo Cult,
+  but not quite the same. I'm sure everyone can relate to this one:
+  The Shiny object syndrome - or: New feels better.
+  ```)
   = Experiment
 
   #align(center)[
@@ -444,10 +530,19 @@ Not all of them are covered. just those that lead to bad software. And even that
 ]
 
 #slide[
+  #comment(```md 
+  Dopamine leads to using more of system1 in decision making.
+
+  Examples:
+
+  - New technology: Blockchain.
+  - Distractions: NoSQL instead of Postgres.
+  - Trends: Stopping work on a new Exo for trendy things like Cray Visor or SSV.
+  ```)
   = Explanation
 
   #toolbox.side-by-side[
-  - New and exciting things release Dopamine. // It makes you use System1 for decisions!
+  - New and exciting things release Dopamine. 
   - Applies to...
     - ...choosing new technology.
     - ...distractions in projects.
@@ -458,29 +553,30 @@ Not all of them are covered. just those that lead to bad software. And even that
 ]
 
 #slide[
+  #comment(```md 
+  You have to realize: making progress is a far better way to get dopamine.
+
+  There is also the opposite though: Status Quo Bias and Zero Risk Bias tend
+  to make people do too conservative decisions. Innovate, but slowly.
+
+  - Status Quo / Endowment: Not changing is preferred and what we already own is viewed as more valuable.
+  - Zero Risk Bias: Options that have no perceived risk are viewed more valuable. But risk is often needed.
+
+  Use innocation like a currency. Have a budget.
+  ```)
   = Fix
 
-  - Use well-tested & renowned software. // like Postgresql
-  - Strategy first and stick to it. // making progress is a far better way to get dopamine.
-  - Get used to be skeptic about new technology: // product managers hate this trick.
+  - Use well-tested & renowned software.
+  - Strategy first and then stick to it.
+  - Get used to be skeptic about new technology: 
 
     - Does it solve an actual problem? // or is it a solution like Blockchain waiting for a problem to come around?
     - Can the technology improve software quality and reduce complexity?  
     - Can I understand the new technology?
-    - Do not ask: "Does it make my life easier?" or "Is it cool?"
+    - Do not ask: #emph("Does it make my life easier?") or #emph("Is it cool?")
 
   - *Opposite:* Status Quo Bias.
   - *Bonus:*    Zero risk bias // tendency to build solutions that have zero perceived risk
-
-
-// Status Quo Bias / Endowment Effect
-//
-// - Dinge werden als wertvoller eingeschätzt wenn man sie besitzt.
-// - Beispiel: Existierende Infrastruktur wird zu Unrecht als gut dargestellt, auch wenn
-// - Quelle: https://en.wikipedia.org/wiki/Status_quo_bias
-  
-
-  // I will not mention the word "AI" here. But it applies as well.
 ]
 
 ////////////////////////////////
@@ -488,23 +584,41 @@ Not all of them are covered. just those that lead to bad software. And even that
 #new-section-slide("Anchoring")
 
 #slide[
-  = Anchoring: Experiment
+  #comment(```md 
+  ```)
+  = Experiment
 
   - Divide in two groups!
-  - Answer the question below, but 
+  - Answer the question *silently* below and note on a piece of paper.
+  - If it is not your turn, close your eyes.
 
   #only(2)[
     *How high is the Eiffel tower? Is it higher than 1000m?*
+    #align(center)[
+      #image("images/eiffel.jpg", height: 30%)
+    ]
   ]
   #only(3)[
-    *How high is the Eiffel tower? Is it higher than 100m?*
+    #align(center)[
+      *Now the other group!*
+    ]
   ]
 
-  // NOTE: Works only with people in the room.
+  #only(4)[
+    *How high is the Eiffel tower? Is it higher than 100m?*
+    #align(center)[
+      #image("images/eiffel.jpg", height: 30%)
+    ]
+  ]
 ]
 
 #slide[
-  = Anchoring: Explanation
+  #comment(```md 
+  This is more of an emotionally guided process.
+
+  It's not really doing some solid guess work or comparisons, let alone math.
+  ```)
+  = Explanation
 
 
   #toolbox.side-by-side[
@@ -513,26 +627,37 @@ Not all of them are covered. just those that lead to bad software. And even that
     - We iterate until we feel happy about our guess.
   ][
     #align(center)[
-      #image("images/anchor-2.jpg", height: 90%)
+      #image("images/anchor-2.jpg", height: 80%)
     ]
   ]
 ]
 
 #slide[
-  = Anchoring: Effect
+  #comment(```md 
+- Effort estimations: Senior says something, all others say a bit above or below. Ask individuals. (Affinity Bias!)
+- Fixation on initial ideas: Name the effect! It helps.
+- Dark patterns in frontend. Price tags for example.
+
+*Bonus:* Affinity Bias: Overvalue opinions of people we trust or that are similar to us. You could call it Mini-Me-Bias. We tend to overtake the opinions of people that have generally similar beliefs to ours, even we would have good reason not to. The effect has some similarities to anchoring.
+  ```)
+  = Fix
 
   #toolbox.side-by-side[
-    *Dangers:*
+    *Is a danger to...*
 
-    - Effort estimations. // Senior says something, all others say a bit above or below. Ask individuals. (Affinity Bias!)
-    - Fixation on initial ideas. // Name the effect! It helps.
-    - Dark patterns in frontend. // Price tags for example.
+    - ...effort estimations.
+    - ...fixation on initial ideas.
+    - ...consumers due to dark patterns.
 
-    *Bonus:* Affinity Bias. // Overvalue opinions of people we trust or that are similar to us. You could call it Mini-Me-Bias. We tend to overtake the opinions of people that have generally similar beliefs to ours, even we would have good reason not to. The effect has some similarities to anchoring.
+    *Mention the effect!*
+
+    #v(2cm)
+
+    *Bonus:* Affinity Bias. 
 
   ][
     #align(center)[
-      #image("images/anchor-3.png", width: 90%)
+      #image("images/anchor-3.png", width: 85%)
     ]
   ]
 ]
@@ -542,34 +667,75 @@ Not all of them are covered. just those that lead to bad software. And even that
 #new-section-slide("Overconfidence")
 
 #slide[
+  #comment(```md 
+  Is that possible?
+
+  Yes, if average is the regular mean. In case of very skewed data, it might happen that there
+  are 20% exceptionally bad drivers and 80% of are good drivers.
+
+  If it is the mean however, this is not possible. But honestly, this was just a little
+  trip into how we are bad at statistics. The actual point is that the median is used
+  and that means that most drivers are overly confident.
+
+  Overconfidence is not a single effect, but is caused by man effect. For the purpose of this
+  presentation I will mostly look into the well known Duning-Kruger effect.
+  ```)
   = Story
 
-  // TODO: Needs some intro.
+  #[
+    #set text(size: 40pt)
+    #align(center)[
+    80% of swedish drivers claim they are better than the average driver.
+    ]
+  ]
 
-  - Dunning Kruger
-  - Cogntitive Dissonance.
-  - Illusory superiority
-  - Worse-than-average-effect (for very hard tasks)
 
-  - 80% of drivers judge themselve to be better than the average - which cannot be correct.
+  // // TODO: Needs some intro.
+  //
+  // - Dunning Kruger
+  // - Cognitive Dissonance.
+  // - Illusory superiority
+  // - Worse-than-average-effect (for very hard tasks)
 ]
 
 #slide[
+  #comment(```md 
+  "Mount stupid"
+
+  High self esteem can be good, even if it's not based. It's a bit like a defense mechanism.
+  Recognizing the own incompetence is required for growth (-> Valley of despair)
+  ```)
   = Explanation
 
+  #toolbox.side-by-side[
+    #image("images/dunning-kruger.jpg", height: 85%)
+  ][
   - People with the required skill do not have the ability to judge themselves.
   - The value of a skill is often not recognized.
-  - A positive self-image has positive effects on mental health. // high self esteem can be good, even if it's not based. It's a bit like a defense mechanism.
+  - A positive self-image has positive effects on mental health. 
   - #link("https://en.wikipedia.org/wiki/Cognitive_dissonance")[Cognitive Dissonance]
-  - Recognizing the own incompetence is required for growth.
+  ]
 ]
 
 #slide[
+  #comment(```md
+  For yourself: There is no fix. Whenever you start with some new tech or project
+  you will feel some level of unjustified competence at the beginning.
+  The only way is to "git gud" (i.e. become an expert)
+
+  But if you are already an expert (or at least in despair) then the question is how you
+  tackle people that are too confident. Let them explain themselves.
+  ```)
   = Fix
 
+  #toolbox.side-by-side[
+    #image("images/git_gud.jpg", height: 85%)
+  ][
   - If you feel like you are lacking, it might be a good sign!
-  - Force overconfident people to explain.
-  - Don't write code that overloads your brain. // because it will overload other brains as well.
+  - Be open for feedback and ask if you're lacking.
+  - Force overconfident people to explain themselves.
+  - Foster a feedback culture as a corrective.
+  ]
 ]
 
 ////////////////////////////////
@@ -577,11 +743,12 @@ Not all of them are covered. just those that lead to bad software. And even that
 #new-section-slide("IKEA effect")
 
 #slide[
+  #comment(```md
+  I've bought a house and I suffer from this effect as well:
+  I renewed the flooring and some parts of it really look a bit shoddy,
+  since it's the first time I've done such a thing.
+  ```)
   = Story
-
-  // I've bought a house and I suffer from this effect as well:
-  // I renewed the flooring and some parts of it really look a bit shoddy,
-  // since it's the first time I've done such a thing.
 
   #toolbox.side-by-side[
   - Goods are more valued if they are build by themselves.
@@ -593,6 +760,8 @@ Not all of them are covered. just those that lead to bad software. And even that
 ]
 
 #slide[
+  #comment(```md
+  ```)
   = Explanation
 
   #toolbox.side-by-side[
@@ -605,6 +774,8 @@ Not all of them are covered. just those that lead to bad software. And even that
 ]
 
 #slide[
+  #comment(```md
+  ```)
   = Fix
 
   #toolbox.side-by-side[
@@ -622,6 +793,13 @@ Not all of them are covered. just those that lead to bad software. And even that
 #new-section-slide("Sunken Cost Fallacy")
 
 #slide[
+  #comment(```md
+  The vietnam war was pro-longed more and more, even though costs (lives, material, war crimes) mounted and though
+  massive demonstrations against it existed. The goverment's argument was though that they could not bail out now
+  after spending billions and countless life. The argument against it was used as argument for the war.
+
+  This is the sunken cost fallacy.
+  ```)
   = Story
 
   #toolbox.side-by-side[
@@ -633,25 +811,22 @@ Not all of them are covered. just those that lead to bad software. And even that
       #image("images/vietnam-why.jpg", height: 85%)
     ]
   ]
-
-  // The vietnam war was pro-longed more and more, even though costs (lives, material, war crimes) mounted and though
-  // massive demonstrations against it existed. The goverment's argument was though that they could not bail out now
-  // after spending billions and countless life. The argument against it was used as argument for the war.
-  //
-  // This is the sunken cost fallacy.
 ]
 
 #slide[
+  #comment(```md
+    This happens in software a lot as well. Projects are started and continued for way too long, even though
+    it's clear it's a dead horse. It's very costly as it wastes resources, binds employees to old project
+    and stops innovation.
+  ```)
   = Explanation
 
     #image("images/sunken-cost-why.png", height: 85%)
-
-    // This happens in software a lot as well. Projects are started and continued for way too long, even though
-    // it's clear it's a dead horse. It's very costly as it wastes resources, binds employees to old project
-    // and stops innovation.
 ]
 
 #slide[
+  #comment(```md
+  ```)
   = Fix
 
   #toolbox.side-by-side[
@@ -662,7 +837,6 @@ Not all of them are covered. just those that lead to bad software. And even that
   ][
     #v(2cm)
     #image("images/dead_horse.jpg", width: 100%)
-
   ]
 ]
 
@@ -671,6 +845,8 @@ Not all of them are covered. just those that lead to bad software. And even that
 #new-section-slide("Curse of knowledge")
 
 #slide[
+  #comment(```md 
+  ```)
   = Experiment
 
   *Explain to your seating neighbor a specific detail you assume they have no idea about.*
@@ -678,6 +854,8 @@ Not all of them are covered. just those that lead to bad software. And even that
 ]
 
 #slide[
+  #comment(```md 
+  ```)
   = Explanation
 
   #toolbox.side-by-side[
@@ -691,6 +869,8 @@ Not all of them are covered. just those that lead to bad software. And even that
 ]
 
 #slide[
+  #comment(```md 
+  ```)
   = Fix
 
   - Knowing about it helps. Feel free to interrupt your peer. // Your peer probably does not notice he does at bad job explaining.
@@ -704,6 +884,8 @@ Not all of them are covered. just those that lead to bad software. And even that
 #new-section-slide("Bikeshedding")
 
 #slide[
+  #comment(```md 
+  ```)
   = Story & Experiment
 
   #toolbox.side-by-side[
@@ -729,6 +911,8 @@ Not all of them are covered. just those that lead to bad software. And even that
 ]
 
 #slide[
+  #comment(```md 
+  ```)
   = Explanation
 
     - We tend to decide quickly on things we do not know much about. // Hi from Dunning-Kruger!
@@ -740,6 +924,8 @@ Not all of them are covered. just those that lead to bad software. And even that
 ]
 
 #slide[
+  #comment(```md 
+  ```)
   = Fix
 
 Hard to fix, since it often masquerades as useful discussion.
@@ -757,6 +943,8 @@ Hard to fix, since it often masquerades as useful discussion.
 
 
 #slide[
+  #comment(```md 
+  ```)
   = Story & Experiment
 
   #toolbox.side-by-side[
@@ -771,6 +959,8 @@ Hard to fix, since it often masquerades as useful discussion.
 ]
 
 #slide[
+  #comment(```md 
+  ```)
   = Explanation
 
   #toolbox.side-by-side[
@@ -796,6 +986,8 @@ Hard to fix, since it often masquerades as useful discussion.
 ]
 
 #slide[
+  #comment(```md 
+  ```)
   = Fix
 
   - Tends to create echo chambers. // i.e. confirmation bias.
@@ -810,7 +1002,9 @@ Hard to fix, since it often masquerades as useful discussion.
 #new-section-slide("Optimism bias")
 
 #slide[
-= Commong sayings amongst developers
+  #comment(```md 
+  ```)
+= Common sayings amongst developers
 
 #place(dx: 50%, dy: 45%)[#emph("Loosing all backups is really unlikely")]
 #place(dx: 20%, dy: 90%)[#emph("Hackers target only big companies!")]
@@ -824,6 +1018,8 @@ Hard to fix, since it often masquerades as useful discussion.
 ]
 
 #slide[
+  #comment(```md 
+  ```)
 = Explanation
 
 
@@ -836,6 +1032,8 @@ Hard to fix, since it often masquerades as useful discussion.
 ]
 
 #slide[
+  #comment(```md 
+  ```)
 = Fix
 
 Very hard to eliminate.
@@ -857,6 +1055,8 @@ NOTE: There is also a pessimism bias. It depends on the character which applies 
 #new-section-slide("Halo effect")
 
 #slide[
+  #comment(```md 
+  ```)
 = Story
 
 #toolbox.side-by-side[
@@ -867,11 +1067,15 @@ NOTE: There is also a pessimism bias. It depends on the character which applies 
 ]
 
 #slide[
+  #comment(```md 
+  ```)
 = Explanation
 
 ]
 
 #slide[
+  #comment(```md 
+  ```)
 = Fix
 
 - We tend to overvalue #emph("Rockstar developers")
@@ -882,19 +1086,19 @@ NOTE: There is also a pessimism bias. It depends on the character which applies 
 *Solution:* Accept all software sucks.
 ]
 
-
-////////////////////////////////
-
-
-#slide[
-
-]
-
 ////////////////////////////////
 
 #new-section-slide("Outro")
 
 #slide[
+  #comment(```md 
+  ```)
+  #image("images/facts.jpg", width: 70%)
+]
+
+#slide[
+  #comment(```md 
+  ```)
 = Summary
 
   #toolbox.side-by-side[
@@ -915,6 +1119,8 @@ NOTE: There is also a pessimism bias. It depends on the character which applies 
 ////////////////////////////////
 
 #slide[
+  #comment(```md 
+  ```)
 = Outlook & Homework
 
 I left out something important: Cognitive load.
@@ -924,6 +1130,8 @@ https://minds.md/zakirullin/cognitive
 ]
 
 #slide[
+  #comment(```md 
+  ```)
 = Outro poem
 
 - Riddled with problems is our mind
@@ -934,6 +1142,8 @@ https://minds.md/zakirullin/cognitive
 
 
 #slide[
+  #comment(```md 
+  ```)
 = Sources
 
 - https://en.wikipedia.org/wiki/Cognitive_bias
@@ -942,6 +1152,8 @@ https://minds.md/zakirullin/cognitive
 ]
 
 #slide[
+  #comment(```md 
+  ```)
   #align(center)[
     = The End
 

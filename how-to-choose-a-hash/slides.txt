@@ -1,0 +1,128 @@
+Agenda:
+
+* What is a hash function?
+* Why are they useful?
+* Algorithm to choose an algorithm.
+
+---
+
+The first three functions have something in common:
+You can get the input value easily by applying the inverse function to the output value.
+For sin(x) that's not really possible, for larger numbers, as they always map to the same one.
+
+Hash functions are not easily invertable and they map a big input set to a small output set.
+They are surjective, but that's something you can forget easily.
+
+---
+
+in our context at least, hash can also mean hash brownies or minced meat...
+On the right side you'll see what Google image search thinks a "hash" is.
+
+That above is the sha1 hash of an empty file
+     Maybe one of the very few hash codes worth to recognize!
+
+---
+
+Now that we know what a function and what a hash is...
+Since every data can be represented as number, we can see it as
+mathematical function
+
+---
+
+We will come back to this image, since we first need to understand
+the decisions we need to make.
+
+Source for the diagram:
+
+https://app.diagrams.net/#G11rSwTBF6jc5VIC4bXvHTUVJ2IJZM7aDa
+
+---
+
+We will check some attributes of hash functions
+
+---
+
+Graphic: On the right side every pixel has an ID.
+If you choose 5 million random values and light up every
+pixel with that ID, then you get roughly that image.
+
+The rainbow color is only to make it easier to see patterns
+and because rainbows are cool
+
+As you see, there are no patterns.
+
+---
+
+
+
+---
+
+
+
+---
+
+
+
+---
+
+that's the one we use for protobeef
+
+---
+
+
+
+---
+
+Cryptographic hash functions usually have a lot more.
+Lowest is 128 bit (md5), sha1 is 160, most are bigger than 256.
+
+Non cryptographic have usually <= 128 bit. Very often 32 bit or 64 bit
+since they are often used in hash tables or algorithms.
+
+---
+
+
+
+---
+
+Sometimes slow performance is a good thing
+     as for example with key derivation function
+     where you want an attacker to spend a lot of time.
+
+     Examples would be scrypt or argon2
+
+     It is important that the performance depends on
+     the machine, as many modern hash algorithms utilize
+     specialized machine instructions, baked into the CPU.
+
+     Some hash algorithms are not suitable for certain platforms.
+     We use FNV1a a lot, but the TI and Pi are not very good at it
+     because they require a modulo operation, which is not supported
+     in hardware on the Pi.
+
+---
+
+In summary: If unsure: Make the hash string include the algorithm, so
+you can easily switch it later. The big mistake of git.
+
+---
+
+
+
+---
+
+Data that was added can be efficiently removed from the hash.
+
+Programs like rsync use it to detect diffs in files and are thus
+able to transfer only the parts of a file that actually changed.
+
+---
+
+perfect hash: specially constructed hash function for a known data set with no collisions.
+
+---
+
+
+
+---
+
