@@ -14,23 +14,39 @@
   #it.body
 ]
 
-#let stroke-thick-black = stroke(
-  thickness: 10pt,
-  paint: black,
-  cap: "round",
-)
-
 #let new-section-slide(title) = slide[
   #set page(footer: none, header: none)
   #set align(horizon)
-  #set text(size: 1.5em)
-  #strong(title)
-  #line(stroke: stroke-thick-black, length: 50%)
+
+  #let g = gradient.linear(
+    color.rgb("#0067aa"),
+    color.rgb("#dd6600"),
+  )
+  #let g2 = gradient.conic(
+    color.rgb("#dd6600"),
+    color.rgb("#0067aa"),
+  )
+
+  #place(dx: 00%, dy: 55%, image("images/logo.png"))
+  #place(dx: 17%, dy: 56%, circle(fill: g2, stroke: black, radius: 0.3cm))
+  #place(dx: 19.6%, dy: 49%, circle(fill: g2, stroke: black, radius: 0.4cm))
+  #place(dx: 22%, dy: 40%, circle(fill: g2, stroke: black,radius: 0.5cm))
+
   #place(
-    horizon + right, [
-      #image("images/logo.png")
+    dx: 25%,
+    dy: 20%,
+    rect(
+      radius: 1cm,
+      inset: 1cm,
+      fill: g,
+      stroke: black,
+    )[
+      #set text(size: 1.5em)
+      #set text(fill: white)
+      #strong(title)
     ]
   )
+
   #toolbox.register-section(title)
 ]
 
@@ -1189,12 +1205,14 @@ Examples:
   ```)
   = Explanation
 
+    #item-by-item[
     - We tend to decide quickly on things we do not know much about. // Hi from Dunning-Kruger!
     - Focusing illusion shifts priorities. // The impact of details is overestimated. Example: Paraplegic people are often happier than people imagine due to their disability. Or thinking "This one promotion will make me so much more happy for a long time".
     - If we know much about a subject we tend to over discuss it.
     - We see opportunity to demonstrate our skills.
     - We forget about the greater goal.
     - Can lead to Analysis Paralysis.
+    ]
 ]
 
 #slide[
@@ -1204,59 +1222,86 @@ Examples:
 
 Hard to fix, since it often masquerades as useful discussion.
 
-- Have frameworks like OKR for common goals.
-- Time-box meetings and give priorities.
-- Leaders should actively discussions gone wild.
-- Explain Bikeshedding to peers.
+  #item-by-item[
+  - Have frameworks like OKR for common goals.
+  - Time-box meetings and give priorities.
+  - Leaders should actively discussions gone wild.
+  - Explain Bikeshedding to peers.
+  ]
 ]
 
 ////////////////////////////////
 
 // Or: The holy trinity of being an asshole.
-#new-section-slide("Confirmation, Hindsight & Attribution Bias")
+#new-section-slide("The \"antisocial\" biases")
 
 
 #slide[
   #comment(```md 
+  NOTE: "antisocial" is my own wording. Those biases work together and make social interactions
+  a pain. The powering force is Cognitive dissonance.
+
+  Confirmation bias:
+
+  When confronted with evidence, we tend to pick the part of it that confirms our existing beliefs
+  and reject those parts that contradicts them. Often very vocally.
+
+  Hindsight Bias:
+
+  Interpreting past events in a way that it was clear
+  Past unpredictability is cleared from our memory.
+
+
+  Fundamental_attribution_error:
+
+  - Deployment was successful because we're so great.
+  - Sales fucked up everything because they are such bad persons.
+  - The deployment failed, really a weird issue that we could not have see coming.
+  - Sales meeting worked well. Eh, they did their job.
+
   ```)
   = Story & Experiment
 
-  #toolbox.side-by-side[
-    // When confronted with evidence, we tend to pick the part of it that confirms our existing beliefs
-    // and reject those parts that contradicts them. Often very vocally.
-    #image("images/confirmation-bias.jpg", height: 85%)
-  ][
-    // Interpreting past events in a way that it was clear
-    // Past unpredictability is cleared from our memory.
-    #image("images/hindisght-bias.jpg", height: 80%)
-  ]
+    #place(
+      dx: 00%,
+      dy: 10%,
+      image("images/confirmation-bias.jpg", height: 60%),
+    )
+    
+    #place(
+      dx: 60%,
+      dy: 10%,
+      image("images/hindisght-bias.jpg", height: 50%)
+    )
+
+    #place(
+      dx: 35%,
+      dy: 50%,
+      image("images/fundamental_attribution_error_comic.png", height: 50%)
+    )
 ]
 
-// TODO: Make this prettier and write comments. Is it a good thing to cluster this?
 #slide[
   #comment(```md 
 
+  Mental shortcut: // Easier to process already known information.
 
-
-- https://en.wikipedia.org/wiki/Fundamental_attribution_error / Correspondence Bias 
-    -> Deployment was successful because we're so great.
-    -> Sales fucked up everything because they are such bad persons.
-    -> The deployment failed, really a weird issue that we could not have see coming.
-    -> Sales meeting worked well. Eh, they did their job.
+  - Desire for control. // It's hard to accept that we did not have the control that lead to this situation.
+  - Reducing regret by sugarcoating. // https://en.wikipedia.org/wiki/Choice-supportive_bias
   ```)
   = Explanation
 
   #toolbox.side-by-side[
     *Confirmation bias*:
 
-    - Desire to be right & Self esteem.
-    - We like to confirm more than to refute.
-    - Mental shortcut. // Easier to process already known information.
+    - Desire to be right & self esteem.
+    - We like to confirm more than to refute. Being wrong feels bad.
+    - Mental shortcut. 
 
   *Hindsight bias:*
 
-  - Desire for control. // It's hard to accept that we did not have the control that lead to this situation.
-  - Reducing regret by sugarcoating. // https://en.wikipedia.org/wiki/Choice-supportive_bias
+  - Desire for control.
+  - Reducing regret by sugarcoating.
   ][
     #image("images/fundamental_attribution_error.png", height: 85%)
 
@@ -1265,14 +1310,29 @@ Hard to fix, since it often masquerades as useful discussion.
 
 #slide[
   #comment(```md 
-  ```)
-  = Effect & Workaround
-
-  - Tends to create echo chambers. // i.e. confirmation bias.
-  - Testing: Positive tests > Negative tests. // Side effect of confirmation bias: We confirm what is there already.
+  - echo chambers: people confirming each other do not grow.
+  - Testing: Side effect of confirmation bias: We confirm what is there already.
   - Re-use of old solutions for new problems. // Things like: The user/sales is dumb, it's the RTC, ...
   - When Deployment goes wrong: I had a bad feeling! // well, no. You didn't.
   - Colleague X is such an idiot, I would have it done so much better! // Attribution bias.
+  - I don't like Chris, his ideas are no good. // Over-generalizing and tendency to refuse ideas from people we do not like (Horn effect)
+
+  ```)
+  = Effect & Workaround
+
+  #item-by-item[
+  - Tends to create echo chambers.
+  - Testing: Positive tests > Negative tests. 
+  - Re-use of old solutions for new problems. 
+  - When Deployment goes wrong: I had a bad feeling! 
+  - Colleague X is such an idiot, I would have it done so much better!
+  - I don't like Chris, his ideas are no good. 
+  ]
+
+  #only("5-")[
+    #v(2cm)
+    *No solution here. Humans are weird.*
+  ]
 ]
 
 ////////////////////////////////
@@ -1291,7 +1351,7 @@ Can you find some more?
 #place(dx: 20%, dy: 90%)[#emph("Hackers target only big companies!")]
 #place(dx: 00%, dy: 30%)[#emph("I smoke way less than others")]
 #place(dx: 60%, dy: 25%)[#emph("That solution will be fast enough!")]
-#place(dx: 10%, dy: 55%)[#emph("That deadline will no issue.")]
+#place(dx: 10%, dy: 55%)[#emph("That deadline will be no issue.")]
 #place(dx: 30%, dy: 70%)[#emph("That new framework/tool/whatever will fix it all.")]
 #place(dx: 30%, dy: 10%)[#emph("It's not that hard to add 2 database columns...")]
 ]
@@ -1453,6 +1513,10 @@ There is also the opposite effect: The horn effect (so instead of an angel's hal
   #align(center)[
     #set text(size: 100pt)
     Doubt yourself!
+
+    #set text(size: 10pt)
+    (and me)
+
   ]
 ]
 
