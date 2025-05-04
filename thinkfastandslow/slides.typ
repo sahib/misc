@@ -1288,6 +1288,9 @@ Hard to fix, since it often masquerades as useful discussion.
 
   - Desire for control. // It's hard to accept that we did not have the control that lead to this situation.
   - Reducing regret by sugarcoating. // https://en.wikipedia.org/wiki/Choice-supportive_bias
+
+
+  - We cling a lot to the code we write. If someone criticizes it, we feel criticized and our self esteem is hurt.
   ```)
   = Explanation
 
