@@ -1,9 +1,6 @@
 // Get Polylux from the official package repository
 #import "@preview/polylux:0.4.0": *
 
-// TODO: Rework name of sections (some are experiments, some stoies, some effects, some solutions.)
-// TODO: Figure out way to add presenter comments.
-
 #enable-handout-mode(false)
 
 // Can be used to embed speaker notes:
@@ -29,6 +26,11 @@
   #set text(size: 1.5em)
   #strong(title)
   #line(stroke: stroke-thick-black, length: 50%)
+  #place(
+    horizon + right, [
+      #image("images/logo.png")
+    ]
+  )
   #toolbox.register-section(title)
 ]
 
@@ -61,7 +63,6 @@
     Psychology in software
 
   ]
-
 )
 
 #slide[
@@ -75,11 +76,26 @@
 ```)
 
   #set page(footer: none, header: none)
+
+  #v(2cm)
   #align(center)[
-    #link("https://upload.wikimedia.org/wikipedia/commons/6/65/Cognitive_bias_codex_en.svg")[
-      #image("images/cognitive_bias_map.png")
+    #image("images/logo.png")
+  ]
+
+  #[
+    #set text(size: 30pt, weight: 1200)
+
+    #align(center)[
+      Psychology in Software Development
+    ]
+
+    #set text(size: 10pt, weight: 200)
+
+    #align(center)[
+      Chris Pahl | 2025
     ]
   ]
+
 ]
 
 #new-section-slide("Intro")
@@ -121,11 +137,27 @@ Not all of them are covered. just those that lead to bad software. And even that
     ```
   ) 
 
-  - Our brain was not made to write software. // (but rather to find food and quickly notice the predators)
-  - We tend to think of our brain as reliable logical processor. // ("We" is our brain and it is lying)
-  - Our brain has bugs, which are called #emph("cognitive bias"). // (and there are thousands of them)
-  - We focus on how our brain prohibits writing good software.
-  - I'm qualified for this talk because I do software and have a brain.
+    #item-by-item[
+    - Our brain was not made to write software. // (but rather to find food and quickly notice the predators)
+    - We tend to think of our brain as reliable logical processor. // ("We" is our brain and it is lying)
+    - Our brain has bugs, which are called #emph("cognitive bias"). // (and there are thousands of them)
+    - We focus on how our brain fails while writing good software.
+    - I'm qualified for this talk because I do software and have a brain.
+  ]
+]
+
+#slide[
+  #comment(
+    ```md
+    Note: This slide is clickable!
+    ```
+  ) 
+
+  #align(center)[
+    #link("https://upload.wikimedia.org/wikipedia/commons/6/65/Cognitive_bias_codex_en.svg")[
+      #image("images/cognitive_bias_map.png", height: 100%)
+    ]
+  ]
 ]
 
 #slide[
@@ -270,17 +302,61 @@ Not all of them are covered. just those that lead to bad software. And even that
 
 #slide[
   #comment(```md 
+  Please do the following: Knock on the table in a constant frequency.
+  I will show you some simple math problems.
+
   As you can see, System 1 can think fast, but is wrong often,
   while System2 is slow (and is more often right - eventually)
   ```)
   = Math
   #item-by-item[
     - $2+2$       // you did not have to think right? Plain pattern matching.
-    - $21 dot 13$ // now you probably have to use system 2.
+    - $21 dot 13$ // now you probably have to use system 2. Did the knocking stop?
     - $77+33$     // chances are you were wrong, sometimes system1 triggers because this feels familiar (7 + 3 + 10), for some system2 triggered.
+    - $23 dot 42$
   ]
   // By the way: When you walk and see an equation you cannot solve immediately,
   // you probably just stop walking. Concurrency is also not build in.
+]
+
+#slide[
+  #comment(```md 
+  Homework: Read that second link: It's really helpful.
+  ```)
+
+  = Cognitive Load
+
+  You can hold roughly *four*#footnote[Exact number does not matter: https://pubmed.ncbi.nlm.nih.gov/11515286/]
+  different "chunks" you can keep in your mind. #footnote[Very good intro: https://minds.md/zakirullin/cognitive]
+
+  #toolbox.side-by-side[
+    #only("2-")[
+
+```go
+// 🧠+
+if val > someConstant
+    // 🧠+++, prev cond should be true,
+    // one of c2 or c3 has be true
+    && (condition2 || condition3) 
+    // 🤯, we are messed up by this point
+    && (condition4 && !condition5) {
+    ...
+}
+```
+    ]
+][
+    #only(3)[
+```go
+isValid = val > someConstant
+isAllowed = condition2 || condition3
+isSecure = condition4 && !condition5
+// 🧠, we don't need to remember the conditions, there are descriptive variables
+if isValid && isAllowed && isSecure {
+    ...
+}
+```
+  ]
+ ]
 ]
 
 #slide[
@@ -374,7 +450,7 @@ Not all of them are covered. just those that lead to bad software. And even that
   ```)
 
   #toolbox.side-by-side[
-    #set text(size: 16pt)
+    #set text(size: 15pt)
     #toolbox.all-sections( (sections, current) => {
       enum(..sections)
     })
@@ -382,8 +458,8 @@ Not all of them are covered. just those that lead to bad software. And even that
     #emph[3 slides per cognitive bias:]
     
     - Experiment (Quiz, Story time, ...)
-    - Explanation & Effect (Why?)
-    - Fix (How to fix?)
+    - Explanation (Why?)
+    - Effect & Workaround
     - Discussion welcome after each bias.
   ]
 ]
@@ -436,7 +512,7 @@ Therefore we are going to discuss it at the start.
   #comment(```md 
   But we can use priming for ourselves!
   ```)
-  = Fix
+  = Effect & Workaround
   
   #toolbox.side-by-side[
   None. If it happens it happens. But:
@@ -449,6 +525,102 @@ Therefore we are going to discuss it at the start.
   ][
     #image("images/premortem.png", width: 80%)
   ]
+]
+
+////////////////////////////////
+
+#new-section-slide("\"Autocomplete Bias\"")
+
+#slide[
+  #comment(```md 
+Those are three biases trench-coating as one.
+
+There are several things wrong with it:
+
+1. MODE_ECB should not be used, as it's absolutely insecure.
+2. Other modes require a dynamic IV.
+3. You might feel you know what you're doing now.
+
+What came in effect here:
+
+1. Suggestibility: You have accepted the suggestion and did not check it.
+2. Unknown unknowns are left out ()
+3. Illusion of explanatory depth: You feel like you've done the job and feel knowledgable,
+   because "you know how to encypt stuff".
+  ```)
+
+  = Experiment
+
+#align(center)[
+  ```python
+from Crypto.Cipher import AES
+
+# A piece of AI generated code:
+# Anything wrong here?
+def encrypt(msg, key):
+    """
+    Encrypt the data in `msg` with `key`,
+    return the encrypted bytes.
+    """
+    cipher = AES.new(key, AES.MODE_ECB)
+    return cipher.encrypt(msg) 
+  ```
+  ]
+]
+
+#slide[
+  #comment(```md 
+- Suggestibility: Autocomplete can work around System2.
+  Maybe you know the effect: Someone says "I don't remember that word for that" and than proceeds 
+  to say a wrong word: You gonna have issues remembering the word yourself now, even you could have done before.
+
+
+- Illusion of explanatory Depth: You might feel like you understood.
+- Availability heuristic: You only see the problems you know of.
+  ```)
+  = Explanation
+
+  #align(center)[
+      #uncover("1-")[*Suggestibility*]
+
+      #uncover("2-")[+]
+
+      #uncover("2-")[*Illusion of explanatory depth*]
+
+      #uncover("3-")[+]
+
+      #uncover("3-")[*Availability heuristic*]
+
+      #uncover("4-")[=]
+
+      #uncover("4-")[
+        #set text(size: 30pt)
+        🪲 🪲 🪲
+      ]
+  ]
+
+
+
+]
+
+#slide[
+  #comment(```md 
+You should be able to code without auto generation or use of AI.
+If this is not the case, see it as a warning sign.
+
+If you explain it to someone else or yourself does not matter.
+It triggers questioning what you know.
+
+  ```)
+  = Effect & Workaround
+
+  #item-by-item[
+  - Do not auto-complete/generate big chunks of code.
+  - If you learned something, try to explain it (to yourself).
+  - Codegen does not replace RTFM.
+  - Review is crucial to find unknown unknowns.
+  ]
+
 ]
 
 ////////////////////////////////
@@ -499,7 +671,7 @@ Therefore we are going to discuss it at the start.
   #comment(```md 
   Use your brain, Luke!
   ```)
-  = Fix
+  = Effect & Workaround
 
   *Ask:* Do I understand it and do I need it?
 
@@ -564,7 +736,7 @@ Therefore we are going to discuss it at the start.
 
   Use innocation like a currency. Have a budget.
   ```)
-  = Fix
+  = Effect & Workaround
 
   - Use well-tested & renowned software.
   - Strategy first and then stick to it.
@@ -637,28 +809,84 @@ Therefore we are going to discuss it at the start.
 - Effort estimations: Senior says something, all others say a bit above or below. Ask individuals. (Affinity Bias!)
 - Fixation on initial ideas: Name the effect! It helps.
 - Dark patterns in frontend. Price tags for example.
-
-*Bonus:* Affinity Bias: Overvalue opinions of people we trust or that are similar to us. You could call it Mini-Me-Bias. We tend to overtake the opinions of people that have generally similar beliefs to ours, even we would have good reason not to. The effect has some similarities to anchoring.
   ```)
-  = Fix
+  = Effect & Workaround
 
   #toolbox.side-by-side[
-    *Is a danger to...*
+    *Anchoring happens with...*
 
     - ...effort estimations.
     - ...fixation on initial ideas.
     - ...consumers due to dark patterns.
 
     *Mention the effect!*
-
-    #v(2cm)
-
-    *Bonus:* Affinity Bias. 
-
   ][
     #align(center)[
       #image("images/anchor-3.png", width: 85%)
     ]
+  ]
+]
+
+////////////////////////////////
+
+#new-section-slide("Broken Window Theory")
+
+#slide[
+  #comment(```md 
+Originates in crime statistics. Neighborhoods that look detoriated (e.g. by having buildings
+with many broken windows) see a rise in getting even more broken.
+
+There was some indication that this is due to broken windows "welcoming" doing more crime.
+Basically like saying "It's already broken, not much more harm here".
+
+A self-enhancing effect.
+
+I should note that the broken window theory does not count as proven,
+but it already made its way into software development as name.
+
+  ```)
+  = Story
+
+  #align(center)[
+    #image("images/broken_windows.jpg", height: 62%)
+    #footnote[https://blog.codinghorror.com/the-broken-window-theory]
+  ]
+]
+
+#slide[
+  #comment(```md 
+  "Just driving the excavator" is a (german?) meme that you don't need to care 
+  for anything except driving an excavator. Learning other things? Not necessary.
+  Cutting through pipes or cables? Not your problem.
+  ```)
+  = Explanation
+
+  #item-by-item[
+  - Shows people that breaking the rules has no downsides.
+  - Enables "Just driving the excavator."-Mentality.
+  - Negative, self-enhancing feedback loop.
+  - Feeling suffocated by things that need to be fixed.
+  ]
+]
+
+#slide[
+  #comment(```md 
+  It's rather simple this time.
+
+  It's all a matter of pragmatism though. Some broken windows are fine for some time.
+  Everyone has them.
+  ```)
+  = Effect & Workaround
+
+  #v(4cm)
+
+  #align(center)[
+    #set text(size: 25pt)
+    #strong("Repair bad decisions, design and poor code early.")
+
+    #set text(size: 10pt)
+    Well, at least try to.
+
   ]
 ]
 
@@ -683,37 +911,38 @@ Therefore we are going to discuss it at the start.
   = Story
 
   #[
-    #set text(size: 40pt)
     #align(center)[
+    #set text(size: 40pt)
     80% of swedish drivers claim they are better than the average driver.
+
+    #set text(size: 20pt)
+    How can this be?
     ]
   ]
-
-
-  // // TODO: Needs some intro.
-  //
-  // - Dunning Kruger
-  // - Cognitive Dissonance.
-  // - Illusory superiority
-  // - Worse-than-average-effect (for very hard tasks)
 ]
 
 #slide[
   #comment(```md 
-  "Mount stupid"
+  The peak = "Mount stupid"
+
+  Value of a skill: "Computer science is not required, I can use AI to program"
 
   High self esteem can be good, even if it's not based. It's a bit like a defense mechanism.
+  Feeling good and superior to others also releases good chemicals in your body.
+
   Recognizing the own incompetence is required for growth (-> Valley of despair)
   ```)
   = Explanation
 
   #toolbox.side-by-side[
-    #image("images/dunning-kruger.jpg", height: 85%)
+    #image("images/dunning-kruger.jpg", width: 100%)
   ][
-  - People with the required skill do not have the ability to judge themselves.
-  - The value of a skill is often not recognized.
-  - A positive self-image has positive effects on mental health. 
-  - #link("https://en.wikipedia.org/wiki/Cognitive_dissonance")[Cognitive Dissonance]
+    #item-by-item[
+    - People with the required skill do not have the ability to judge a skill.
+    - The value of a skill is often not recognized to be useful.
+    - A positive self-image has positive effects on the own mental health. 
+    - The unknown unknowns are ignored as usual.
+    ]
   ]
 ]
 
@@ -726,13 +955,13 @@ Therefore we are going to discuss it at the start.
   But if you are already an expert (or at least in despair) then the question is how you
   tackle people that are too confident. Let them explain themselves.
   ```)
-  = Fix
+  = Effect & Workaround
 
   #toolbox.side-by-side[
     #image("images/git_gud.jpg", height: 85%)
   ][
   - If you feel like you are lacking, it might be a good sign!
-  - Be open for feedback and ask if you're lacking.
+  - Be open for feedback and ask where you're lacking.
   - Force overconfident people to explain themselves.
   - Foster a feedback culture as a corrective.
   ]
@@ -751,9 +980,11 @@ Therefore we are going to discuss it at the start.
   = Story
 
   #toolbox.side-by-side[
-  - Goods are more valued if they are build by themselves.
-  - Even if done partially only.
-  - Even if done poorly!
+    #item-by-item[
+    - Items/Projects are more valued when self-build.
+    - Even if you did a small part only.
+    - Even if done very poorly!
+    ]
   ][
     #image("images/ikea-house.jpg", height: 85%)
   ]
@@ -765,9 +996,11 @@ Therefore we are going to discuss it at the start.
   = Explanation
 
   #toolbox.side-by-side[
-  - Building something makes us feel confident about our skills.
-  - Elevates users to "co-creators".
-  - The more effort the more positive we see the product.
+    #item-by-item[
+      - Building something makes us feel confident about our skills.
+      - Elevates users to "co-creators".
+      - The more effort the more positive we see the product.
+    ]
   ][
     #image("images/ikea-paradöx.jpg", height: 85%)
   ]
@@ -775,17 +1008,24 @@ Therefore we are going to discuss it at the start.
 
 #slide[
   #comment(```md
-  ```)
-  = Fix
+Not-Invented-Here-Syndrom: When persons or companies prefer to write their
+own solution, even if there are off the shelve solutions.
 
-  #toolbox.side-by-side[
-  - The primary cause for #emph("Not-Invented-Here-Syndrom"). // People tend to defend tools they've written. (melon, anyone?)
-  - Open Source: Increases contribution. // What's better to use than a tool you contributed to?
-  - Tools we researched more are more appealing.
-  - If users can adjust something, they love it more (dashboards, profiles)
-  ][
-    #image("images/ikea-effect.jpg", height: 85%)
-  ]
+People tend to defend tools they've written. (melon, anyone?)
+
+Open Source: What's better to use than a tool you contributed to?
+  ```)
+  = Effect & Workaround
+
+#emph("Negative:")
+
+- The primary cause for #emph("Not-Invented-Here-Syndrom"). 
+- Tools we researched ourselves are more appealing.
+
+#emph("Positive:")
+
+- Open Source: Increases contribution.
+- If users can adjust something, they love it more (dashboards, profiles)
 ]
 
 ////////////////////////////////
@@ -826,14 +1066,18 @@ Therefore we are going to discuss it at the start.
 
 #slide[
   #comment(```md
+We really should start bringing back the fail of the week procedure.
   ```)
-  = Fix
+  = Effect & Workaround
 
   #toolbox.side-by-side[
-    - Evaluate choices like you'd start freshly.
+    #item-by-item[
+    - If you ride a dead horse, get off.
+    - Evaluate choices like you'd start freshly on a  green field.
     - Have a good error culture.
     - Get used to abandoning old stuff.
     - IKEA effect contributes here.
+    ]
   ][
     #v(2cm)
     #image("images/dead_horse.jpg", width: 100%)
@@ -846,23 +1090,43 @@ Therefore we are going to discuss it at the start.
 
 #slide[
   #comment(```md 
+  The expected outcome here is that you're going to have trouble explaining the detail,
+  if the hobby is uncommon enough. You will likely have to expand the scope of your
+  of your explanations more and more.
+
+  This happens when you try to see the explanation from the eyes of your seating neighbor.
+
+  In this case you are forced to explain and you will surely succeed, but often enough
+  we do not even notice that we should explain something.
   ```)
   = Experiment
 
+  #v(3cm)
+
+  #align(center)[
   *Explain to your seating neighbor a specific detail you assume they have no idea about.*
+  For example from a hobby of yours.
+
   What do you notice?
+  ]
 ]
 
 #slide[
   #comment(```md 
+
+  Comments: For example when reading code that we understood perfectly at that time, but no longer fully do.
+
+  Not called out:  Either because being ashamed ("I should know that already!") or because one does not know the explanation was missing stuff.
   ```)
   = Explanation
 
   #toolbox.side-by-side[
-    - We implicitly assume everyone else has the same knowledge as we do.
-    - This can apply also to future selfs No comments in code, anyone? // For example when reading code that we understood perfectly at that time.
-    - UI design also suffers from CoS: We assume the user knows.
-    - Often not called out. // Either because being ashamed ("I should know that already!") or because one does not know the explanation was missing stuff.
+    #item-by-item[
+      - We implicitly assume everyone else has the same knowledge as we do.
+      - This can apply also to future selfs No comments in code, anyone?
+      - UI design also suffers from #emph("CoS"): We assume the user knows.
+      - Often not called out.
+    ]
   ][
     #image("images/curse-of-knowledge.jpg", height: 80%)
   ]
@@ -871,12 +1135,12 @@ Therefore we are going to discuss it at the start.
 #slide[
   #comment(```md 
   ```)
-  = Fix
+  = Effect & Workaround
 
   - Knowing about it helps. Feel free to interrupt your peer. // Your peer probably does not notice he does at bad job explaining.
   - Try to see the world from your peer's perspective.
   - Ask questions to see if your peer understood.
-  - Be patient and do not be an a-hole.
+  - Be patient as explainer.
 ]
 
 ////////////////////////////////
@@ -885,6 +1149,23 @@ Therefore we are going to discuss it at the start.
 
 #slide[
   #comment(```md 
+  
+Story: When building a nuclear plant a lot of things have to be designed and
+decided. This cannot be done by a single person usually, so there are many
+experts for different fields, so you usually have a sort of committee. One for
+the cooling, one for the building process and another one for waste disposal.
+Some finance guy is probably also in there.
+
+When those experts talk about nuclear fission, then only few people have an opinion
+or can give feedback. But if talking about how to design the bike shed then everyone
+has an opinion. As a result, the discussion time for building the bikeshed is disproportionally
+pro-longed, while other topics might even fells short.
+
+Examples:
+- Discussing what file layout should be used.
+- Coding conventions of all sorts.
+- Whether the microservice principle is exactly followed and whether we should split a service.
+- 
   ```)
   = Story & Experiment
 
@@ -901,13 +1182,6 @@ Therefore we are going to discuss it at the start.
   #align(center)[
     *Discuss: What trivial detail did you did give disproportional detail?*
   ]
-  
-
-  // Examples:
-  // - Discussing what file layout should be used.
-  // - Whether the microservice principle is exactly followed and whether we should split a service.
-  // - 
-
 ]
 
 #slide[
@@ -926,7 +1200,7 @@ Therefore we are going to discuss it at the start.
 #slide[
   #comment(```md 
   ```)
-  = Fix
+  = Effect & Workaround
 
 Hard to fix, since it often masquerades as useful discussion.
 
@@ -958,8 +1232,17 @@ Hard to fix, since it often masquerades as useful discussion.
   ]
 ]
 
+// TODO: Make this prettier and write comments. Is it a good thing to cluster this?
 #slide[
   #comment(```md 
+
+
+
+- https://en.wikipedia.org/wiki/Fundamental_attribution_error / Correspondence Bias 
+    -> Deployment was successful because we're so great.
+    -> Sales fucked up everything because they are such bad persons.
+    -> The deployment failed, really a weird issue that we could not have see coming.
+    -> Sales meeting worked well. Eh, they did their job.
   ```)
   = Explanation
 
@@ -977,18 +1260,13 @@ Hard to fix, since it often masquerades as useful discussion.
   ][
     #image("images/fundamental_attribution_error.png", height: 85%)
 
-    // - https://en.wikipedia.org/wiki/Fundamental_attribution_error / Correspondence Bias 
-    //    -> Deployment was successful because we're so great.
-    //    -> Sales fucked up everything because they are such bad persons.
-    //    -> The deployment failed, really a weird issue that we could not have see coming.
-    //    -> Sales meeting worked well. Eh, they did their job.
   ]
 ]
 
 #slide[
   #comment(```md 
   ```)
-  = Fix
+  = Effect & Workaround
 
   - Tends to create echo chambers. // i.e. confirmation bias.
   - Testing: Positive tests > Negative tests. // Side effect of confirmation bias: We confirm what is there already.
@@ -1003,6 +1281,9 @@ Hard to fix, since it often masquerades as useful discussion.
 
 #slide[
   #comment(```md 
+I did say some of these already...
+
+Can you find some more?
   ```)
 = Common sayings amongst developers
 
@@ -1013,31 +1294,33 @@ Hard to fix, since it often masquerades as useful discussion.
 #place(dx: 10%, dy: 55%)[#emph("That deadline will no issue.")]
 #place(dx: 30%, dy: 70%)[#emph("That new framework/tool/whatever will fix it all.")]
 #place(dx: 30%, dy: 10%)[#emph("It's not that hard to add 2 database columns...")]
-
-// I did say some of these already...
 ]
 
 #slide[
   #comment(```md 
+- Representativeness heuristic - When thinking of a car accident, we do think of a bad driver and not an average driver like ourselves. We compare each other with the bad driver and think "That won't happen to me!"
+- People want to feel good. // And optimistic outcomes are more desirable. Also they want to signal "I can do that!"
+- Focus on desired end states. // Meaning that we tend to focus on things we wish for, ignoring unwanted output.
+- Good mood. // The better the mood, the more likely the effect of optimism bias.
   ```)
 = Explanation
 
-
-- Representativeness heuristic // When thinking of a car accident, we do think of a bad driver and not an average driver like ourselves. We compare each other with the bad driver and think "That won't happen to me!"
-- People want to feel good. // And optimistic outcomes are more desirable. Also they want to signal "I can do that!"
-- Focus on desired end states. // Meaning that we tend to focus on things we wish for, ignoring unwanted output.
-- Missing painful experiences.
-- Good mood. // The better the mood, the more likely the effect of optimism bias.
+#toolbox.side-by-side[
+  #item-by-item[
+    - Representativeness heuristic.
+    - People want to feel good. 
+    - Focus on desired end states.
+    - Missing painful experiences.
+    - Good mood makes us optimistic.
+  ]
+][
+  #image("images/optimism.jpg", height: 80%)
+]
 
 ]
 
 #slide[
   #comment(```md 
-  ```)
-= Fix
-
-Very hard to eliminate.
-
 There is no glory in prevention. // security, maintainability but also health and climate crisis - all due optimism.
 
 - Convince others of preemptive measures.
@@ -1045,8 +1328,16 @@ There is no glory in prevention. // security, maintainability but also health an
 - Pre-Mortem it!  // i.e. imagine a negative outcome.
 - Let peers challenge your plans.
 
-
 NOTE: There is also a pessimism bias. It depends on the character which applies more.
+  ```)
+= Effect & Workaround
+
+  #item-by-item[
+  -  *Very hard to fully eliminate.*
+  - There is no glory in prevention.
+  - Base rates (i.e. look at other projects).
+  - Use pre-mortem.
+  ]
 ]
 
 ////////////////////////////////
@@ -1056,34 +1347,65 @@ NOTE: There is also a pessimism bias. It depends on the character which applies 
 
 #slide[
   #comment(```md 
+  Kahnemann worked as professor and had to grade his students after exams.
+  He noticed that he gave better grades to students that 
+
+  Solutions for Kahnemann:
+
+  - Grade each question invidually, so that you can compare answers.
+  - Grade each work anonymously.
+
+  More generally: A positive impression stemming from a positive attribute of
+  a person (or a thing) "shines over" other attribtues.
+
+  Pretty persons tend to be assumed smart and friendly due to that.
+
+  Developers that made good projects in the past are expected to perform well
+  in the future and are assumed to be smart in general.
   ```)
 = Story
 
 #toolbox.side-by-side[
-  TODO: Kahnemann story of student grading.
+  #only("1-")[
+    #image("images/grading.jpg", height: 65%)
+  ]
 ][
-  #image("images/halo-effect.png", height: 65%)
+  #only(2)[
+    #image("images/halo-effect.png", height: 65%)
+  ]
 ]
 ]
 
 #slide[
-  #comment(```md 
-  ```)
 = Explanation
 
+  #comment(```md 
+There is also the opposite effect: The horn effect (so instead of an angel's halo it plays on the devil's horns).
+
+*Bonus:* Affinity Bias: Overvalue opinions of people we trust or that are similar to us. You could call it Mini-Me-Bias. We tend to overtake the opinions of people that have generally similar beliefs to ours, even we would have good reason not to. The effect has some similarities to anchoring.
+  ```)
+
+  #align(center)[
+    #image("images/halo-effect-impact.jpg", height: 80%)
+  ]
 ]
 
 #slide[
   #comment(```md 
-  ```)
-= Fix
 
-- We tend to overvalue #emph("Rockstar developers")
-- Each of us have a technology they love. // Linux, Flutter, Apple - We tend to defend it and choose tools similar to it.
+- Each of us have a technology they love. Be aware. // Linux, Flutter, Apple - We tend to defend it and choose tools similar to it.
 - Do not use #emph("exciting") software, but boring one. // Would you rather have a good looking but bad surgeon or a jerk that is an excellent surgeon?
+  ```)
 
+= Effect & Workaround
 
-*Solution:* Accept all software sucks.
+  #item-by-item[
+  - We tend to overvalue #emph("Rockstar") developers.
+  - Each of us have a technology they love. Be aware.
+  - Do not use #emph("exciting") software, but boring one.
+  - Mind this effect as a manager.
+  - Accept all software sucks. 😏
+]
 ]
 
 ////////////////////////////////
@@ -1092,12 +1414,20 @@ NOTE: There is also a pessimism bias. It depends on the character which applies 
 
 #slide[
   #comment(```md 
+  Cognitive biases can be frustrating. Humans are not machines and they can react in very 
+  unexpected ways. I'm sure everyone can relate a bit to this tweet.
   ```)
-  #image("images/facts.jpg", width: 70%)
+  #align(center)[
+    #image("images/facts.jpg", width: 70%)
+  ]
 ]
 
 #slide[
   #comment(```md 
+  Everyone has biases.
+
+  This talk will not fix them, you are just now aware they exist.
+  There are no real fixes, just workarounds.
   ```)
 = Summary
 
@@ -1119,46 +1449,21 @@ NOTE: There is also a pessimism bias. It depends on the character which applies 
 ////////////////////////////////
 
 #slide[
-  #comment(```md 
-  ```)
-= Outlook & Homework
-
-I left out something important: Cognitive load.
-
-https://minds.md/zakirullin/cognitive
-
+  #v(4cm)
+  #align(center)[
+    #set text(size: 100pt)
+    Doubt yourself!
+  ]
 ]
 
 #slide[
-  #comment(```md 
-  ```)
-= Outro poem
-
-- Riddled with problems is our mind
-- Easy solutions not in sight
-- Now no longer as blind,
-- but our behavior is still not bright.
-]
-
-
-#slide[
-  #comment(```md 
-  ```)
 = Sources
 
+- https://thedecisionlab.com/biases
 - https://en.wikipedia.org/wiki/Cognitive_bias
 - https://github.com/zakirullin/cognitive-load
 - https://thevaluable.dev/cognitive-bias-software-development
-]
-
-#slide[
-  #comment(```md 
-  ```)
-  #align(center)[
-    = The End
-
-    *Tip:* The title slide is clickable!
-  ]
+- [...]
 ]
 
 // DONE:
@@ -1189,18 +1494,13 @@ https://minds.md/zakirullin/cognitive
 // 
 // - Actor–observer asymmetry
 // - Survivorship Bias
-// - Complexity bias (Tendency to push towards too complex solutions) TODO: Is that a based one?
+// - Complexity bias (Tendency to push towards too complex solutions) NOTE: Does not sreally seem based.
 // - Generation effect (information is easier remembered when a person reasoned it themself, same applies to humor)
 // - Additive Bias (tendency to add to a solution instead of removing it, even if better) -> Not strong and thin scientific proof
 // - Loss aversions:
 //     - Zero risk bias (tendency to build solutions that have zero perceived risk)
 //     - Analysis Paralysis
 // - https://en.wikipedia.org/wiki/Automation_bias - Favor of decisions made by automated systems over human decisions.
-// - Broken Windows Theory - if something is already broken, we tend to be less critical when only quick repairing it. // TODO: Not really based and software related.
+// - Broken Windows Theory - if something is already broken, we tend to be less critical when only quick repairing it. // NOTE: Not really based and software related.
 // - https://en.wikipedia.org/wiki/Choice-supportive_bias - Sugarcoating the own decision afterwards. "It was the right one!"
 // - Google Effect: https://en.wikipedia.org/wiki/Google_effect - Tendency to forgot things we know we can search again.
-//
-//
-
-
-// TODO: Doch noch etwas mehr Broken-Window Theory und "Ich fahr hier bloß den Bagger"-Attitüde reinbringen?
