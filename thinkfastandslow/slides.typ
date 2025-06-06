@@ -316,27 +316,42 @@ Not all of them are covered. just those that lead to bad software. And even that
   ]
 ]
 
+//
 #slide[
-  #comment(```md 
+  #comment(```md
   Please do the following: Knock on the table in a constant frequency.
   I will show you some simple math problems.
 
   As you can see, System 1 can think fast, but is wrong often,
   while System2 is slow (and is more often right - eventually)
+  Also, system 2 takes the seat and you cant do much else.
+
+  That's also why you shouldnt ask an driver math problems in the car.
   ```)
   = Math
   #item-by-item[
     - $2+2$       // you did not have to think right? Plain pattern matching.
+    - $21 + 13$   // probably easy, but not quite as anymore.
     - $21 dot 13$ // now you probably have to use system 2. Did the knocking stop?
     - $77+33$     // chances are you were wrong, sometimes system1 triggers because this feels familiar (7 + 3 + 10), for some system2 triggered.
-    - $23 dot 42$
+    - A bat and a ball cost #sym.dollar 1.10 in total. The bat costs #sym.dollar 1 more than the ball. How much does the ball cost?
   ]
-  // By the way: When you walk and see an equation you cannot solve immediately,
-  // you probably just stop walking. Concurrency is also not build in.
+
+  #only(6)[
+    #h(9cm)
+    #box[
+      + $"bat" + "ball" = dollar
+      1.10 $
+      + $("ball" + dollar 1) + "ball" = dollar 1.10 $
+      + $2 "ball" = dollar 0.10 $
+      + $"ball" = dollar 0.05 $
+    ]
+  ]
+
 ]
 
 #slide[
-  #comment(```md 
+  #comment(```md
   Homework: Read that second link: It's really helpful.
   ```)
 
@@ -560,6 +575,9 @@ There are several things wrong with it:
 What came in effect here:
 
 1. Suggestibility: You have accepted the suggestion and did not check it.
+   You might remember that banana example? That goes into that direction.
+   But also when I say "This code is bad", then I set the stage for a discussion
+   on "why is this code bad"
 2. Unknown unknowns are left out ()
 3. Illusion of explanatory depth: You feel like you've done the job and feel knowledgable,
    because "you know how to encypt stuff".
@@ -593,6 +611,8 @@ def encrypt(msg, key):
 
 - Illusion of explanatory Depth: You might feel like you understood.
 - Availability heuristic: You only see the problems you know of.
+
+General tip: Don't let AI suggest you something, use AI to validate the thoughts you already made.
   ```)
   = Explanation
 
