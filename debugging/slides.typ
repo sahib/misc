@@ -42,9 +42,6 @@
   ]
 )
 
-// TODO: Add intro. (?)
-// TODO: Add commentary and war stories.
-
 #slide[
   #comment(```md
 ```)
@@ -121,14 +118,18 @@
 #slide[
   #comment(
     ```md
+  - Read everything, cover to cover: Gooble up all documentation there is.
+  - Know what to expect and what is reasonable: Check normal runs, see if the logs there say anything.
+  - Know your tools: Invest some time to get up to speed with debugging and introspection tools.
+  - Lookup the details: Ask why until you reached the root cause.
     ```
   )
 
   #v(4cm)
-  - Read everything, cover to cover
-  - Know what to expect and what is reasonable
-  - Know your tools
-  - Lookup the details
+  - Read everything, cover to cover.
+  - Know what to expect and what is reasonable.
+  - Know your tools.
+  - Lookup the details (5-why method!)
 ]
 
 //////////////////////////////
@@ -161,12 +162,12 @@
   )
 
   #v(4cm)
-  - Expect that the report is valid
-  - Reproduce it yourself
-  - Stimulate, not simulate
-  - Don't just wait for it too happen again
-  - Control the condition to find intermittent bugs
-  - Never throw away a debugging tool
+  - Expect that the report is valid.
+  - Reproduce it yourself.
+  - Stimulate, not simulate.
+  - Don't just wait for it too happen again.
+  - Control the condition to find intermittent bugs.
+  - Never throw away a debugging tool.
 ]
 
 //////////////////////////////
@@ -187,11 +188,11 @@
 #slide[
   #comment(
     ```md
-  - Order the symptoms
+  - Sort the symptoms
 
     - What symptoms does the system have?
     - Which of those are related to the bug?
-    - Which are a cause of others?
+    - Which are a cause of others? What's the chain?
     - What are the components we have to look into
     - Can we find hypothesis that explain those symptoms?
 
@@ -221,12 +222,11 @@
 
   #v(4cm)
 
-  - Order the symptoms
-  - Only guess to focus the search
-  - Find a hypothesis explaining all symptoms
-  - Apply Occam's Razor generously
-  - Instrument the system
-  - Use the 5-Why method
+  - Sort the symptoms.
+  - Only guess to focus the search.
+  - Find a hypothesis explaining all symptoms.
+  - Apply Occam's Razor generously.
+  - Instrument the system.
 
 
   #place(
@@ -275,10 +275,10 @@
   )
 
   #v(4cm)
-  - Use binary search
-  - Automate the bug checking
-  - Start with the bad and work to the good
-  - Fix the issues you know about first
+  - Use binary search.
+  - Automate the bug checking.
+  - Start with the bad and work to the good.
+  - Fix the issues you know about first.
 
 ]
 
@@ -310,10 +310,10 @@
     ```
   )
   #v(4cm)
-  - Use a rifle, not a shotgun
-  - Remove the things that had no effect
-  - Grab the brass bars with both hands
-  - Compare with a known good state
+  - Use a rifle, not a shotgun.
+  - Remove the things that had no effect.
+  - Grab the brass bars with both hands.
+  - Compare with a known good state.
 
   #place(
     bottom + right,
@@ -526,18 +526,24 @@ I too often saw people apply some fix they thought fixed it and close the ticket
   ]
 ]
 
-// * Additional thoughts:
-//
-//   * Debuggers can be useful, but if you require them you probably have created a complexity beast. Debuggers are not good in finding race conditions and timing issues.
-//   * Debuggers have some many restrictions: No timing issues, hard to do in embedded, containers and often slower than good ol' debugging for me.
-//   * printf debug is surprisingly effective if done right, as it turns out.
-//   * Ask for help. Rubber Duck programming is a thing and so is Rubber Duck Debugging.
-//   * System wide debugging: perf / eBFF
-//   * Learn strace
-//   * coverage density: How often is a piece of code ran?
-//   * Don't always trust reports -> Eliminate conflicting statements.
-//   * Distinguish between symptoms and causes.
+#slide[
+  #comment(
+    ```md
+    * Debuggers can be useful, but if you require them you probably have created a complexity beast. Debuggers are not good in finding race conditions and timing issues.
+    * Debuggers have some many restrictions: No timing issues, hard to do in embedded, containers and often slower than good ol' debugging for me.
+    ```
+  )
 
+  #align(center)[
+    #set text(size: 30pt)
+    *Software Extras*
+  ]
+
+  - Debuggers aren't that great.
+  - printf() will always be useful, if done right.
+  - Learn tools like strace, pprof, diff, perf ...
+  - Telemetry is great to find the needle in the haystack.
+]
 
 // Done:
 //   * Add Quality Debugging Tools to your application - builtin!
@@ -545,6 +551,13 @@ I too often saw people apply some fix they thought fixed it and close the ticket
 //   * Make a MRE (minimal reproducible example).
 //   * Make your code easy to debug. Invest time in logging, modularity, tracing, monitoring, alerting, linting, test setups.
 //   * 5 Why Methode: Drill down to the actual reasons.
+//   * printf debug is surprisingly effective if done right, as it turns out.
+//   * Ask for help. Rubber Duck programming is a thing and so is Rubber Duck Debugging.
+//   * System wide debugging: perf / eBFF
+//   * Learn strace
+//   * coverage density: How often is a piece of code ran?
+//   * Don't always trust reports -> Eliminate conflicting statements.
+//   * Distinguish between symptoms and causes.
 //
 // Cool bugs (own):
 //
