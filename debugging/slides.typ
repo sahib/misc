@@ -466,7 +466,7 @@ I too often saw people apply some fix they thought fixed it and close the ticket
   - Prevent similar bugs from happening: Add regression tests. Can the weird crash happen by anything else?
     ```
   ) 
-
+   
   #v(4cm)
   - Revert the fix, test, revert the revert & test.
   - It never just goes away by itself.
@@ -499,6 +499,8 @@ I too often saw people apply some fix they thought fixed it and close the ticket
   - Keep your log hygiene: Most of our logs are spammy and hard to parse. People tend to see them as source
     for a data lake and not for human consumption.
   - Train your colleagues: Nobody will use a debugging utility that nobody knows of. Do Pair debugging.
+  - There is no glory in prevention, but pain in finding bugs: You do not get promoted if you prevented some theoretical problems sadly.
+    You usually need to endure some pain first before you remember those rules.
     ```
   )
 
@@ -508,6 +510,7 @@ I too often saw people apply some fix they thought fixed it and close the ticket
   - Include debugging utilities.
   - Keep your log hygiene.
   - Train your colleagues.
+  - There is no glory in prevention, but pain in finding bugs.
 ]
 
 //////////////////////////////

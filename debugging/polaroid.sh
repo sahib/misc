@@ -7,7 +7,7 @@ convert() {
   local text="${4:-5}"
   magick "${src_path}" -resize 1500x1500 \
     -font 'TT2020-Style-E' -pointsize 50 \
-    -bordercolor '#ffffea' -background white -fill black -gravity center -set caption "${text}" \
+    -bordercolor '#ffffee' -background white -fill black -gravity center -set caption "${text}" \
     -polaroid "${rotation}" \
     \( +clone -background '#999' -shadow 100x25+11+11 \) +swap -background none -layers merge +repage \
     "${dst_path}" &
