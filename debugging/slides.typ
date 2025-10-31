@@ -57,6 +57,7 @@
 
 #slide[
   #comment(```md
+  Print this page as reminder!
 ```)
 
   #align(center)[
@@ -75,6 +76,9 @@
 
   The rules are very generic and can be applied to outside of software.
   Many feel obvious, but when debugging we often forget them.
+
+  Even after hearing this talk I do recommend reading this book,
+  it has some really excellent stories.
 ```)
 
   #align(center)[
@@ -102,14 +106,24 @@
   toolbox.register-section(commandmentText)
 }
 
+// ON HOLD:
+//
+// War-Story:
+//   - SIM Card issue in Taiwan: How the fuck does this even work.
+//   - UI-bug: Took ages to know where it came from. (That did not solve it)
+//   - Faulty Netzteil causing my Powerlan to be broken (or microwave)
+
+
 #slide[
   #comment(
     ```md
   Basically RTFM
 
-  War-Story:
-    - SIM Card issue in Taiwan: How the fuck does this even work.
-    - UI-bug: Took ages to know where it came from. (That did not solve it)
+  Story: My health issues. I've read a lot of articles about medicine, digestion and papers.
+  In the end I knew enough to order a specific test myself that I could show my doc that was not cooperative until then.
+
+  Alternative: SIM Card issue in Taiwan: How the fuck does this even work.
+
     ```
   )
   #commandment("Understand the system")
@@ -143,6 +157,8 @@
 
   War-Story: Also UI-bug: To get a hint at what is causing it we had to go at great lengths
   trying to make it happen.
+
+  War Story: Pi Freeze. We had a lot of trouble reproducing it and what you cannot reproduce you can't fix.
 
     ```
   )
@@ -179,6 +195,14 @@
 
     You probably can imagine a thousand ways, but that time is lost
     for gathering proper proof.
+
+
+    War Story: This always happens when we get a weird support ticket.
+    We immediately generate a lot of possible theories (which is good!)
+    but sometimes we stop there. Example: Display flicker.
+
+    We've imagined more theories but none tht we can proof.
+    If that happens we need to gather more data.
     ```
   )
 #commandment("Quit Thinking and Look")
@@ -240,8 +264,21 @@
 #slide[
   #comment(
     ```md
+  Explain: Minimal Repoducible Example (or Guide: If I do this, this breaks)
 
-  War story: git bisect?
+  You do this basically every time you have no internet. A connection to the internet
+  is like a pipeline and you look for the location of the blockage:
+
+  - You check if you have a connection (plugged in or wifi)
+  - You open google.de. No?
+  - You ping google.de. No?
+  - You ping 8.8.8.8. If it works it is probably DNS. No?
+  - You check if you have an IP addr.
+  - You run something like trace route or check specific ports or firewall settings etc.
+
+  // War story: Audio crackling - isolate the components that do it.
+  // The Linux audio stack consists of many components, including hardware and they form  a pipeline.
+  // Where in the pipeline was the crackling added?
     ```
   )
 #commandment("Divide and Conquer")
@@ -287,8 +324,21 @@
 #slide[
   #comment(
     ```md
+    War story: fsck fuckup.
 
+    We had some devices where the boot partition suddenly failed. Files suddenly had a size of zero
+    and the device were not booting anymore. Definitely not good.
 
+    Triggering the bug was very hard. Sometimes it did not happen, but we did not know
+    which measure fixed it. We kinda suspected that it was very timing-sensitive bug.
+
+    You might feel inclined to a release in this case that has a bunch of potential fixes going on.
+    Well... so we did actually, after all there was pressure to do something. In the end it turned out that some of
+    those "fixes" cancelled out each other and we would not know much more than before.
+
+    Luckily we had a device in the office after some time and could develop some better theories.
+    With a test bench we were then able to test the individual fixes and it turned out a program
+    that was supposed to check the filesystem actually caused those issues.
     ```
   )
 #commandment("Change one Thing at a Time")
@@ -302,7 +352,7 @@
 
     https://www.iwm.org.uk/collections/item/object/205260813 (see the bars below)
 
-  - Compare with a known good state: What changed? 
+  - Compare with a known good state: What changed?
       - Use git diff
       - diff debug logs (good vs bad)
       - Use coverage based differential debugging: <https://research.swtch.com/diffcover>
@@ -328,12 +378,21 @@
 #slide[
   #comment(
     ```md
-    War story: fsck fuckup.
+    Here is a cool story from the book:
 
-    We wanted to save some time by trying several things at once.
-    Triggering the bug was very hard. Sometimes it did not happen, but we did not know
-    which measure fixed it. Sometimes it still happened, but we did not know if the fixes
-    cancelled out for some reasons.
+    The author was developing a system that was compressing video data.
+    For development, he had a camera setup that filmed him and displayed the decoded video back to him
+    to see any issues. He would move his hand fast to see if there were comppression artiacts and so on.
+
+    But for whatever reason the system occassionally crashed... but mostly on Tuesdays.
+    How would you tackle this?
+
+    The author did also many attempts, including changing temperature. But turns out
+    he was wearing a shirt with a checkerboard pattern on tuesdays. Whenver too much of
+    the shirt was visible, the system would crash.
+
+    Sometimes really small details matter and finding them is helped by writing a log
+    of things that have been done and tried.
     ```
   )
 #commandment("Keep an Audit Trail")
@@ -364,6 +423,8 @@
   - Write regression tests.
 
       - When you fixed it, make sure it stays fixed. Happens way too often that different people debug the same problem.
+      - Since this case was not thought of during design it would be otherwise likely that we forget it once more.
+        (and having to fix a bug twice is not a nice feeling!)
     ```
   )
 
@@ -386,6 +447,9 @@
     but still we get lost in the details somehow.
 
     Check if it's plugged in, check the obvious.
+
+    Example: You think you fixed the bug but it is still happening? Well, then maybe you did not compile or deploy?
+    A session is not there? Maybe it's the wrong day?
     ```
   ) 
 #commandment("Check the Plug")
@@ -399,7 +463,7 @@
   - Start at the beginning: Is the memory initialized? Is it turned on?
   - Test the tool: Do your debugging tools work? Are you running the right compiler? The right code?
     ```
-  ) 
+  )
 
   #v(4cm)
 
@@ -416,8 +480,10 @@
     ```md
     Sometimes you're stuck on your own, well then you need somebody else to debug your brain.
     Experts would be nice, but sometimes a duck can do as well.
+
+    Story: Asking Raspberry Pi developers when we don't know how to progress or even start.
     ```
-  ) 
+  )
 #commandment("Get a Fresh View")
 ]
 
@@ -451,9 +517,11 @@
   #comment(
     ```md
 I too often saw people apply some fix they thought fixed it and close the ticket.
+
+TODO: Story?
     ```
-  ) 
-#commandment("If you didn't fix it, it ain't fixed")
+  )
+#commandment("Double check it really is fixed")
 ]
 
 #slide[
@@ -465,8 +533,8 @@ I too often saw people apply some fix they thought fixed it and close the ticket
   - Fix whatever led to the bug: Are there processes missing? Bad qualtiy control?
   - Prevent similar bugs from happening: Add regression tests. Can the weird crash happen by anything else?
     ```
-  ) 
-   
+  )
+
   #v(4cm)
   - Revert the fix, test, revert the revert & test.
   - It never just goes away by itself.
@@ -485,6 +553,8 @@ I too often saw people apply some fix they thought fixed it and close the ticket
     Example: Dani can work with the Pi a lot to debug the control system. There are many
     tools that are only accessible by ssh'ing to the device and their sole purpose
     is to provide introspection. Tools like those are as important as having automated tests!
+
+    This is also generally a good idea because you don't have to debug yourself anymore.
     ```
   )
 #commandment("Make it easy to debug")
@@ -519,6 +589,10 @@ I too often saw people apply some fix they thought fixed it and close the ticket
   #comment(
     ```md
     Questions?
+
+    Feel free to share some cool debugging stories after the talk.
+
+    Print the second slide of this presentation as reminder!
     ```
   )
 
