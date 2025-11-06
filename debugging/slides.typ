@@ -44,6 +44,20 @@
 
 #slide[
   #comment(```md
+
+- Debugging is a way of thinking.
+- It is a craft, not an art. It can be learned.
+
+Why do I even feel qualified to give this talk?
+Because I've made lot of mistakes obviously in my engineering career.
+And since I don't like mistakes I've got somewhat good at finding them...
+
+Aaaand this skill probably gets more important in the age of AI generated code.
+
+Feel free to share your experiences or stories during the talk, then it
+gets hopefully less of a lecture. Also just ask some comments or questions
+right away, because I won't see your faces.
+
 ```)
 
   #align(center)[
@@ -68,9 +82,6 @@
 
 #slide[
   #comment(```md
-  Debugging as a science, not as an art.
-  Or more like a craft.
-
   His book only has 9 rules, I added one. Tell me at the end which one
   was the one I added.
 
@@ -106,23 +117,12 @@
   toolbox.register-section(commandmentText)
 }
 
-// ON HOLD:
-//
-// War-Story:
-//   - SIM Card issue in Taiwan: How the fuck does this even work.
-//   - UI-bug: Took ages to know where it came from. (That did not solve it)
-//   - Faulty Netzteil causing my Powerlan to be broken (or microwave)
-
-
 #slide[
   #comment(
     ```md
   Basically RTFM
 
-  Story: My health issues. I've read a lot of articles about medicine, digestion and papers.
-  In the end I knew enough to order a specific test myself that I could show my doc that was not cooperative until then.
-
-  Alternative: SIM Card issue in Taiwan: How the fuck does this even work.
+  SIM Card issue in Taiwan: How the fuck does this even work.
 
     ```
   )
@@ -132,10 +132,13 @@
 #slide[
   #comment(
     ```md
-  - Read everything, cover to cover: Gooble up all documentation there is.
+  - Read everything, cover to cover: Gooble up all documentation there is. (If you don't know what a bootloader does, how are you supposed to fix it?)
   - Know what to expect and what is reasonable: Check normal runs, see if the logs there say anything.
   - Know your tools: Invest some time to get up to speed with debugging and introspection tools.
   - Lookup the details: Ask why until you reached the root cause.
+
+  Story: My health issues. I've read a lot of articles about medicine, digestion and papers.
+  In the end I knew enough to order a specific test myself that I could show my doc that was not cooperative until then.
     ```
   )
 
@@ -155,8 +158,8 @@
   It is even annoying since you do not exactly know if there is a bug and
   you do not have a way to fix it.
 
-  War-Story: Also UI-bug: To get a hint at what is causing it we had to go at great lengths
-  trying to make it happen.
+  # War-Story: Also UI-bug: To get a hint at what is causing it we had to go at great lengths
+  # trying to make it happen.
 
   War Story: Pi Freeze. We had a lot of trouble reproducing it and what you cannot reproduce you can't fix.
 
@@ -171,8 +174,8 @@
     - Do it again: To best understand it, you have to make the steps yourself. Learning by doing.
     - Reproduce it yourself: Sometimes reports from others are kinda confused and hard to understand. It's importat for understanding to see it yourself.
     - Stimulate, not simulate: Use real hardware, real timing. If you do that you might notice more bugs.
-    - Don't just wait for it too happen again: Don't wait for the storm, use a hose to waterproof your house.
     - Control the condition to find intermittent bugs: Some bugs only show on load e.g. - remember this.
+    - Don't just wait for it too happen again: Don't wait for the storm, use a hose to waterproof your house.
     - Never throw away a debugging tool: During failing your probably had some ideas to make the system more introspectable. Use that.
     ```
   )
@@ -248,7 +251,7 @@
 
   - Sort the symptoms.
   - Only guess to focus the search.
-  - Find a hypothesis explaining all symptoms.
+  - Find a theory explaining all symptoms.
   - Apply Occam's Razor generously.
   - Instrument the system.
 
@@ -269,16 +272,14 @@
   You do this basically every time you have no internet. A connection to the internet
   is like a pipeline and you look for the location of the blockage:
 
+  [Ask audience]
+
   - You check if you have a connection (plugged in or wifi)
   - You open google.de. No?
   - You ping google.de. No?
   - You ping 8.8.8.8. If it works it is probably DNS. No?
   - You check if you have an IP addr.
   - You run something like trace route or check specific ports or firewall settings etc.
-
-  // War story: Audio crackling - isolate the components that do it.
-  // The Linux audio stack consists of many components, including hardware and they form  a pipeline.
-  // Where in the pipeline was the crackling added?
     ```
   )
 #commandment("Divide and Conquer")
@@ -419,12 +420,6 @@
   - Let others read your log.
 
       - They might have new ideas or just plainly say "nah, that's bullshit"
-
-  - Write regression tests.
-
-      - When you fixed it, make sure it stays fixed. Happens way too often that different people debug the same problem.
-      - Since this case was not thought of during design it would be otherwise likely that we forget it once more.
-        (and having to fix a bug twice is not a nice feeling!)
     ```
   )
 
@@ -432,9 +427,7 @@
   - Write down what you did, in what order and what happened.
   - The devil is in the details.
   - Correlate events, find patterns.
-  - Regression tests are a form of logging.
   - Let others read your log.
-  - Write regression tests.
 
 ]
 
@@ -461,7 +454,7 @@
     ```md
   - Question your assumptions: Use the audit log to see how you got here.
   - Start at the beginning: Is the memory initialized? Is it turned on?
-  - Test the tool: Do your debugging tools work? Are you running the right compiler? The right code?
+  - Test the tool: Do your debugging tools work? Are you running the right compiler? The right code? Deploying to the right device?
     ```
   )
 
@@ -516,9 +509,21 @@
 #slide[
   #comment(
     ```md
-I too often saw people apply some fix they thought fixed it and close the ticket.
+I quite often saw people apply some fix they thought fixed it and close the ticket.
 
-TODO: Story?
+Story:
+
+- When I was still living with my parents (centuries ago), I had some weird issues
+  where my internet connection was away for a couple of minutes. Mostly in the evening.
+- That was annoying, I was kinda good at one of those first person shooters, and really hated
+  it when the match was over because my internet was gone.
+- Eventually I was trying to fix it. It was the first time I was using Linux so I tried to change
+  network stuff around. I checked if the internet elsewhere in the house was working (it did!). 
+  I bought a wifi router. Every time the problem stayed away for some time, but it came back again eventually.
+  I had no way to trigger it eventually and I got too comfortable with the situation.
+- In the end it was an issue of Powerlan (a technique to send ethernet packages over your hourses power network)
+  and actually totally wild. Vogelwild. Whenever the microwave was used the powerlan was reset and took
+  some minutes to normalize.
     ```
   )
 #commandment("Double check it really is fixed")
@@ -532,6 +537,10 @@ TODO: Story?
   - Make sure you fix the root cause: Question whether you have a workaround or a proper fix. 
   - Fix whatever led to the bug: Are there processes missing? Bad qualtiy control?
   - Prevent similar bugs from happening: Add regression tests. Can the weird crash happen by anything else?
+
+      - When you fixed it, make sure it stays fixed. Happens way too often that different people debug the same problem.
+      - Since this case was not thought of during design it would be otherwise likely that we forget it once more.
+        (and having to fix a bug twice is not a nice feeling!)
     ```
   )
 
@@ -539,6 +548,7 @@ TODO: Story?
   - Revert the fix, test, revert the revert & test.
   - It never just goes away by itself.
   - Make sure you fix the root cause.
+  - Regression tests are a form of documentation.
   - Fix the process that caused the bug.
   - Prevent similar bugs from happening.
 ]
@@ -593,6 +603,8 @@ TODO: Story?
     Feel free to share some cool debugging stories after the talk.
 
     Print the second slide of this presentation as reminder!
+
+    And if you don't mind you can also give me feedback - either now or via Slack.
     ```
   )
 
