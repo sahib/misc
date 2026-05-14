@@ -160,6 +160,9 @@
 
   #v(.5em)
   #align(center)[
+    #v(1cm)
+    #text(fill: gray)[General tendency:]
+
     Using GenAI is a tradeoff between control and productivity.
   ]
 ]
@@ -946,17 +949,17 @@
   #v(1em)
   #set text(size: 1.1em)
 
-  1. If you don't know what good software looks like - \
+  1. If you don't know what good software looks like — \
     #emph[how do you write the right prompt?]
 
   #v(.6em)
 
-  2. If you can't understand what the model just generated - \
+  2. If you can't understand what the model just generated — \
     #emph[how do you verify it?]
 
   #v(.6em)
 
-  3. If you can't code (anymore) - \
+  3. If you can't code (anymore) — \
     #emph[how can you understand the diffs?]
 
   #v(1em)
@@ -1107,10 +1110,10 @@
         #text(fill: gray)[Split tasks up and prompt them individually.]
       - Claude can help you split up work. \
         #text(fill: gray)[It just tends to work on the task right away.]
-      - It is easy to loose understanding without noticing. \
+      - It is easy to lose understanding without noticing. \
         #text(fill: gray)[Keep doing important things manually!]
       - Large diffs make it easy to get lost. \
-        #text(fill: gray)[Make `git` commits often to keep diffs digestible.]
+        #text(fill: gray)[Commit often so diffs stay reviewable.]
     ],
     align(center + horizon)[
       #cetz.canvas(length: 1cm, {
@@ -1379,9 +1382,9 @@
     align: horizon,
     [
       - Explain the tasks at hand like you would to a junior colleague. \
-        #text(fill: gray)[A very eager, junior colleague with seemingly infinite power.]
+        #text(fill: gray)[A very eager, junior colleague with seemingly infinite capacity.]
       - Push back. Ask for alternatives. Let it explain. Disagree. \
-        #text(fill: gray)[If you wouldn't accept a colleague's PR with the same reasoning, don't accept the model's.]
+        #text(fill: gray)[If you'd reject a colleague's PR for that reasoning, reject the model's.]
     ],[
       #v(-1cm)
       #stack(
@@ -1404,7 +1407,7 @@
     not the theory.
 ```)
 
-  = Bonus: Software as Theory Building
+  = Bonus: Programming as Theory Building
   #text(size: .8em, fill: gray)[Peter Naur, 1985]
 
   #v(.5em)
@@ -1453,8 +1456,8 @@
     column-gutter: 1em,
     align: horizon,
     [
-      - The model has no theory. It just sees what's there and adds hallucinations. \
-        #text(fill: gray)[It will not tell you. It just guesses.]
+      - The model has no theory — it sees the artefact and fills the rest in. \
+        #text(fill: gray)[Confidently. It won't tell you which is which.]
       - Bad prompt: "Write tests for this file" \
         #text(fill: gray)[It freezes today's behaviour, *bugs included*. Again, no mention.]
       - Your job is still to build the theory. \
@@ -1566,7 +1569,7 @@
   #v(1em)
   #emph[Homework]:
   #v(1em)
-  SOFTWARE AS THEORY BUILDING.
+  PROGRAMMING AS THEORY BUILDING.
   ]
 
   #place(right + horizon, image("images/master.jpg", height: 110%))
