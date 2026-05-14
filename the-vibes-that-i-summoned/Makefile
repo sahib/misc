@@ -1,7 +1,4 @@
-polaroid:
-	@./polaroid.sh
-
-slides.pdf: polaroid
+slides.pdf:
 	typst compile slides.typ
 	polylux2pdfpc slides.typ
 
