@@ -4,10 +4,6 @@
 
 #enable-handout-mode(false)
 
-// TODO: Taschenrechner + Navigation (google maps) mention
-// TODO: Mention productivity decrease due to pro-longed quality control (review) and understanding gap?
-// TODO: Note that reading code and writing code are distinct skills.
-
 // Can be used to embed speaker notes.
 // We define this locally instead of using `toolbox.pdfpc.speaker-note`
 // because polylux 0.4.0 still does `type(x) == "string"` checks, which
@@ -21,6 +17,22 @@
     panic("comment(): expected a string or a raw block")
   }
   [ #metadata((t: "Note", v: txt)) <pdfpc> ]
+}
+
+// Rainbow-colour each codepoint of a string. Inherits font size/weight
+// from the surrounding text() so it composes cleanly inside headlines.
+#let rainbow(s) = {
+  let colors = (
+    rgb("#e74c3c"), // red
+    rgb("#e67e22"), // orange
+    rgb("#f39c12"), // amber
+    rgb("#27ae60"), // green
+    rgb("#2980b9"), // blue
+    rgb("#8e44ad"), // purple
+  )
+  for (i, c) in s.codepoints().enumerate() {
+    text(fill: colors.at(calc.rem(i, colors.len())))[#c]
+  }
 }
 
 #show link: set text(blue)
@@ -77,7 +89,7 @@
   #place(right + horizon, image("images/zauberlehrling.png", height: 100%))
 
   #place(left + horizon, box(width: 50%, inset: 2em)[
-    #text(size: 2.2em, weight: "bold")[The vibes\ that I summoned...]
+    #text(size: 2.2em, weight: "bold")[The #rainbow("vibes")\ that I summoned...]
 
     #v(1em)
     #text(size: .95em, fill: gray)[
@@ -148,11 +160,7 @@
 
   #v(.5em)
   #align(center)[
-    // TODO: Need to re-word that bit; too general.
-
     Using GenAI is a tradeoff between control and productivity.
-
-    It's not black & white.
   ]
 ]
 
@@ -433,7 +441,7 @@
     #tag(1.1em, [code review companion], color: mid, angle: -2deg)
     #tag(.85em, [mock data / fixtures], color: pale, angle: +2deg)
     #tag(.95em, [error decoding], color: pale, angle: -1deg)
-    #tag(1.1em, [onboarding ramp-up], color: mid, angle: +1deg)
+    #tag(1.1em, [search engine], color: mid, angle: +1deg)
     #tag(.9em, [log analysis], color: pale, angle: -3deg)
     #tag(.85em, [proofreading], color: pale, angle: +2deg)
     #tag(1.0em, [automation], color: mid, angle: -2deg)
@@ -466,7 +474,7 @@
 
   Workforce & cognition:
   - Fewer juniors hired: no juniors today → no seniors tomorrow.
-  - Atrophy: skills you don't use, you lose.
+  - Atrophy: skills you don't use, you lose. (See: Calculator and Navigation without google maps)
   - Schools: AI can boost or bypass learning (more on this in a moment).
   - Convincing hallucinations: the failure mode that will eventually kill someone.
 ```)
@@ -495,6 +503,7 @@
     #tag(1.25em, [data privacy], color: red, angle: +2deg)
     #tag(1.05em, [cyberattack automation], color: mid, angle: -1deg)
     #tag(.85em, [communities thinning out], color: pale, angle: +3deg)
+    #tag(1.45em, [erosion of trust], color: red, angle: +3deg, weight: "bold")
   ]
 ]
 
@@ -522,6 +531,7 @@
     #tag(1.25em, [data privacy], color: blue, angle: +2deg)
     #tag(1.05em, [cyberattack automation], color: blue, angle: -1deg)
     #tag(.85em, [communities thinning out], color: blue, angle: +3deg)
+    #tag(1.45em, [erosion of trust], color: mid, angle: +3deg, weight: "bold")
   ]
 ]
 
@@ -736,10 +746,7 @@
   #v(.6em)
   #align(center)[
     #text(size: .85em)[
-      Reviewing 27,757 lines carefully ≈ *138 h*. A working month ≈ *176 h*.\
-      #text(fill: gray, style: "italic")[
-        Either we're 7× faster than the industry — or we didn't review.
-      ]
+      Reviewing 27,757 lines carefully ≈ *138 h*.
     ]
   ]
 ]
@@ -939,15 +946,17 @@
   #v(1em)
   #set text(size: 1.1em)
 
-  - If you don't know what good software looks like - \
+  1. If you don't know what good software looks like - \
     #emph[how do you write the right prompt?]
 
   #v(.6em)
 
-  - If you can't understand what the model just generated - \
+  2. If you can't understand what the model just generated - \
     #emph[how do you verify it?]
 
-  - If you can't code (anymore) - \
+  #v(.6em)
+
+  3. If you can't code (anymore) - \
     #emph[how can you understand the diffs?]
 
   #v(1em)
@@ -969,13 +978,31 @@
 
   = Five habits that helped me
 
-  #v(2cm)
+  #v(.8em)
 
-  + Think first, generate then.
-  + Split the work - keep some of it manual.
-  + Have a real verification strategy.
-  + You only get replaced if you make yourself replaceable.
-  + Treat the AI as a colleague.
+  #let green = rgb("#3a8f4a")
+
+  #let habit(num, body, color: green) = box(
+    width: 100%,
+    inset: (left: 1em, right: .8em, y: .7em),
+    stroke: (left: 4pt + color),
+    grid(
+      columns: (auto, 1fr),
+      column-gutter: 1em,
+      align: horizon,
+      text(size: 2em, weight: "bold", fill: color)[#num],
+      text(size: 1.0em, weight: "bold")[#body],
+    ),
+  )
+
+  #stack(
+    spacing: .7em,
+    habit([1], [Sketch first, generate then.]),
+    habit([2], [Split the work - keep some of it manual.]),
+    habit([3], [Have a real verification strategy.]),
+    habit([4], [Don't make yourself replaceable.]),
+    habit([5], [Treat the AI like a colleague.]),
+  )
 ]
 
 #slide[
@@ -988,28 +1015,186 @@
     actually understand later.
 ```)
 
-  = 1. Think first, generate then\
-  #text(size: .8em, fill: gray)[Don't let the model set the anchor.]
+  = 1. Sketch first, generate then\
+  #text(size: .8em, fill: gray)[You set the anchor, you stay in the loop.]
 
-  #v(.3em)
-  - Sketch the SQL query yourself,
-  - Then ask the model to review and optimise.
-  - Write the function signature and the docstring.
-  - Then let the model fill the body.
-  - You set the anchor; the model refines.
+  #v(.5em)
 
-  #v(1em)
+  - Sketch the SQL query yourself, \
+    #text(fill: gray)[Then ask the model to review and optimise.]
+  - Write the function signature and the docstring. \
+    #text(fill:gray)[Then let the model fill the body.]
+  - Put `TODO` comments in your code \
+    #text(fill: gray)[Then let Claude work on them.]
+
+  #v(0.5cm)
+
+    #align(center)[
+      #cetz.canvas(length: 1cm, {
+        import cetz.draw: *
+
+        // Lemniscate of Bernoulli, with vertical stretch for legibility:
+        //   x(t) = a · cos(t) / (1 + sin²(t))
+        //   y(t) = s · a · sin(t)·cos(t) / (1 + sin²(t))
+        let a = 4.2
+        let s = 1.1
+        let pt(t) = {
+          let c = calc.cos(t * 1rad)
+          let n = calc.sin(t * 1rad)
+          let d = 1 + n * n
+          (a * c / d, s * a * n * c / d)
+        }
+
+        let manual-color = rgb("#1f77b4") // quality blue — "you"
+        let gen-color    = rgb("#d9542b") // productivity orange — "model"
+
+        // Eight phases over t ∈ [0, 2π]. Manual (short) anchors the
+        // tips and the centre crossing; gen (longer) is the expansion
+        // arc between anchors. Pattern: M-G-M-G-M-G-M-G.
+        let TAU = 2 * calc.pi
+        let phases = (
+          (0.0000 * TAU, 0.0625 * TAU, "manual"),
+          (0.0625 * TAU, 0.2500 * TAU, "gen"),
+          (0.2500 * TAU, 0.3125 * TAU, "manual"),
+          (0.3125 * TAU, 0.5000 * TAU, "gen"),
+          (0.5000 * TAU, 0.5625 * TAU, "manual"),
+          (0.5625 * TAU, 0.7500 * TAU, "gen"),
+          (0.7500 * TAU, 0.8125 * TAU, "manual"),
+          (0.8125 * TAU, 1.0000 * TAU, "gen"),
+        )
+
+        for (t0, t1, kind) in phases {
+          let color = if kind == "manual" { manual-color } else { gen-color }
+          let weight = if kind == "manual" { 6.5pt } else { 4.5pt }
+          let n = 28
+          let pts = ()
+          let i = 0
+          while i <= n {
+            let t = t0 + (t1 - t0) * i / n
+            pts.push(pt(t))
+            i = i + 1
+          }
+          line(..pts, stroke: weight + color, mark: (end: ">", fill: color))
+        }
+
+        // Labels at the two tips.
+        content(
+          (-a - 0.3, 0),
+          text(size: .8em, fill: manual-color, weight: "bold")[you sketch],
+          anchor: "east",
+        )
+        content(
+          (a + 0.3, 0),
+          text(size: .8em, fill: gen-color, weight: "bold")[model expands],
+          anchor: "west",
+        )
+      })
+    ]
 ]
 
 #slide[
-  = 2. Split the work
+  = 2. Split the work, do some manual
   #text(size: .8em, fill: gray)[The parts you write are the parts you understand.]
 
-  #v(.3em)
-  - Leave the manual labor work to the model (e.g. build systems)
-  - Keep doing at least some smaller tasks yourself.
-  - I suggest: Do most of critical production code yourself.
-  - Tests, Build system, scripts, boilerplate: Default to Claude.
+  #v(.5em)
+
+  #grid(
+    columns: (1fr, auto),
+    column-gutter: 2em,
+    align: horizon,
+    [
+      - Claude does not perform well, if given too big scopes. \
+        #text(fill: gray)[Split tasks up and prompt them individually.]
+      - Claude can help you split up work. \
+        #text(fill: gray)[It just tends to work on the task right away.]
+      - It is easy to loose understanding without noticing. \
+        #text(fill: gray)[Keep doing important things manually!]
+      - Large diffs make it easy to get lost. \
+        #text(fill: gray)[Make `git` commits often to keep diffs digestible.]
+    ],
+    align(center + horizon)[
+      #cetz.canvas(length: 1cm, {
+        import cetz.draw: *
+
+        // Three-level tree: 1 big root → 3 sub-tasks → 6 leaves.
+        // Each sub-tree gets its own colour (red / green / blue) so the
+        // split is visually traceable. Nodes are rounded rects with
+        // little white "title bars" inside so they read as task cards.
+
+        let red     = rgb("#d9542b")
+        let green   = rgb("#3a8f4a")
+        let blue    = rgb("#1f77b4")
+        let neutral = rgb("#444444")
+        let subtree = (red, green, blue)
+
+        // task-card: rounded rect with 1 or 2 white "title" lines inside.
+        let card(cx, cy, w, h, fill, lines: 1) = {
+          rect(
+            (cx - w / 2, cy - h / 2),
+            (cx + w / 2, cy + h / 2),
+            fill: fill,
+            stroke: none,
+            radius: 0.06,
+          )
+          let pad = 0.1
+          let inner = w - 2 * pad
+          if lines == 1 {
+            line(
+              (cx - inner / 2, cy),
+              (cx + inner / 2 - 0.04, cy),
+              stroke: 1.3pt + white,
+            )
+          } else {
+            let dy = 0.09
+            line(
+              (cx - inner / 2, cy + dy),
+              (cx + inner / 2, cy + dy),
+              stroke: 1.6pt + white,
+            )
+            line(
+              (cx - inner / 2, cy - dy),
+              (cx - inner / 2 + inner * 0.6, cy - dy),
+              stroke: 1.6pt + white,
+            )
+          }
+        }
+
+        // Coordinates — taller than before: root at y=9, leaves at y=1.5.
+        let root   = (1.5, 9.0)
+        let mids   = ((0.4, 5.3), (1.5, 5.3), (2.6, 5.3))
+        let leaves = (
+          (0.1, 1.5), (0.7, 1.5),
+          (1.2, 1.5), (1.8, 1.5),
+          (2.3, 1.5), (2.9, 1.5),
+        )
+        let leaf-parent = (0, 0, 1, 1, 2, 2)
+
+        let edge = rgb("#bbbbbb")
+
+        // Connectors first so cards cap them.
+        for m in mids {
+          line(root, m, stroke: 1.3pt + edge)
+        }
+        for (i, l) in leaves.enumerate() {
+          line(mids.at(leaf-parent.at(i)), l, stroke: 1pt + edge)
+        }
+
+        // Root: dark, two lines (a "big" task with multiple parts).
+        card(root.at(0), root.at(1), 1.3, 0.6, neutral, lines: 2)
+
+        // Mids: one card per subtree colour.
+        for (i, m) in mids.enumerate() {
+          card(m.at(0), m.at(1), 0.95, 0.45, subtree.at(i))
+        }
+
+        // Leaves: lighter shade of the parent subtree colour.
+        for (i, l) in leaves.enumerate() {
+          let c = subtree.at(leaf-parent.at(i)).lighten(35%)
+          card(l.at(0), l.at(1), 0.5, 0.32, c)
+        }
+      })
+    ],
+  )
 ]
 
 #slide[
@@ -1020,24 +1205,42 @@
     property tests, regressions, smoke tests on real data.
   - The point isn't "more tests". The point is: *before* you accept a
     large generated change, name the signal that would tell you it's wrong.
+
+  If you can't say how you'd notice the bug, you don't have a verification strategy - you just have hope.
 ```)
 
-  = 3. Have a real verification strategy
-
+  = 3. Verify strategy before code
+  #text(size: .8em, fill: gray)[There are no shortcuts to quality.]
   #v(.3em)
-  - Before you accept a generated change, *name the signal* that would tell you it's wrong.
-  - Find other ways if the diff is too big:
-    - Property-based tests, fuzzing (e.g. _noise_ for Dart).
-    - Type checkers, linters, static analysers.
-    - Replay against real production data.
-  - If you can't say how you'd notice the bug, you don't have a verification strategy - you have hope.
 
+  Before you accept a generated change \
+  #text(fill: gray)[name the signal that would tell you it's wrong.]
 
+  #v(.8em)
 
-#text(fill: gray)[
-  Example: Noise library for Dart. I don't speak Dart.
-]
+  #let green = rgb("#3a8f4a")
+  #let grey  = rgb("#888888")
 
+  #let verify-card(body, color: green) = box(
+    width: 100%,
+    inset: (left: .8em, right: .6em, y: .5em),
+    stroke: (left: 4pt + color),
+    text(size: .9em, weight: "bold")[#body],
+  )
+
+  #grid(
+    columns: (1fr, 1fr, 1fr),
+    column-gutter: .8em,
+    row-gutter: .7em,
+    verify-card([Comparison against a reference implementation]),
+    verify-card([Property-based tests, fuzzing, ...]),
+    verify-card([Type checkers, linters, static analysers]),
+    verify-card([`/review` and manual review by colleagues]),
+    verify-card([Replay against real production data]),
+    verify-card([Work actively on the code]),
+  )
+
+  #text(fill: gray)[#emph[Example]: Noise library for Dart — I don't speak Dart.]
 ]
 
 
@@ -1051,25 +1254,144 @@
     rule.
 ```)
 
-  = 4. You only get replaced if you make yourself replaceable.
+  = 4. Don't make yourself replaceable.
   #text(size: .8em, fill: gray)[You only get replaced if you make yourself replaceable.]
 
-  #v(.3em)
-  - The replaceable parts of your job are the parts where you're already a slow autocomplete.
-  - Spend the time AI saves you on the parts no model can do: judgement, context, design.
-  - Code was the source of truth before, that's changing.
-  - Now you have more time to think about design and purpose.
-  - If you just operate Claude you are replaceable.
+  - Code was the source of truth before, that's changing. \
+    #text(fill: gray)[Now it is context given via design documents.]
+  - Spend the time Claude saves you on the parts it's bad at. \
+    #text(fill:gray)[Namely: decisions, judgement, context, design.]
+  - Reading code is much more important now than writing code. \
+    #text(fill: gray)[Keep your tools sharp. Be able to work without Claude.]
+
+  #v(.5em)
+
+  #align(center)[
+    #cetz.canvas(length: 1cm, {
+      import cetz.draw: *
+
+      // Stack of "engineering work" bands. Bottom = AI's turf
+      // (greyed). Top = yours (green). The visual story: the value
+      // gradient has moved up the stack — go stand where it is now.
+
+      let bar-w = 14.0
+      let bar-h = 0.55
+      let gap = 0.12
+
+      // Bottom → top.
+      let bands = (
+        ([Syntax · typing · trivial lookups],         rgb("#e8e8e8"), black, [AI]),
+        ([Boilerplate · scaffolding · glue],          rgb("#cdcdcd"), black, [AI]),
+        ([Refactors · idioms · routine logic],        rgb("#a8a8a8"), black, [contested]),
+        ([Reading · understanding · review],          rgb("#5fa370"), white, [you]),
+        ([Design · judgement · context · decisions],  rgb("#3a8f4a"), white, [you]),
+      )
+
+      for (i, band) in bands.enumerate() {
+        let (label, fill-color, text-color, tag) = band
+        let y0 = i * (bar-h + gap)
+        rect(
+          (0, y0),
+          (bar-w, y0 + bar-h),
+          fill: fill-color,
+          stroke: none,
+          radius: 0.08,
+        )
+        // Work label, left-aligned inside the band.
+        content(
+          (0.3, y0 + bar-h / 2),
+          text(size: .75em, weight: "bold", fill: text-color)[#label],
+          anchor: "west",
+        )
+        // Owner tag, right-aligned inside the band.
+        content(
+          (bar-w - 0.3, y0 + bar-h / 2),
+          text(size: .7em, fill: text-color, style: "italic")[#tag],
+          anchor: "east",
+        )
+      }
+
+      // Upward "value" arrow alongside the stack.
+      let n = bands.len()
+      let stack-top = n * bar-h + (n - 1) * gap
+      let arrow-x = bar-w + 0.45
+      line(
+        (arrow-x, 0.1),
+        (arrow-x, stack-top - 0.1),
+        stroke: 2pt + rgb("#3a8f4a"),
+        mark: (end: ">", fill: rgb("#3a8f4a")),
+      )
+    })
+  ]
 ]
 
 #slide[
-  = 5. Treat the AI as a colleague\
-  #text(size: .8em, fill: gray)[Not an oracle, not a junior, not magic.]
+  = 5. Treat Claude like a colleague\
+  #text(size: .8em, fill: gray)[Talk to it like your seat neighbor.]
 
-  #v(.3em)
-  - Push back. Ask for alternatives. Disagree.
-  - It's a very eager, sometimes rather junior colleague with seemingly infinite power.
-  - If you wouldn't accept a colleague's PR with the same reasoning, don't accept the model's.
+  #v(.5em)
+
+  #let blue = rgb("#1f77b4")
+  #let orange = rgb("#d9542b")
+  #let border = rgb("#dddddd")
+
+  // PR-review-style comment card: avatar (initial in coloured disc),
+  // bold name + grey "commented", and the comment body underneath.
+  #let pr-comment(initial, name, color, body) = box(
+    width: 100%,
+    inset: (x: .7em, y: .55em),
+    stroke: (
+      left: 3pt + color,
+      top: 0.4pt + border,
+      right: 0.4pt + border,
+      bottom: 0.4pt + border,
+    ),
+    radius: 4pt,
+    [
+      #grid(
+        columns: (auto, 1fr),
+        column-gutter: .55em,
+        align: horizon + left,
+        box(
+          width: 1.5em,
+          height: 1.5em,
+          fill: color,
+          radius: 100%,
+          inset: 0pt,
+          align(
+            center + horizon,
+            text(size: .7em, fill: white, weight: "bold")[#initial],
+          ),
+        ),
+        text(size: .65em)[
+          #text(weight: "bold", fill: color)[#name]
+          #text(fill: gray)[ commented]
+        ],
+      )
+      #v(.15em)
+      #text(size: .65em)[#body]
+    ],
+  )
+
+  #grid(
+    columns: (1.55fr, 1fr),
+    column-gutter: 1em,
+    align: horizon,
+    [
+      - Explain the tasks at hand like you would to a junior colleague. \
+        #text(fill: gray)[A very eager, junior colleague with seemingly infinite power.]
+      - Push back. Ask for alternatives. Let it explain. Disagree. \
+        #text(fill: gray)[If you wouldn't accept a colleague's PR with the same reasoning, don't accept the model's.]
+    ],[
+      #v(-1cm)
+      #stack(
+      spacing: .55em,
+      pr-comment("y", "you",    blue,   [Why a map here and not a for-loop?]),
+      pr-comment("C", "claude", orange, [Map is more idiomatic — happy to switch if perf matters.]),
+      pr-comment("y", "you",    blue,   [Show me the benchmark first.]),
+    )
+    ]
+  )
 ]
 
 #slide[
@@ -1082,7 +1404,7 @@
     not the theory.
 ```)
 
-  = Extra: Software as Theory Building
+  = Bonus: Software as Theory Building
   #text(size: .8em, fill: gray)[Peter Naur, 1985]
 
   #v(.5em)
@@ -1122,25 +1444,118 @@
     doc gets the reasoning.
 ```)
 
-  = What that means for AI
+  = Bonus: What that means for Claude
 
-  - The model has no theory. It has the artefact and the context you give it.
-  - "Write tests for this file" → it freezes today's behaviour, *bugs included*.
-  - Your job is still to build the theory. The AI helps you write the code that follows from it.
+  #v(.9em)
 
-  #v(.5em)
-  *Practical:*
-  - Keep a design doc / decision log. The *why*, not just the *what*.
-  - `CLAUDE.md` is size-limited — use it for headlines, link out for depth.
+  #grid(
+    columns: (4fr, 2fr),
+    column-gutter: 1em,
+    align: horizon,
+    [
+      - The model has no theory. It just sees what's there and adds hallucinations. \
+        #text(fill: gray)[It will not tell you. It just guesses.]
+      - Bad prompt: "Write tests for this file" \
+        #text(fill: gray)[It freezes today's behaviour, *bugs included*. Again, no mention.]
+      - Your job is still to build the theory. \
+        #text(fill: gray)[The AI helps you write the code that follows from it.]
+    ],
+    align(center + horizon)[
+      #cetz.canvas(length: 1cm, {
+        import cetz.draw: *
+
+        // Venn: all context (the theory) vs what Claude sees.
+        // Region labels live OUTSIDE the circles with thin leader lines
+        // pointing into each region — keeps the circles uncluttered.
+
+        let blue   = rgb("#1f77b4")
+        let orange = rgb("#d9542b")
+        let dim    = rgb("#444444")
+        let leader = rgb("#999999")
+
+        let theory-c = (0, 0)
+        let theory-r = 2.4
+        let claude-c = (2.4, 0)
+        let claude-r = 1.4
+
+        circle(
+          theory-c,
+          radius: theory-r,
+          fill: blue.transparentize(85%),
+          stroke: 1.4pt + blue,
+        )
+        circle(
+          claude-c,
+          radius: claude-r,
+          fill: orange.transparentize(78%),
+          stroke: 1.4pt + orange,
+        )
+
+        // Circle titles, outside above each circle.
+        content(
+          (theory-c.at(0) - 0.7, theory-r + 0.35),
+          text(size: .8em, weight: "bold", fill: blue)[All context],
+          anchor: "south",
+        )
+        content(
+          (claude-c.at(0) + 0.3, claude-r + 0.35),
+          text(size: .8em, weight: "bold", fill: orange)[~~~~~Claude sees],
+          anchor: "south",
+        )
+
+        // Callout helper: thin leader line + width-constrained label box,
+        // so the three labels can't bleed into each other.
+        let callout(anchor-pt, label-pt, title, body, title-color, width: 2.4cm) = {
+          line(anchor-pt, label-pt, stroke: 0.7pt + leader)
+          content(
+            label-pt,
+            anchor: "north",
+            box(width: width)[
+              #set text(size: .6em)
+              #set par(leading: .4em)
+              #align(center)[
+                #text(weight: "bold", fill: title-color)[#title] \
+                #text(fill: dim)[#body]
+              ]
+            ],
+          )
+        }
+
+        // Left crescent: the unwritten theory Claude can't see.
+        // Pushed further left to clear the centre callout.
+        callout(
+          (-1.3, -1.4),
+          (-2.8, -2.4),
+          [unwritten theory],
+          [design decisions \ why-nots · retros \ team intuition],
+          blue,
+        )
+
+        // Overlap: the artefact (what does get written down).
+        // Pushed lower so it staggers below the two side callouts.
+        callout(
+          (1.55, -1.0),
+          (1.55, -3.0),
+          [the artefact],
+          [code · docs \ `CLAUDE.md` · prompts],
+          dim,
+        )
+
+        // Right sliver: Claude's priors / guesses.
+        // Pushed further right to clear the centre callout.
+        callout(
+          (3.3, -0.5),
+          (4.9, -2.4),
+          [generic priors],
+          [stale defaults \ hallucinations],
+          orange,
+        )
+      })
+    ],
+  )
 ]
 
 #slide[
-  #comment(```md
-  - One sentence summary. Then open it up.
-  - If the room is quiet: start with "where on the spectrum do you sit
-    today, and where would you like to be in six months?"
-```)
-
   #set align(center + horizon)
   #set page(footer: none)
 
@@ -1148,12 +1563,11 @@
 
   #v(2em)
   #text(size: 1.2em, fill: gray)[Questions or Disagreements?]
-
-  #emph[Homework]: \
-  Read SOFTWARE AS THEORY BUILDING.
+  #v(1em)
+  #emph[Homework]:
+  #v(1em)
+  SOFTWARE AS THEORY BUILDING.
   ]
 
   #place(right + horizon, image("images/master.jpg", height: 110%))
 ]
-
-// TODO: End with zauberlehrling end refernce?
