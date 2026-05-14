@@ -6,6 +6,7 @@
 
 // TODO: Taschenrechner + Navigation (google maps) mention
 // TODO: Mention productivity decrease due to pro-longed quality control (review) and understanding gap?
+// TODO: Note that reading code and writing code are distinct skills.
 
 // Can be used to embed speaker notes.
 // We define this locally instead of using `toolbox.pdfpc.speaker-note`
@@ -101,7 +102,7 @@
     is and whether you noticed making it.
 ```)
 
-  = The Spectrum
+  = The Spectrum (on Reddit)
 
   #v(1.5em)
   #align(center)[
@@ -115,7 +116,7 @@
       rect(
         (0, -bar-h/2), (bar-w, bar-h/2),
         fill: gradient.linear(
-          rgb("#3a8f4a"), rgb("#d9b53d"), rgb("#c0392b"),
+          blue, green, red,
         ),
         stroke: 1pt + black,
       )
@@ -147,6 +148,8 @@
 
   #v(.5em)
   #align(center)[
+    // TODO: Need to re-word that bit; too general.
+
     Using GenAI is a tradeoff between control and productivity.
 
     It's not black & white.
@@ -257,7 +260,7 @@
   #align(center)[
     #text(size: .85em, fill: gray)[
       Quality peaks in the middle. Productivity follows it down.
-      *Confidence diverges from both* — that's the dangerous zone.
+      *Confidence diverges from both* -> Dunning-Kruger zone!
     ]
   ]
 ]
@@ -383,6 +386,62 @@
 
 #slide[
   #comment(```md
+  Flip side of the risks slide — and the bridge into "maybe it's how we use it".
+  Green = the ones where AI genuinely earns its keep: low cost of being wrong,
+  high cost of doing it by hand, and a human still owns the result.
+
+  Cognitive scaffolding (green):
+  - Rubber-ducking: explain it out loud, find the bug.
+  - Explaining unfamiliar code: faster than archaeology.
+  - Edge case brainstorming: "what could go wrong?"
+  - Learning accelerator: ramp-up on new languages/libraries.
+  - Naming things: the second-hardest problem in CS, suddenly cheap.
+
+  Cheap-to-verify drafting:
+  - Boilerplate, fixtures, mock data.
+  - Test generation, regex / SQL.
+  - Documentation drafts, commit messages, changelogs.
+  - Translation between languages (human and programming).
+
+  Search & comprehension:
+  - Code review companion, error decoding, log analysis.
+  - Summarising long PRs / threads / docs.
+  - Onboarding ramp-up for new team members.
+```)
+
+  = Good use cases
+
+  #let green = rgb("#3a8f4a")
+  #let mid = rgb("#444444")
+  #let pale = rgb("#888888")
+
+  #align(center + horizon)[
+    #tag(1.6em, [rubber-ducking], color: green, angle: -2deg, weight: "bold")
+    #tag(.9em, [ideation], color: pale, angle: -3deg)
+    #tag(1.5em, [explain unfamiliar code], color: green, angle: +2deg, weight: "bold")
+    #tag(1.0em, [test generation], color: mid, angle: -1deg)
+    #tag(1.4em, [pair programming], color: green, angle: +1deg, weight: "bold")
+    #tag(.9em, [boilerplate], color: pale, angle: +2deg)
+    #tag(1.15em, [refactoring assist], color: mid, angle: -2deg)
+    #tag(1.45em, [learning accelerator], color: green, angle: -3deg, weight: "bold")
+    #tag(1.0em, [documentation drafts], color: mid, angle: +3deg)
+    #tag(.9em, [naming things], color: pale, angle: +1deg)
+    #tag(1.05em, [summarisation], color: mid, angle: -1deg)
+    #tag(.85em, [regex / SQL crafting], color: pale, angle: +2deg)
+    #tag(1.3em, [edge-case brainstorming], color: green, angle: -1deg, weight: "bold")
+    #tag(.9em, [translation], color: pale, angle: +3deg)
+    #tag(1.1em, [code review companion], color: mid, angle: -2deg)
+    #tag(.85em, [mock data / fixtures], color: pale, angle: +2deg)
+    #tag(.95em, [error decoding], color: pale, angle: -1deg)
+    #tag(1.1em, [onboarding ramp-up], color: mid, angle: +1deg)
+    #tag(.9em, [log analysis], color: pale, angle: -3deg)
+    #tag(.85em, [proofreading], color: pale, angle: +2deg)
+    #tag(1.0em, [automation], color: mid, angle: -2deg)
+  ]
+]
+
+#slide[
+  #comment(```md
   Rapid-fire — don't dwell on any one. Goal: land the cumulative weight
   before pivoting to "but maybe it's how we use it".
 
@@ -467,9 +526,6 @@
 ]
 
 
-// ─────────────────────────────────────────────────────────────────
-// 8. PIVOT — "maybe it's not the tool, it's how we use it"
-// ─────────────────────────────────────────────────────────────────
 #slide[
   #comment(```md
   - Deliberately re-frame: we've just listed a lot of scary things, but
