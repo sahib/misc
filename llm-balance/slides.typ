@@ -282,7 +282,7 @@
   then move on. Audience just needs the impression "this isn't one person's
   hot take, there's a stack of independent measurements pointing the same way".
 
-  Card-by-card detail:
+  Card-by-card:
 
   -19% (METR, 2025). Randomised controlled trial. 16 experienced OSS devs,
   246 real tasks in their OWN mature repos, ~5 yr experience each. With
@@ -372,7 +372,7 @@
     card(
       [29.5%],
       [Python with CWEs],
-      [AI-generated snippets containing known vulnerabilities],
+      [AI-generated code in real GitHub repos · 43 CWE categories],
       [Fu et al. · ACM TOSEM · 2025],
     ),
     card(
@@ -477,7 +477,7 @@
 
   Workforce & cognition:
   - Fewer juniors hired: no juniors today → no seniors tomorrow.
-  - Atrophy: skills you don't use, you lose. (See: Calculator and Navigation without google maps)
+  - Atrophy: skills you don't use, you lose. (See: calculators, navigation without Google Maps.)
   - Schools: AI can boost or bypass learning (more on this in a moment).
   - Convincing hallucinations: the failure mode that will eventually kill someone.
 ```)
@@ -1010,12 +1010,10 @@
 
 #slide[
   #comment(```md
-  - Rule 1: my favourite worked example is SQL. Sketch the query yourself,
+  - My favourite worked example is SQL. Sketch the query yourself,
     *then* ask the model to review and optimise. You stay in the loop;
     the model adds value without anchoring you.
-  - Rule 2: deliberately keep some work manual. Not for purity — for skill
-    maintenance, and because the parts you do manually are the parts you
-    actually understand later.
+  - Same for code: function signature + docstring first, body second.
 ```)
 
   = 1. Sketch first, generate then\
@@ -1096,6 +1094,14 @@
 ]
 
 #slide[
+  #comment(```md
+  - Deliberately keep some work manual. Not for purity — for skill
+    maintenance, and because the parts you do manually are the parts
+    you actually understand later.
+  - Small scopes also help the model: long, vague prompts get long,
+    vague code back. Split, then prompt each piece.
+```)
+
   = 2. Split the work, do some manual
   #text(size: .8em, fill: gray)[The parts you write are the parts you understand.]
 
@@ -1209,7 +1215,7 @@
   - The point isn't "more tests". The point is: *before* you accept a
     large generated change, name the signal that would tell you it's wrong.
 
-  If you can't say how you'd notice the bug, you don't have a verification strategy - you just have hope.
+  If you can't say how you'd notice the bug, you don't have a verification strategy — you just have hope.
 ```)
 
   = 3. Verify strategy before code
@@ -1249,12 +1255,11 @@
 
 #slide[
   #comment(```md
-  - Rule 4 sounds cynical but it's just practical. The replaceable parts
-    of your job are the ones where you're acting as a slow autocomplete.
+  - Sounds cynical but it's just practical. The replaceable parts of your
+    job are the ones where you're already acting as a slow autocomplete.
     Stop doing those parts that way.
-  - Rule 5: collaborator, not oracle. You'd push back on a coworker. Push
-    back on the model. You'd ignore a coworker who hallucinated. Same
-    rule.
+  - The work that survives is the work the model is bad at: judgement,
+    context, taste, design.
 ```)
 
   = 4. Don't make yourself replaceable.
@@ -1329,6 +1334,13 @@
 ]
 
 #slide[
+  #comment(```md
+  - Collaborator, not oracle. You'd push back on a coworker — push back
+    on the model. You'd ignore a coworker who hallucinated — same rule.
+  - The PR-comment exchange on the slide is the behaviour: ask why, ask
+    for the benchmark, refuse the hand-wave.
+```)
+
   = 5. Treat Claude like a colleague\
   #text(size: .8em, fill: gray)[Talk to it like your seat neighbor.]
 
