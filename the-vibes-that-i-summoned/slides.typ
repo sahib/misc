@@ -290,8 +290,7 @@
   #v(.3em)
   #align(center)[
     #text(size: .85em, fill: gray)[
-      Quality peaks in the middle. Productivity follows it down.
-      *Confidence diverges from both* -> Dunning-Kruger zone!
+      Danger Zone: Dunning-Kruger
     ]
   ]
 ]
@@ -440,7 +439,7 @@
   - Onboarding ramp-up for new team members.
 ```)
 
-  = Good use cases
+  = Use-cases that could make us better devs
 
   #let green = rgb("#3a8f4a")
   #let mid = rgb("#444444")
@@ -511,7 +510,7 @@
   #align(center + horizon)[
     #tag(.85em, [ecological cost], color: pale, angle: -3deg)
     #tag(1.7em, [Convincing hallucinations], color: red, angle: -2deg, weight: "bold")
-    #tag(.8em, [schools], color: pale, angle: +3deg)
+    #tag(.8em, [education], color: pale, angle: +3deg)
     #tag(1.1em, [licensing], color: mid, angle: -2deg)
     #tag(1.55em, [Atrophy], color: black, angle: +2deg, weight: "bold")
     #tag(.85em, [concentration], color: pale, angle: +1deg)
@@ -539,7 +538,7 @@
   #align(center + horizon)[
     #tag(.85em, [ecological cost], color: pale, angle: -3deg)
     #tag(1.7em, [Convincing hallucinations], color: blue, angle: -2deg, weight: "bold")
-    #tag(.8em, [schools], color: blue, angle: +3deg)
+    #tag(.8em, [education], color: blue, angle: +3deg)
     #tag(1.1em, [licensing], color: blue, angle: -2deg)
     #tag(1.55em, [Atrophy], color: blue, angle: +2deg, weight: "bold")
     #tag(.85em, [concentration], color: blue, angle: +1deg)
@@ -569,7 +568,7 @@
 
   #set align(center + horizon)
 
-  #text(size: 1.5em)[Exhibit A: schools.]
+  #text(size: 1.5em)[Exhibit A: Education]
 
   #v(2em)
   #text(size: 1.3em, style: "italic", fill: gray)[
@@ -618,7 +617,7 @@
   VERIFY exact numbers and SSRN ID before presenting.
 ```)
 
-  = Same tool, opposite outcomes
+  = Study: AI in school lessons
 
   #v(1cm)
 
@@ -687,6 +686,10 @@
     #text(size: .65em, fill: gray)[
       Bastani et al., _Generative AI Can Harm Learning_, SSRN 2024 
     ]
+
+    #text(size: .65em, fill: gray)[
+      Pupils did prefer to be in the solver group though...  :-(
+    ]
   ]
 ]
 
@@ -750,7 +753,7 @@
         #text(size: 3.6em, weight: "bold", fill: rgb("#c0392b"))[98.7%]
         #v(-.5em)
         #text(size: .9em, weight: "bold")[suggestions accepted as-is] \
-        #text(size: .6em, fill: gray)[1.3% rejected. Is that a review process?]
+        #text(size: .6em, fill: gray)[1.3% rejected.]
       ]
     ),
     box(
@@ -761,7 +764,8 @@
         #text(size: 3.6em, weight: "bold")[27,757]
         #v(-.5em)
         #text(size: .9em, weight: "bold")[lines accepted last month] \
-        #text(size: .6em, fill: gray)[≈ 925 LoC/day · careful review ≈ 100–200 LoC/hour]
+        #text(size: .6em, fill: gray)[≈ 925 LoC/day \
+          careful review ≈ 100–200 LoC/hour]
       ]
     ),
   )
@@ -863,7 +867,7 @@
 
     bias-card(
       [Authority bias],
-      [Eloquent + fast + confident reads as expert.],
+      [Eloquent + fast + confident = reads as expert.],
       [fluency ≠ correctness],
       hb,
     ),
@@ -876,7 +880,7 @@
     bias-card(
       [Illusion of explanatory depth],
       [We think we understand — until asked to explain.],
-      ["yes, I read the diff" → bug],
+      [Reading diffs is not enough!],
       hb,
     ),
   )
@@ -949,7 +953,7 @@
     bias-card(
       [Omission bias],
       [Rare and novel answers get suppressed by common ones.],
-      [the model is bad at being weird],
+      [the model is bad at creative solutions],
       mb,
     ),
   )
@@ -964,28 +968,28 @@
   - If you don't understand the diff, you can't review it.
 ```)
 
-  = Hen & Egg
+  = Hen & Egg questions
 
   #v(1em)
   #set text(size: 1.1em)
 
   1. If you don't know what good software looks like — \
-    #emph[how do you write the right prompt?]
+    #text(fill: gray)[#emph[how do you write the right prompt?]]
 
   #v(.6em)
 
   2. If you can't understand what the model just generated — \
-    #emph[how do you verify it?]
+    #text(fill: gray)[#emph[how do you verify it?]]
 
   #v(.6em)
 
   3. If you can't code (anymore) — \
-    #emph[how can you understand the diffs?]
+    #text(fill: gray)[#emph[how can you understand the diffs?]]
 
   #v(.6em)
 
   4. If you do not know what you build inside-out — \
-     #emph[how do you learn new designs?]
+     #text(fill: gray)[#emph[how do you learn new designs?]]
 ]
 
 #slide[
@@ -1047,7 +1051,7 @@
     #text(fill: gray)[Then ask the model to review and optimise.]
   - Write the function signature and the docstring. \
     #text(fill:gray)[Then let the model fill the body.]
-  - Put `TODO` comments in your code \
+  - Put `TODO` comments in your code. \
     #text(fill: gray)[Then let Claude work on them.]
 
   #v(0.5cm)
@@ -1134,7 +1138,7 @@
     column-gutter: 2em,
     align: horizon,
     [
-      - Claude does not perform well, if given too big scopes. \
+      - Claude does not perform well in too big scopes.  \
         #text(fill: gray)[Split tasks up and prompt them individually.]
       - Claude can help you split up work. \
         #text(fill: gray)[It just tends to work on the task right away.]
@@ -1244,7 +1248,7 @@
   #text(size: .8em, fill: gray)[There are no shortcuts to quality.]
   #v(.3em)
 
-  Before you accept a generated change \
+  Before you accept a generated change, \
   #text(fill: gray)[name the signal that would tell you it's wrong.]
 
   #v(.8em)
@@ -1312,7 +1316,7 @@
       let bands = (
         ([Syntax · typing · trivial lookups],         rgb("#e8e8e8"), black, [AI]),
         ([Boilerplate · scaffolding · glue],          rgb("#cdcdcd"), black, [AI]),
-        ([Refactors · idioms · routine logic],        rgb("#a8a8a8"), black, [contested]),
+        ([Refactors · idioms · routine logic],        rgb("#a8a8a8"), black, [both]),
         ([Reading · understanding · review],          rgb("#5fa370"), white, [you]),
         ([Design · judgement · context · decisions],  rgb("#3a8f4a"), white, [you]),
       )
@@ -1507,6 +1511,7 @@
 
         let blue   = rgb("#1f77b4")
         let orange = rgb("#d9542b")
+        let green  = rgb("#2ca02c")
         let dim    = rgb("#444444")
         let leader = rgb("#999999")
 
@@ -1527,6 +1532,22 @@
           fill: orange.transparentize(78%),
           stroke: 1.4pt + orange,
         )
+
+        // Green-tinted intersection lens, drawn over the muddy overlap.
+        let ix-x = 1.99167
+        let ix-y = 1.33913
+        merge-path(close: true, fill: green.transparentize(60%), stroke: none, {
+          arc-through(
+            (ix-x, -ix-y),
+            (theory-r, 0),
+            (ix-x, ix-y),
+          )
+          arc-through(
+            (ix-x, ix-y),
+            (2.4 - claude-r, 0),
+            (ix-x, -ix-y),
+          )
+        })
 
         // Circle titles, outside above each circle.
         content(
@@ -1575,16 +1596,16 @@
           (1.55, -3.0),
           [the artefact],
           [code · docs \ `CLAUDE.md` · prompts],
-          dim,
+          green,
         )
 
         // Right sliver: Claude's priors / guesses.
         // Pushed further right to clear the centre callout.
         callout(
           (3.3, -0.5),
-          (4.9, -2.4),
-          [generic priors],
-          [stale defaults \ hallucinations],
+          (4.9, -1.9),
+          [training data],
+          [average software / \ hallucinations],
           orange,
         )
       })
