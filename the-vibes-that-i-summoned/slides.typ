@@ -220,7 +220,7 @@ require 80% of the skill.
   
   #place(left + horizon, box(width: 40%, inset: 0em)[
     #text(fill: gray)[Prompt:] \
-    "Imagine Donald Duck as regular, realistic human. Remove the hat."
+    "Imagine Donald Duck as regular, realistic human. No sailor suite."
   ])
 
 
@@ -1213,15 +1213,16 @@ Short: If you can't say how you'd notice the bug, you don't have a verification 
 - We should see our job therefore not as someone who just writes code - that was never the task of a software engineer anyways.
 - Claude can do many things faster than us - as long as we risk manage it.
 - Even juniors need to step up now and learn design decisions.
+- What does not change: You are responsible. I don't want to hear "But Claude said..."
 ```)
 
   = 4. Don't make yourself replaceable.
   #text(size: .8em, fill: gray)[You only get replaced if you make yourself replaceable.]
 
   - Code was the source of truth before, that's changing. \
-    #text(fill: gray)[Now it is context given via design documents.]
+    #text(fill: gray)[Now it is moving to context given via design documents.]
   - Spend the time Claude saves you on the parts it's bad at. \
-    #text(fill:gray)[Namely: decisions, judgement, context, design.]
+    #text(fill:gray)[Namely: decisions, judgement, context, design, #text(fill: rgb(0, 100, 0))[responsibility!]]
   - Reading code is much more important now than writing code. \
     #text(fill: gray)[Keep your tools sharp. Be able to work without Claude.]
 
