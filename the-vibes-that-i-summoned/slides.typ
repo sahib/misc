@@ -5,6 +5,16 @@
 
 #enable-handout-mode(false)
 
+// Toggle a notes-included build with:
+//   typst compile --input notes=true slides.typ slides-with-notes.pdf
+// Default (no input) produces the normal presentation PDF.
+#let with-notes = sys.inputs.at("notes", default: "false") == "true"
+
+// Per-slide note text. `comment(...)` stashes the current slide's note here;
+// the `slide` wrapper below reads it after the slide body and emits a
+// matching notes page.
+#let _slide-note = state("slide-note", none)
+
 // Can be used to embed speaker notes.
 // We define this locally instead of using `toolbox.pdfpc.speaker-note`
 // because polylux 0.4.0 still does `type(x) == "string"` checks, which
@@ -18,6 +28,32 @@
     panic("comment(): expected a string or a raw block")
   }
   [ #metadata((t: "Note", v: txt)) <pdfpc> ]
+  _slide-note.update(txt)
+}
+
+// Wrap polylux's `slide` so that, in notes mode, every slide is followed by
+// a page rendering its speaker note. Outside notes mode this is a transparent
+// pass-through, so the presentation PDF is unchanged.
+#let _polylux-slide = slide
+
+#let slide(body) = {
+  _slide-note.update(none)
+  _polylux-slide(body)
+  if with-notes {
+    context {
+      let txt = _slide-note.get()
+      if txt != none {
+        pagebreak(weak: true)
+        v(0.5em)
+        text(size: 11pt, fill: gray, weight: "bold")[Speaker notes — preceding slide]
+        v(0.6em)
+        block(width: 100%, breakable: true, [
+          #set text(size: 13pt)
+          #raw(block: true, lang: none, txt)
+        ])
+      }
+    }
+  }
 }
 
 // Rainbow-colour each codepoint of a string. Inherits font size/weight
