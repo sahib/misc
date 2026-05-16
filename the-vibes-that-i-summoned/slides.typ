@@ -1566,3 +1566,107 @@ where he is overwhelmed from what we summoned. His old master has to help him.
 
   #place(right + horizon, image("images/master.jpg", height: 110%))
 ]
+
+#slide[
+  = Backup: More on skill atrophy & cognition
+
+  #let card(stat, headline, body, source, color: rgb("#c0392b")) = box(
+    width: 100%,
+    inset: (left: .8em, right: .6em, y: .4em),
+    stroke: (left: 4pt + color),
+    [
+      #text(size: 1.4em, weight: "bold", fill: color)[#stat]
+      #v(-.4em)
+      #text(size: .85em, weight: "bold")[#headline] \
+      #text(size: .6em, fill: gray)[#body] \
+      #v(.1em)
+      #text(size: .55em, fill: gray, style: "italic")[#source]
+    ],
+  )
+
+  #grid(
+    columns: (1fr, 1fr, 1fr),
+    column-gutter: .8em,
+
+    card(
+      [28→22%],
+      [endoscopists deskilled],
+      [adenoma detection rate dropped from 28% to 22% when working without AI, after months of AI exposure · skill atrophy beyond software],
+      [Lancet Gastro & Hepatology · 2025],
+    ),
+    card(
+      [−17%],
+      [the vendor measures the cost],
+      [junior devs scored 17% lower on a concept quiz after building with AI · code-reading and debugging impaired],
+      [Shen & Tamkin · Anthropic · 2026],
+    ),
+    card(
+      [83%],
+      [your brain on LLMs],
+      [LLM users couldn't quote their own essays · EEG showed weakest neural connectivity of the three groups],
+      [Kosmyna et al. · MIT Media Lab · arXiv:2506.08872 · 2025],
+    ),
+  )
+]
+
+#slide[
+  #set page(footer: none, header: none)
+
+  = Backup: Positive AI studies
+
+  #let card(stat, headline, body, source, color: rgb("#3a8f4a")) = box(
+    width: 100%,
+    inset: (left: .8em, right: .6em, y: .35em),
+    stroke: (left: 4pt + color),
+    [
+      #text(size: 1.4em, weight: "bold", fill: color)[#stat]
+      #v(-.4em)
+      #text(size: .85em, weight: "bold")[#headline] \
+      #text(size: .6em, fill: gray)[#body] \
+      #v(.1em)
+      #text(size: .55em, fill: gray, style: "italic")[#source]
+    ],
+  )
+
+  #grid(
+    columns: (1fr, 1fr, 1fr),
+    rows: (1fr, 1fr),
+    column-gutter: .8em,
+    row-gutter: .8em,
+
+    card(
+      [+55%],
+      [Copilot task speed],
+      [sandbox RCT · optimistic ceiling],
+      [Peng et al. · GitHub · 2023],
+    ),
+    card(
+      [+14%],
+      [call-center output],
+      [novices gain most · METR in reverse],
+      [Brynjolfsson, Li & Raymond · NBER w31161 · 2023],
+    ),
+    card(
+      [~40%],
+      [faster writing],
+      [time saved, quality up · cheap verification],
+      [Noy & Zhang · Science · 2023],
+    ),
+
+    card(
+      [Jagged],
+      [the frontier matters],
+      [inside frontier: AI helps · outside: WRONG more often],
+      [Dell'Acqua et al. · HBS WP 24-013 · 2023],
+      color: rgb("#444444"),
+    ),
+    card(
+      [↑ use ↓ trust],
+      [the vibes shifted],
+      [adoption up YoY · trust in AI code falling],
+      [Stack Overflow Dev Survey · 2024-25],
+      color: rgb("#444444"),
+    ),
+    [],
+  )
+]
