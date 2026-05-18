@@ -2,7 +2,6 @@
 #import "@preview/polylux:0.4.0": *
 #import "@preview/cetz:0.3.2"
 
-
 #enable-handout-mode(false)
 
 // Toggle a notes-included build with:
@@ -127,8 +126,8 @@
 
     #v(1em)
     #text(size: .95em, fill: gray)[
-      Thoughts on working\
-      with AI agents.
+      Convenience and skill\
+      when working with AI agents.
     ]
 
     #v(2.5em)
@@ -464,7 +463,7 @@ The core idea is that most of those use cases manage risk - it's not full vibeco
     #tag(.9em, [boilerplate], color: pale, angle: +2deg)
     #tag(1.15em, [refactoring assist], color: mid, angle: -2deg)
     #tag(1.45em, [learning accelerator], color: green, angle: -3deg, weight: "bold")
-    #tag(1.0em, [documentation drafts], color: mid, angle: +3deg)
+    #tag(1.0em, [prototyping], color: mid, angle: +3deg)
     #tag(.9em, [naming things], color: pale, angle: +1deg)
     #tag(1.05em, [summarisation], color: mid, angle: -1deg)
     #tag(.85em, [regex / SQL crafting], color: pale, angle: +2deg)
@@ -499,6 +498,7 @@ It's just very important to see AI as  high-risk tech. Mostly, discussion is aro
     #tag(1.55em, [Atrophy], color: black, angle: +2deg, weight: "bold")
     #tag(.85em, [concentration], color: pale, angle: +1deg)
     #tag(1.15em, [misinformation at scale], color: mid, angle: -1deg)
+    #tag(1.15em, [silent corruption], color: mid, angle: -1deg)
     #tag(1.45em, [Prompt injection & MCP], color: red, angle: +3deg, weight: "bold")
     #tag(.9em, [content degradation], color: pale, angle: -2deg)
     #tag(1.6em, [No juniors hired], color: black, angle: -1deg, weight: "bold")
@@ -529,7 +529,8 @@ Not all risks are important for a company. I took the libery to highlight the on
     #tag(1.1em, [licensing], color: blue, angle: -2deg)
     #tag(1.55em, [Atrophy], color: blue, angle: +2deg, weight: "bold")
     #tag(.85em, [concentration], color: blue, angle: +1deg)
-    #tag(1.15em, [misinformation at scale], color: mid, angle: -1deg)
+    #tag(1.15em, [misinformation at scale], color: blue, angle: -1deg)
+    #tag(1.15em, [silent corruption], color: mid, angle: -1deg)
     #tag(1.45em, [Prompt injection & MCP], color: blue, angle: +3deg, weight: "bold")
     #tag(.9em, [content degradation], color: pale, angle: -2deg)
     #tag(1.6em, [No juniors hired], color: blue, angle: -1deg, weight: "bold")
@@ -763,7 +764,7 @@ Those are not new, just on crack now with Claude. Card-by-card:
 - Confirmation bias. The prompt we type already contains the answer we want. Phrasing alone often determines what comes back.
 - Authority bias. Eloquent + fast + confident reads as expert. LLMs are eloquent, fast, AND confident — even when wrong. We're not wired to discount fluency.
 - Dunning–Kruger, remixed. Users mistake the model's competence for their own. Dangerous for seniors and juniors alike. The senior thinks "this is what I'd have written"; the junior thinks "I now understand this codebase".
-- Illusion of explanatory depth. We think we understand something until asked to explain it. Maths teachers know. AI-generated code we've reviewed but not WRITTEN sits squarely in this trap.
+- Illusion of explanatory depth. We think we understand something until asked to explain it. Maths teachers know. AI-generated code we've reviewed but not WRITTEN is similar to a math problem where you nod along during school but fail completely when being called to the whiteboard.
 
 Not on the slide but worth mentioning: Atrophy. Not a bias - the *cumulative effect* of the others over months. Skills decay quietly.
 Plug: full talk on cognitive biases incoming next time I'm in Augsburg.
@@ -878,6 +879,11 @@ Tying it back: the human biases and the model biases compound. We trust the flue
 #slide[
   #comment(```md
 Those are the kind of questions I have to ask myself as someone with directs.
+
+The last question is derived from a saying my juniors should know:
+"You have to learn the rules before you break them."
+
+Rules are meant in the sense of best practices.
 ```)
 
   = Hen & Egg questions
@@ -887,21 +893,14 @@ Those are the kind of questions I have to ask myself as someone with directs.
 
   1. If you don't know what good software looks like — \
     #text(fill: gray)[#emph[how do you write the right prompt?]]
-
-  #v(.6em)
-
   2. If you can't understand what the model just generated — \
     #text(fill: gray)[#emph[how do you verify it?]]
-
-  #v(.6em)
-
   3. If you can't code (anymore) — \
     #text(fill: gray)[#emph[how can you understand the diffs?]]
-
-  #v(.6em)
-
   4. If you do not know what you build inside-out — \
      #text(fill: gray)[#emph[how do you learn new designs?]]
+  5. If you don't notice broken best practices — \
+     #text(fill: gray)[#emph[how can you master them?]]
 ]
 
 #slide[
@@ -961,6 +960,10 @@ that train of thought online very often. Maybe looking wrong though.
   *then* ask the model to review and optimise. You stay in the loop;
   the model adds value without anchoring you.
 - Same for code: function signature + docstring first, body second.
+
+This rule is also there to make sure you don't use LLMs for pure laziness.
+Use it to be more productive and to achieve higher quality, not to quickly
+set your task to done.
 ```)
 
   = 1. Sketch first, generate then\
@@ -1046,7 +1049,8 @@ that train of thought online very often. Maybe looking wrong though.
   maintenance, and because the parts you do manually are the parts
   you actually understand later.
 - Small scopes also help the model: long, vague prompts get long,
-  vague code back. Garbage in, garbage out. Split, then prompt each piece. 
+  vague code back. Garbage in, garbage out. Split, then prompt each piece.
+  - Don't say "I coded this" when it was Claude. Basic decency.
 ```)
 
   = 2. Split the work, do some manual
@@ -1067,6 +1071,8 @@ that train of thought online very often. Maybe looking wrong though.
         #text(fill: gray)[Keep doing important things manually!]
       - Large diffs make it easy to get lost. \
         #text(fill: gray)[Commit often so diffs stay reviewable.]
+      - If something was 100% generated, then note it down. \
+        #text(fill: gray)[Be honest with your colleagues.]
     ],
     align(center + horizon)[
       #cetz.canvas(length: 1cm, {
@@ -1165,6 +1171,7 @@ Example: Noise for Dart.
 - Was that all? No, the implementation was minimal (as asked) but did not protect
   against DoS attacks like sending in big chunks. Claude did not fix that.
 - Here is where experience with security protocols came into play.
+- If you let Claude write tests: Immediately run the coverage viewer over it and check what it did miss. Ideally you add more tests then.
 
 Not all software has test suites of course, but most can be tested.
 
@@ -1195,7 +1202,7 @@ Short: If you can't say how you'd notice the bug, you don't have a verification 
     column-gutter: .8em,
     row-gutter: .7em,
     verify-card([Comparison against a reference implementation]),
-    verify-card([Property-based tests, fuzzing, ...]),
+    verify-card([Property-based tests, fuzzing, coverage, ...]),
     verify-card([Type checkers, linters, static analysers]),
     verify-card([`/review` and manual review by colleagues]),
     verify-card([Replay against real production data]),
@@ -1208,12 +1215,15 @@ Short: If you can't say how you'd notice the bug, you don't have a verification 
 
 #slide[
   #comment(```md
-- Code was hard to write and maintain, so it was the authority on questions about how a syste behaves.
+- Code was hard to write and maintain, so it was the authority on questions about how a system behaves.
 - Now it's easy to find the diff between a written design document and the code.
 - We should see our job therefore not as someone who just writes code - that was never the task of a software engineer anyways.
 - Claude can do many things faster than us - as long as we risk manage it.
 - Even juniors need to step up now and learn design decisions.
 - What does not change: You are responsible. I don't want to hear "But Claude said..."
+
+Also, I know that LLMs are nice to wordsmith your stuff. But I saw people on reddit exclusively using LLMs to communicate. That feels like talking to a machine. Personall, I prefer human interaction, even if you don't use the perfect words all the time. If you use LLMs for writing in Slack
+or documentation then I never know how much of that was the machine and how much of that was you.
 ```)
 
   = 4. Don't make yourself replaceable.
