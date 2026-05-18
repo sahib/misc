@@ -549,7 +549,7 @@ Not all risks are important for a company. I took the libery to highlight the on
   #comment(```md
 Not hypotheticals — all happened in 2025-2026.
 - Railway: Cursor/Opus agent autonomously deleted production data in a live system. No confirmation prompt.
-- Replit: AI agent wiped a production database affecting 1,200+ companies. CEO called it "catastrophic failure."
+- Replit: AI agent wiped a production database affecting 1,200+ companies. 
 - git reset --hard: Claude Code silently overwrote eight hours of work. No warning, no prompt.
 - 29M secrets: GitGuardian 2026 — AI agents ingesting .env files drove a surge in leaked credentials to GitHub.
 - Doc corruption: Microsoft study, 19 models, 52 documents, 100 interactions. 25% content degradation, no plateau. Only Python code survived — compilers verify it. If design docs become the source of truth, this matters.
@@ -1770,7 +1770,7 @@ where he is overwhelmed from what we summoned. His old master has to help him.
     spacing: .6em,
     reading(
       [Peter Naur — "Programming as Theory Building" (1985, PDF)],
-      [The original paper. All the theory-building arguments in this talk trace back here.],
+      [The original paper.],
       "https://pages.cs.wisc.edu/~remzi/Naur.pdf",
     ),
     reading(
