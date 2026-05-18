@@ -545,16 +545,100 @@ Not all risks are important for a company. I took the libery to highlight the on
   ]
 ]
 
+#slide[
+  #comment(```md
+Not hypotheticals — all happened in 2025-2026.
+- Railway: Cursor/Opus agent autonomously deleted production data in a live system. No confirmation prompt.
+- Replit: AI agent wiped a production database affecting 1,200+ companies. CEO called it "catastrophic failure."
+- git reset --hard: Claude Code silently overwrote eight hours of work. No warning, no prompt.
+- 29M secrets: GitGuardian 2026 — AI agents ingesting .env files drove a surge in leaked credentials to GitHub.
+- Doc corruption: Microsoft study, 19 models, 52 documents, 100 interactions. 25% content degradation, no plateau. Only Python code survived — compilers verify it. If design docs become the source of truth, this matters.
+  ```)
+
+  = The security risks are real
+
+  #let inc(what, impact, source, url, color: rgb("#c0392b")) = box(
+    width: 100%,
+    inset: (left: .65em, right: .45em, y: .13em),
+    stroke: (left: 4pt + color),
+    [
+      #text(size: .75em, weight: "bold")[#what]
+      #v(-.4em)
+      #text(size: .55em, fill: gray)[#impact] \
+      #link(url)[#text(size: .46em, style: "italic")[#source]]
+    ]
+  )
+
+  #grid(
+    columns: (1fr, 1fr, 1fr),
+    column-gutter: .6em,
+    row-gutter: .3em,
+
+    inc(
+      [Railway: production data deleted],
+      [Cursor/Opus agent destroyed a live system. No confirmation prompt.],
+      [The Register · April 2026],
+      "https://www.theregister.com/2026/04/27/cursoropus_agent_snuffs_out_pocketos/",
+    ),
+    inc(
+      [Replit: database wiped, 1,200+ companies],
+      [AI agent wiped a production database. CEO called it "catastrophic failure."],
+      [Fortune · July 2025],
+      "https://fortune.com/2025/07/23/ai-coding-tool-replit-wiped-database-called-it-a-catastrophic-failure/",
+    ),
+    inc(
+      [`git reset --hard` · 8 h of work gone],
+      [Hard reset executed without warning. No prompt, no undo.],
+      [cekrem.github.io · 2026],
+      "https://cekrem.github.io/posts/if-you-re-running-claude-code-run-it-in-a-box/",
+    ),
+    inc(
+      [29 million secrets leaked (2025)],
+      [AI agents ingesting `.env` files drove a credential-leak surge to GitHub.],
+      [GitGuardian via HelpNetSecurity · 2026],
+      "https://www.helpnetsecurity.com/2026/04/14/gitguardian-ai-agents-credentials-leak/",
+    ),
+    inc(
+      [Document corruption: 25 % degradation],
+      [19 models · 52 docs · 100 edits. Monotonic decline, no plateau.],
+      [Microsoft Research via cekrem.github.io],
+      "https://cekrem.github.io/posts/llms-corrupt-your-documents",
+      color: rgb("#7d3c98"),
+    ),
+    inc(
+      [Samsung: source code leaked via ChatGPT],
+      [Engineers pasted proprietary chip code into ChatGPT. Three leaks in one month.],
+      [TechCrunch · May 2023],
+      "https://techcrunch.com/2023/05/02/samsung-bans-use-of-generative-ai-tools-like-chatgpt-after-april-internal-data-leak/",
+    ),
+  )
+]
 
 #slide[
-  #set align(center + horizon)
+  #comment(```md
+Practical answer to the previous slide. Sandboxing is not about distrusting the model — it is about removing the blast radius so Claude and you can operate more freely inside.
 
-  #text(size: 1.5em)[Exhibit A: Education]
+- sbx is Docker's sandbox CLI.
+- Credentials on the host are not visible inside the box.
+- Writes are scoped to the project directory.
+- You can safely run --dangerously-skip-permissions inside — the "danger" is now contained.
+- If the model goes rogue: blast radius = current project, not your machine, credentials, or production.
+  ```)
 
-  #v(2em)
-  #text(size: 1.3em, style: "italic", fill: gray)[
-    Maybe it's not so much about the tool —\
-    but about how we use it?
+
+
+  #align(center+horizon)[
+    = One practical fix: sandboxing
+  #v(1.8em)
+    #block(
+      inset: (x: 2.5em, y: 1em),
+      radius: 6pt,
+      stroke: black,
+    )[
+      #text(fill: blue, size: 1.4em)[\$ ]#text(fill: black, size: 1.4em)[sbx run claude]
+    ]
+
+    #text(fill:gray)[(or /sandbox, for smaller tasks)]
   ]
 ]
 
@@ -766,8 +850,7 @@ Those are not new, just on crack now with Claude. Card-by-card:
 - Dunning–Kruger, remixed. Users mistake the model's competence for their own. Dangerous for seniors and juniors alike. The senior thinks "this is what I'd have written"; the junior thinks "I now understand this codebase".
 - Illusion of explanatory depth. We think we understand something until asked to explain it. Maths teachers know. AI-generated code we've reviewed but not WRITTEN is similar to a math problem where you nod along during school but fail completely when being called to the whiteboard.
 
-Not on the slide but worth mentioning: Atrophy. Not a bias - the *cumulative effect* of the others over months. Skills decay quietly.
-Plug: full talk on cognitive biases incoming next time I'm in Augsburg.
+Not on the slide but worth mentioning: Atrophy. Not a bias - the *cumulative effect* of the others over months. Skills decay quietly. Plug: full talk on cognitive biases incoming next time I'm in Augsburg.
 ```)
 
   = Human cognitive biases
@@ -1662,21 +1745,48 @@ where he is overwhelmed from what we summoned. His old master has to help him.
       [time saved, quality up · cheap verification],
       [Noy & Zhang · Science · 2023],
     ),
-
-    card(
-      [Jagged],
-      [the frontier matters],
-      [inside frontier: AI helps · outside: WRONG more often],
-      [Dell'Acqua et al. · HBS WP 24-013 · 2023],
-      color: rgb("#444444"),
-    ),
-    card(
-      [↑ use ↓ trust],
-      [the vibes shifted],
-      [adoption up YoY · trust in AI code falling],
-      [Stack Overflow Dev Survey · 2024-25],
-      color: rgb("#444444"),
-    ),
     [],
+  )
+]
+
+#slide[
+  = Backup: Further reading — \
+    Programming as Theory Building
+
+  #v(.8em)
+
+  #let reading(title, subtitle, url) = box(
+    width: 100%,
+    inset: (left: .8em, right: .6em, y: .5em),
+    stroke: (left: 4pt + rgb("#444444")),
+    [
+      #link(url)[#text(size: .9em, weight: "bold")[#title]]
+      #v(-.25em)
+      #text(size: .7em, fill: gray)[#subtitle]
+    ]
+  )
+
+  #stack(
+    spacing: .6em,
+    reading(
+      [Peter Naur — "Programming as Theory Building" (1985, PDF)],
+      [The original paper. All the theory-building arguments in this talk trace back here.],
+      "https://pages.cs.wisc.edu/~remzi/Naur.pdf",
+    ),
+    reading(
+      [Christian Ekrem — "Programming as Theory Building"],
+      [Modern take: LLM-generated code belongs to nobody's theory. Good entry point to the original.],
+      "https://cekrem.github.io/posts/programming-as-theory-building-naur",
+    ),
+    reading(
+      [Christian Ekrem — "Architecture by Autocomplete"],
+      [Concrete example: AI defaults to primitive types because training data is full of them.],
+      "https://cekrem.github.io/posts/architecture-by-autocomplete",
+    ),
+    reading(
+      [Christian Ekrem — "LLMs Corrupt Your Documents"],
+      ["The theory dies twice." Design docs as source of truth silently degrade under AI edits.],
+      "https://cekrem.github.io/posts/llms-corrupt-your-documents",
+    ),
   )
 ]
