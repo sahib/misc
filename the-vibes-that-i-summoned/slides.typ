@@ -109,6 +109,8 @@
 - This is more of a opinion talk, but I tried to back it up with numbers.
 - I felt the need to give my opinion because I worked now quite a bit
   with Claude (also on open source projects) and it's impressive - both positively and negatively.
+- I currently have a bit of a love and hate relationship with Claude -
+  it's so helpful in many places and downright destructive in others.
 - Did you get the zauberlehrling-reference in the title slide?
 ```)
 
@@ -1058,7 +1060,7 @@ set your task to done.
     #text(fill: gray)[Then ask the model to review and optimise.]
   - Write the function signature and the docstring. \
     #text(fill:gray)[Then let the model fill the body.]
-  - Put `TODO` comments in your code. \
+  - Write a skeleton with the core logic filled out and add `TODO` comments. \
     #text(fill: gray)[Then let Claude work on them.]
 
   #v(0.5cm)
