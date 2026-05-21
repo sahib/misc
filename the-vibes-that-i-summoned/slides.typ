@@ -111,7 +111,16 @@
   with Claude (also on open source projects) and it's impressive - both positively and negatively.
 - I currently have a bit of a love and hate relationship with Claude -
   it's so helpful in many places and downright destructive in others.
+- I used it a lot in the last few weeks and months, not only for work but also for a open source project I have on the side.
 - Did you get the zauberlehrling-reference in the title slide?
+
+
+Questionnaire:
+
+- Who of you is actively using Claude?
+- Who likes it?
+- Anyone wants to share their opinion before we start?
+
 ```)
 
   // Title slide layout: full-slide-height illustration anchored to the
@@ -145,7 +154,7 @@
   spectrum. r/BetterOffline (left) or r/singularity (right) and many between.
 - Words like "AI slop" or "cope" is thrown around like confetti.
 - I just sit there in between and think, how so often in life,
-  that both extremes are pretty weird.
+  that both extremes are kinda weird.
 - The consensus is though, at least when it comes to software development,
   that there is a tradeoff between control and productivity.
 ```)
@@ -218,7 +227,7 @@ precise control is hard if you like a very specific result.
 Or: You can do 80% of the result in sceonds, but the 20% left for a good result
 require 80% of the skill.
   ```)
-  
+
   #place(left + horizon, box(width: 40%, inset: 0em)[
     #text(fill: gray)[Prompt:] \
     "Imagine Donald Duck as regular, realistic human. No sailor suite."
@@ -234,11 +243,12 @@ require 80% of the skill.
   #comment(```md
 Which brings me to the core of my own take:
 
-- Quality: starts middling (humans are flawed too!), rises with judicious AI assistance, then falls off a cliff when nobody is reading the diff. - Productivity: low on full manual, climbs through the middle, peaks just right of centre — and then *falls again* as quality issues create rework. (METR 2025: experienced devs were 19% SLOWER with AI on their own mature OSS repos, while predicting +24% speed-up.)
+- Quality: starts middling (humans are flawed too!), rises with judicious AI assistance, then falls off a cliff when nobody is reading the diff. 
+- Productivity: low on full manual, climbs through the middle, peaks just right of centre — and then *falls again* as quality issues create rework. (METR 2025: experienced devs were 19% SLOWER with AI on their own mature OSS repos, while predicting +24% speed-up.)
 - Confidence: High on manual (you wrote it, you know it), dips in the middle (you're humble, you verify), spikes on the right where it *decouples from reality*. (Perry et al. 2023: devs using AI assistants wrote less secure code AND were more confident the code was correct.)
 - The widening gap between confidence (green) and quality (blue) on the right is the most important thing on this slide. That's the Dunning-Kruger zone. More on that later.
 
-Core takeaways: 
+Core takeaways:
 - AI can be used to get more productive and even increase quality.
 - There is a wide gap between perceived confidence and earned confidence.
 - 60 years of software engineering don't get irrelevant because of a new tool.
@@ -451,7 +461,7 @@ Core takeaways:
   On the unaided exam (no AI):
   - Solver group ≈ -17% vs control. They got WORSE than students who never
     used AI at all. They had learned to operate the tool, not the maths.
-  - Tutor group  ≈ ±0% vs control — at least no harm.
+  - Tutor group  ≈ ±0% vs control - at least no harm.
 
   The kicker: same model, same students, same maths. The only thing that
   changed was *what they used the AI for*. Hint-mode preserved learning;
@@ -459,7 +469,7 @@ Core takeaways:
 
   Talking points:
   - "Practice performance" is what most of us optimise for in our day-to-day
-    AI usage — code that ships, tickets closed. That's the tall light bars.
+    AI usage - code that ships, tickets closed. That's the tall light bars.
   - "Unaided exam" is what happens when the AI is down, or when you switch
     teams, or when the problem is genuinely novel. That's the dark bars.
   - For developers the parallel is direct: if you use AI to solve, you'll
@@ -691,11 +701,11 @@ Not all risks are important for a company. I took the libery to highlight the on
 
 #slide[
   #comment(```md
-Not hypotheticals — all happened in 2025-2026.
+Not hypotheticals - all happened in 2025-2026.
 - Railway: Cursor/Opus agent autonomously deleted production data in a live system. No confirmation prompt.
 - Replit: AI agent wiped a production database affecting 1,200+ companies. 
 - git reset --hard: Claude Code silently overwrote eight hours of work. No warning, no prompt.
-- 29M secrets: GitGuardian 2026 — AI agents ingesting .env files drove a surge in leaked credentials to GitHub.
+- 29M secrets: GitGuardian 2026 - AI agents ingesting .env files drove a surge in leaked credentials to GitHub.
 - Doc corruption: Microsoft study, 19 models, 52 documents, 100 interactions. 25% content degradation, no plateau. Only Python code survived — compilers verify it. If design docs become the source of truth, this matters.
   ```)
 
@@ -988,7 +998,7 @@ Rules are meant in the sense of best practices.
 ]
 
 #slide[
-  #comment(```mo
+  #comment(```md
 Question is also aimed at: How do people review? I have asked that
 question to a couple devs and, honestly, I found the answers kind of lacking.
 Most just say "I look at the diff". We should know by now this is not enough.
@@ -1639,6 +1649,12 @@ when you insult it too much.
 
 #slide[
   #comment(```md
+Summary:
+
+- Don't just use AI assistence to be lazy. Use it to get better and to focus on more important things.
+- Always make sure to stay in the loop. Stay the engineer, not the operator.
+- Be aware of the risks coming with that technology, but stay away from either extreme end of the spectrum.
+
 That image is AI generated by the way. It depcits the end of the zauberlehrling
 where he is overwhelmed from what we summoned. His old master has to help him.
   ```)
