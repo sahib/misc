@@ -109,7 +109,18 @@
 - This is more of a opinion talk, but I tried to back it up with numbers.
 - I felt the need to give my opinion because I worked now quite a bit
   with Claude (also on open source projects) and it's impressive - both positively and negatively.
+- I currently have a bit of a love and hate relationship with Claude -
+  it's so helpful in many places and downright destructive in others.
+- I used it a lot in the last few weeks and months, not only for work but also for a open source project I have on the side.
 - Did you get the zauberlehrling-reference in the title slide?
+
+
+Questionnaire:
+
+- Who of you is actively using Claude?
+- Who likes it?
+- Anyone wants to share their opinion before we start?
+
 ```)
 
   // Title slide layout: full-slide-height illustration anchored to the
@@ -143,7 +154,7 @@
   spectrum. r/BetterOffline (left) or r/singularity (right) and many between.
 - Words like "AI slop" or "cope" is thrown around like confetti.
 - I just sit there in between and think, how so often in life,
-  that both extremes are pretty weird.
+  that both extremes are kinda weird.
 - The consensus is though, at least when it comes to software development,
   that there is a tradeoff between control and productivity.
 ```)
@@ -216,7 +227,7 @@ precise control is hard if you like a very specific result.
 Or: You can do 80% of the result in sceonds, but the 20% left for a good result
 require 80% of the skill.
   ```)
-  
+
   #place(left + horizon, box(width: 40%, inset: 0em)[
     #text(fill: gray)[Prompt:] \
     "Imagine Donald Duck as regular, realistic human. No sailor suite."
@@ -232,11 +243,12 @@ require 80% of the skill.
   #comment(```md
 Which brings me to the core of my own take:
 
-- Quality: starts middling (humans are flawed too!), rises with judicious AI assistance, then falls off a cliff when nobody is reading the diff. - Productivity: low on full manual, climbs through the middle, peaks just right of centre — and then *falls again* as quality issues create rework. (METR 2025: experienced devs were 19% SLOWER with AI on their own mature OSS repos, while predicting +24% speed-up.)
+- Quality: starts middling (humans are flawed too!), rises with judicious AI assistance, then falls off a cliff when nobody is reading the diff. 
+- Productivity: low on full manual, climbs through the middle, peaks just right of centre — and then *falls again* as quality issues create rework. (METR 2025: experienced devs were 19% SLOWER with AI on their own mature OSS repos, while predicting +24% speed-up.)
 - Confidence: High on manual (you wrote it, you know it), dips in the middle (you're humble, you verify), spikes on the right where it *decouples from reality*. (Perry et al. 2023: devs using AI assistants wrote less secure code AND were more confident the code was correct.)
 - The widening gap between confidence (green) and quality (blue) on the right is the most important thing on this slide. That's the Dunning-Kruger zone. More on that later.
 
-Core takeaways: 
+Core takeaways:
 - AI can be used to get more productive and even increase quality.
 - There is a wide gap between perceived confidence and earned confidence.
 - 60 years of software engineering don't get irrelevant because of a new tool.
@@ -431,6 +443,186 @@ Core takeaways:
   )
 ]
 
+#slide[
+  #comment(```md
+  Bastani et al. Wharton/Penn field experiment, ~1000 Turkish high-school
+  maths students. The cleanest piece of evidence we have on tutor-vs-solver.
+
+  Three groups:
+  - Control:    no AI, do the work yourself.
+  - AI solver:  asks ChatGPT, gets the answer.
+  - AI tutor:   asks a tutor-prompted ChatGPT, gets a hint.
+
+  During practice (with the tool available):
+  - Solver group ≈ +48% over control.
+  - Tutor group  ≈ +127% over control.
+  - Both look like they're crushing it.
+
+  On the unaided exam (no AI):
+  - Solver group ≈ -17% vs control. They got WORSE than students who never
+    used AI at all. They had learned to operate the tool, not the maths.
+  - Tutor group  ≈ ±0% vs control - at least no harm.
+
+  The kicker: same model, same students, same maths. The only thing that
+  changed was *what they used the AI for*. Hint-mode preserved learning;
+  answer-mode actively damaged it.
+
+  Talking points:
+  - "Practice performance" is what most of us optimise for in our day-to-day
+    AI usage - code that ships, tickets closed. That's the tall light bars.
+  - "Unaided exam" is what happens when the AI is down, or when you switch
+    teams, or when the problem is genuinely novel. That's the dark bars.
+  - For developers the parallel is direct: if you use AI to solve, you'll
+    pass code review while it's available. The day it isn't, the gap shows.
+
+  Backup source: Lee et al., CHI 2025 (Microsoft + CMU) — surveyed knowledge
+  workers; the more they trusted GenAI, the less critical thinking they
+  reported applying.
+```)
+
+  = Study: AI in school lessons
+
+  #v(1cm)
+
+  #align(center)[
+    #cetz.canvas(length: 1cm, {
+      import cetz.draw: *
+
+      let baseline = 2.2
+
+      // 3 groups × (practice-height, exam-height, group colour, label)
+      let groups = (
+        (2.2, 2.2, gray, [No AI\ #text(size: .7em, fill: gray)[control]]),
+        (3.25, 1.53, rgb("#c0392b"), [AI as #strong[solver]\ #text(size: .7em, fill: gray)[gives the answer]]),
+        (5.0, 2.3, rgb("#1f77b4"), [AI as #strong[tutor]\ #text(size: .7em, fill: gray)[gives a hint]]),
+      )
+
+      let w = 18
+      let h = 5.6
+      let bw = 0.9
+      let gap = 0.15
+      let group-gap = w / 3
+      let x0 = group-gap / 2
+
+      // y-axis
+      line((0, 0), (0, h), stroke: 1pt + black, mark: (end: ">"))
+      content((-0.4, h - 0.2), text(size: .75em, fill: gray)[score], anchor: "east")
+
+      // control baseline (drawn before bars so they overlap it)
+      line((0, baseline), (w, baseline), stroke: (dash: "dashed", paint: gray, thickness: 0.8pt))
+      line((0, 0), (w, 0), stroke: 1pt + black, mark: (end: ">"))
+
+      //content((w - 0.1, baseline - 0.4), anchor: "east",
+      //        text(size: .7em, fill: gray)[control baseline])
+
+      // bars
+      for (i, g) in groups.enumerate() {
+        let (p-h, e-h, color, label) = g
+        let xc = x0 + i * group-gap
+
+        rect((xc - bw - gap/2, 0), (xc - gap/2, p-h),
+             fill: color.lighten(70%), stroke: 1pt + color)
+        rect((xc + gap/2, 0), (xc + bw + gap/2, e-h),
+             fill: color, stroke: 1pt + color)
+
+        content((xc, -1), label)
+      }
+
+      // legend (upper-left interior, in the empty space before the first group)
+      let lx = 0.6
+      let ly = h - 0.3
+      rect((lx, ly - 0.4), (lx + 0.45, ly - 0.05),
+           fill: gray.lighten(70%), stroke: 1pt + gray)
+      content((lx + 0.6, ly - 0.225), anchor: "west", text(size: .7em)[during practice])
+      rect((lx, ly - 1.0), (lx + 0.45, ly - 0.65),
+           fill: gray, stroke: 1pt + gray)
+      content((lx + 0.6, ly - 0.825), anchor: "west", text(size: .7em)[on unaided exam])
+    })
+  ]
+
+  #v(.3em)
+  #align(center)[
+    #text(size: .65em, fill: gray)[
+      Bastani et al., _Generative AI Can Harm Learning_, SSRN 2024
+    ]
+
+    #text(size: .65em, fill: gray)[
+      Pupils did prefer to be in the solver group though...  :-(
+    ]
+  ]
+]
+
+
+#slide[
+  #set page(footer: none)
+  #v(4cm)
+  #align(center)[
+    #text(size: 1.9em)[Are #emph[you] team tutor or team solver?]
+  ]
+]
+
+#slide[
+  #comment(```md
+- To be fair: High suggestion rate might be flawed by the fact that you often let Claude do it's stuff and then use it to revert it. Still frightenly high.
+- If we correlate that with the number of lines generated you can do some basic math that make it unlikely that every line was actually checked.
+- Goal is not too blame everyone, but at some devleopers would have to spend
+  8 hours a day for a proper review in that speed.
+
+Assumption: Careful review of 100-200 lines takes an hour.
+(Cohen, *Best Kept Secrets of Peer Code Review*; Google's internal guidance is in the same ballpark).
+
+Actual review time might of course be faster, but I'm also counting time to test the solution in there. Even if it's off by a factor 2x it's the same result.
+
+Why is that? Are some devs just sloppy? I don't think so, it boils down to how our brain works.
+```)
+
+  = Keeping up with Claude
+
+  #v(.2em)
+  #align(center)[
+    #text(size: .85em, fill: gray)[Our team's Claude Code account · April 2026]
+  ]
+
+  #v(.6em)
+
+  #grid(
+    columns: (1fr, 1fr),
+    column-gutter: 1.5em,
+    align: horizon,
+
+    box(
+      width: 100%,
+      inset: (left: 1.2em, right: 1em, y: .5em),
+      stroke: (left: 6pt + rgb("#c0392b")),
+      [
+        #text(size: 3.6em, weight: "bold", fill: rgb("#c0392b"))[98.7%]
+        #v(-.5em)
+        #text(size: .9em, weight: "bold")[suggestions accepted as-is] \
+        #text(size: .6em, fill: gray)[1.3% rejected.]
+      ]
+    ),
+    box(
+      width: 100%,
+      inset: (left: 1.2em, right: 1em, y: .5em),
+      stroke: (left: 6pt + black),
+      [
+        #text(size: 3.6em, weight: "bold")[27,757]
+        #v(-.5em)
+        #text(size: .9em, weight: "bold")[lines accepted last month] \
+        #text(size: .6em, fill: gray)[≈ 925 LoC/day \
+          careful review ≈ 100–200 LoC/hour]
+      ]
+    ),
+  )
+
+  #v(.6em)
+  #align(center)[
+    #text(size: .85em)[
+      Reviewing 27,757 lines carefully ≈ *138 h*.
+    ]
+  ]
+]
+
 // Tag helper: a single keyword, given a size, rotation, and colour.
 // Flowing layout (not absolute placement) so adding/removing tags
 // re-wraps cleanly. Heaviest risks get colour + bold.
@@ -440,44 +632,6 @@ Core takeaways:
 )
 
 #set par(leading: .9em, justify: false)
-
-#slide[
-  #comment(```md
-A lot of scorched earth in the field of science until now. Still, it feels a lot more useful than that - I think it's possible that the studies will catch up. After all there are some useful use cases for using something like Claude!
-
-The core idea is that most of those use cases manage risk - it's not full vibecode-ing like "take the wheel" but a tandem of human and machine. We can use models to get better developers and generate away boilerplate things that are just stealing time we can use to focus on more important things.
-```)
-
-  = Use-cases that could make us better devs
-
-  #let green = rgb("#3a8f4a")
-  #let mid = rgb("#444444")
-  #let pale = rgb("#888888")
-
-  #align(center + horizon)[
-    #tag(1.6em, [rubber-ducking], color: green, angle: -2deg, weight: "bold")
-    #tag(.9em, [ideation], color: pale, angle: -3deg)
-    #tag(1.5em, [explain unfamiliar code], color: green, angle: +2deg, weight: "bold")
-    #tag(1.0em, [test generation], color: mid, angle: -1deg)
-    #tag(1.4em, [pair programming], color: green, angle: +1deg, weight: "bold")
-    #tag(.9em, [boilerplate], color: pale, angle: +2deg)
-    #tag(1.15em, [refactoring assist], color: mid, angle: -2deg)
-    #tag(1.45em, [learning accelerator], color: green, angle: -3deg, weight: "bold")
-    #tag(1.0em, [prototyping], color: mid, angle: +3deg)
-    #tag(.9em, [naming things], color: pale, angle: +1deg)
-    #tag(1.05em, [summarisation], color: mid, angle: -1deg)
-    #tag(.85em, [regex / SQL crafting], color: pale, angle: +2deg)
-    #tag(1.3em, [edge-case brainstorming], color: green, angle: -1deg, weight: "bold")
-    #tag(.9em, [translation], color: pale, angle: +3deg)
-    #tag(1.1em, [code review companion], color: mid, angle: -2deg)
-    #tag(.85em, [mock data / fixtures], color: pale, angle: +2deg)
-    #tag(.95em, [error decoding], color: pale, angle: -1deg)
-    #tag(1.1em, [search engine], color: mid, angle: +1deg)
-    #tag(.9em, [log analysis], color: pale, angle: -3deg)
-    #tag(.85em, [proofreading], color: pale, angle: +2deg)
-    #tag(1.0em, [automation], color: mid, angle: -2deg)
-  ]
-]
 
 #slide[
   #comment(```md
@@ -547,11 +701,11 @@ Not all risks are important for a company. I took the libery to highlight the on
 
 #slide[
   #comment(```md
-Not hypotheticals — all happened in 2025-2026.
+Not hypotheticals - all happened in 2025-2026.
 - Railway: Cursor/Opus agent autonomously deleted production data in a live system. No confirmation prompt.
-- Replit: AI agent wiped a production database affecting 1,200+ companies. CEO called it "catastrophic failure."
+- Replit: AI agent wiped a production database affecting 1,200+ companies. 
 - git reset --hard: Claude Code silently overwrote eight hours of work. No warning, no prompt.
-- 29M secrets: GitGuardian 2026 — AI agents ingesting .env files drove a surge in leaked credentials to GitHub.
+- 29M secrets: GitGuardian 2026 - AI agents ingesting .env files drove a surge in leaked credentials to GitHub.
 - Doc corruption: Microsoft study, 19 models, 52 documents, 100 interactions. 25% content degradation, no plateau. Only Python code survived — compilers verify it. If design docs become the source of truth, this matters.
   ```)
 
@@ -642,184 +796,41 @@ Practical answer to the previous slide. Sandboxing is not about distrusting the 
   ]
 ]
 
-
 #slide[
   #comment(```md
-  Bastani et al. Wharton/Penn field experiment, ~1000 Turkish high-school
-  maths students. The cleanest piece of evidence we have on tutor-vs-solver.
+A lot of scorched earth in the field of science until now. Still, it feels a lot more useful than that - I think it's possible that the studies will catch up. After all there are some useful use cases for using something like Claude!
 
-  Three groups:
-  - Control:    no AI, do the work yourself.
-  - AI solver:  asks ChatGPT, gets the answer.
-  - AI tutor:   asks a tutor-prompted ChatGPT, gets a hint.
-
-  During practice (with the tool available):
-  - Solver group ≈ +48% over control.
-  - Tutor group  ≈ +127% over control.
-  - Both look like they're crushing it.
-
-  On the unaided exam (no AI):
-  - Solver group ≈ -17% vs control. They got WORSE than students who never
-    used AI at all. They had learned to operate the tool, not the maths.
-  - Tutor group  ≈ ±0% vs control — at least no harm.
-
-  The kicker: same model, same students, same maths. The only thing that
-  changed was *what they used the AI for*. Hint-mode preserved learning;
-  answer-mode actively damaged it.
-
-  Talking points:
-  - "Practice performance" is what most of us optimise for in our day-to-day
-    AI usage — code that ships, tickets closed. That's the tall light bars.
-  - "Unaided exam" is what happens when the AI is down, or when you switch
-    teams, or when the problem is genuinely novel. That's the dark bars.
-  - For developers the parallel is direct: if you use AI to solve, you'll
-    pass code review while it's available. The day it isn't, the gap shows.
-
-  Backup source: Lee et al., CHI 2025 (Microsoft + CMU) — surveyed knowledge
-  workers; the more they trusted GenAI, the less critical thinking they
-  reported applying.
+The core idea is that most of those use cases manage risk - it's not full vibecode-ing like "take the wheel" but a tandem of human and machine. We can use models to get better developers and generate away boilerplate things that are just stealing time we can use to focus on more important things.
 ```)
 
-  = Study: AI in school lessons
+  = Use-cases that could make us better devs
 
-  #v(1cm)
+  #let green = rgb("#3a8f4a")
+  #let mid = rgb("#444444")
+  #let pale = rgb("#888888")
 
-  #align(center)[
-    #cetz.canvas(length: 1cm, {
-      import cetz.draw: *
-
-      let baseline = 2.2
-
-      // 3 groups × (practice-height, exam-height, group colour, label)
-      let groups = (
-        (2.2, 2.2, gray, [No AI\ #text(size: .7em, fill: gray)[control]]),
-        (3.25, 1.53, rgb("#c0392b"), [AI as #strong[solver]\ #text(size: .7em, fill: gray)[gives the answer]]),
-        (5.0, 2.3, rgb("#1f77b4"), [AI as #strong[tutor]\ #text(size: .7em, fill: gray)[gives a hint]]),
-      )
-
-      let w = 18
-      let h = 5.6
-      let bw = 0.9
-      let gap = 0.15
-      let group-gap = w / 3
-      let x0 = group-gap / 2
-
-      // y-axis
-      line((0, 0), (0, h), stroke: 1pt + black, mark: (end: ">"))
-      content((-0.4, h - 0.2), text(size: .75em, fill: gray)[score], anchor: "east")
-
-      // control baseline (drawn before bars so they overlap it)
-      line((0, baseline), (w, baseline), stroke: (dash: "dashed", paint: gray, thickness: 0.8pt))
-      line((0, 0), (w, 0), stroke: 1pt + black, mark: (end: ">"))
-
-      //content((w - 0.1, baseline - 0.4), anchor: "east",
-      //        text(size: .7em, fill: gray)[control baseline])
-
-      // bars
-      for (i, g) in groups.enumerate() {
-        let (p-h, e-h, color, label) = g
-        let xc = x0 + i * group-gap
-
-        rect((xc - bw - gap/2, 0), (xc - gap/2, p-h),
-             fill: color.lighten(70%), stroke: 1pt + color)
-        rect((xc + gap/2, 0), (xc + bw + gap/2, e-h),
-             fill: color, stroke: 1pt + color)
-
-        content((xc, -1), label)
-      }
-
-      // legend (upper-left interior, in the empty space before the first group)
-      let lx = 0.6
-      let ly = h - 0.3
-      rect((lx, ly - 0.4), (lx + 0.45, ly - 0.05),
-           fill: gray.lighten(70%), stroke: 1pt + gray)
-      content((lx + 0.6, ly - 0.225), anchor: "west", text(size: .7em)[during practice])
-      rect((lx, ly - 1.0), (lx + 0.45, ly - 0.65),
-           fill: gray, stroke: 1pt + gray)
-      content((lx + 0.6, ly - 0.825), anchor: "west", text(size: .7em)[on unaided exam])
-    })
-  ]
-
-  #v(.3em)
-  #align(center)[
-    #text(size: .65em, fill: gray)[
-      Bastani et al., _Generative AI Can Harm Learning_, SSRN 2024 
-    ]
-
-    #text(size: .65em, fill: gray)[
-      Pupils did prefer to be in the solver group though...  :-(
-    ]
-  ]
-]
-
-
-#slide[
-  #set page(footer: none)
-  #v(4cm)
-  #align(center)[
-    #text(size: 1.9em)[Are #emph[you] team tutor or team solver?]
-  ]
-]
-
-#slide[
-  #comment(```md
-- To be fair: High suggestion rate might be flawed by the fact that you often let Claude do it's stuff and then use it to revert it. Still frightenly high.
-- If we correlate that with the number of lines generated you can do some basic math that make it unlikely that every line was actually checked.
-- Goal is not too blame everyone, but at some devleopers would have to spend
-  8 hours a day for a proper review in that speed.
-
-Assumption: Careful review of 100-200 lines takes an hour.
-(Cohen, *Best Kept Secrets of Peer Code Review*; Google's internal guidance is in the same ballpark).
-
-Actual review time might of course be faster, but I'm also counting time to test the solution in there. Even if it's off by a factor 2x it's the same result.
-
-Why is that? Are some devs just sloppy? I don't think so, it boils down to how our brain works.
-```)
-
-  = Keeping up with Claude
-
-  #v(.2em)
-  #align(center)[
-    #text(size: .85em, fill: gray)[Our team's Claude Code account · April 2026]
-  ]
-
-  #v(.6em)
-
-  #grid(
-    columns: (1fr, 1fr),
-    column-gutter: 1.5em,
-    align: horizon,
-
-    box(
-      width: 100%,
-      inset: (left: 1.2em, right: 1em, y: .5em),
-      stroke: (left: 6pt + rgb("#c0392b")),
-      [
-        #text(size: 3.6em, weight: "bold", fill: rgb("#c0392b"))[98.7%]
-        #v(-.5em)
-        #text(size: .9em, weight: "bold")[suggestions accepted as-is] \
-        #text(size: .6em, fill: gray)[1.3% rejected.]
-      ]
-    ),
-    box(
-      width: 100%,
-      inset: (left: 1.2em, right: 1em, y: .5em),
-      stroke: (left: 6pt + black),
-      [
-        #text(size: 3.6em, weight: "bold")[27,757]
-        #v(-.5em)
-        #text(size: .9em, weight: "bold")[lines accepted last month] \
-        #text(size: .6em, fill: gray)[≈ 925 LoC/day \
-          careful review ≈ 100–200 LoC/hour]
-      ]
-    ),
-  )
-
-  #v(.6em)
-  #align(center)[
-    #text(size: .85em)[
-      Reviewing 27,757 lines carefully ≈ *138 h*.
-    ]
+  #align(center + horizon)[
+    #tag(1.6em, [rubber-ducking], color: green, angle: -2deg, weight: "bold")
+    #tag(.9em, [ideation], color: pale, angle: -3deg)
+    #tag(1.5em, [explain unfamiliar code], color: green, angle: +2deg, weight: "bold")
+    #tag(1.0em, [test generation], color: mid, angle: -1deg)
+    #tag(1.4em, [pair programming], color: green, angle: +1deg, weight: "bold")
+    #tag(.9em, [boilerplate], color: pale, angle: +2deg)
+    #tag(1.15em, [refactoring assist], color: mid, angle: -2deg)
+    #tag(1.45em, [learning accelerator], color: green, angle: -3deg, weight: "bold")
+    #tag(1.0em, [prototyping], color: mid, angle: +3deg)
+    #tag(.9em, [naming things], color: pale, angle: +1deg)
+    #tag(1.05em, [summarisation], color: mid, angle: -1deg)
+    #tag(.85em, [regex / SQL crafting], color: pale, angle: +2deg)
+    #tag(1.3em, [edge-case brainstorming], color: green, angle: -1deg, weight: "bold")
+    #tag(.9em, [translation], color: pale, angle: +3deg)
+    #tag(1.1em, [code review companion], color: mid, angle: -2deg)
+    #tag(.85em, [mock data / fixtures], color: pale, angle: +2deg)
+    #tag(.95em, [error decoding], color: pale, angle: -1deg)
+    #tag(1.1em, [search engine], color: mid, angle: +1deg)
+    #tag(.9em, [log analysis], color: pale, angle: -3deg)
+    #tag(.85em, [proofreading], color: pale, angle: +2deg)
+    #tag(1.0em, [automation], color: mid, angle: -2deg)
   ]
 ]
 
@@ -987,7 +998,7 @@ Rules are meant in the sense of best practices.
 ]
 
 #slide[
-  #comment(```mo
+  #comment(```md
 Question is also aimed at: How do people review? I have asked that
 question to a couple devs and, honestly, I found the answers kind of lacking.
 Most just say "I look at the diff". We should know by now this is not enough.
@@ -1058,7 +1069,7 @@ set your task to done.
     #text(fill: gray)[Then ask the model to review and optimise.]
   - Write the function signature and the docstring. \
     #text(fill:gray)[Then let the model fill the body.]
-  - Put `TODO` comments in your code. \
+  - Write a skeleton with the core logic and add `TODO` comments. \
     #text(fill: gray)[Then let Claude work on them.]
 
   #v(0.5cm)
@@ -1638,6 +1649,12 @@ when you insult it too much.
 
 #slide[
   #comment(```md
+Summary:
+
+- Don't just use AI assistence to be lazy. Use it to get better and to focus on more important things.
+- Always make sure to stay in the loop. Stay the engineer, not the operator.
+- Be aware of the risks coming with that technology, but stay away from either extreme end of the spectrum.
+
 That image is AI generated by the way. It depcits the end of the zauberlehrling
 where he is overwhelmed from what we summoned. His old master has to help him.
   ```)
@@ -1770,12 +1787,12 @@ where he is overwhelmed from what we summoned. His old master has to help him.
     spacing: .6em,
     reading(
       [Peter Naur — "Programming as Theory Building" (1985, PDF)],
-      [The original paper. All the theory-building arguments in this talk trace back here.],
+      [The original paper.],
       "https://pages.cs.wisc.edu/~remzi/Naur.pdf",
     ),
     reading(
       [Christian Ekrem — "Programming as Theory Building"],
-      [Modern take: LLM-generated code belongs to nobody's theory. Good entry point to the original.],
+      [Modern take: LLM-generated code belongs to nobody's theory. Good entry point.],
       "https://cekrem.github.io/posts/programming-as-theory-building-naur",
     ),
     reading(
