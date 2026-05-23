@@ -1,6 +1,6 @@
 // Get Polylux from the official package repository
 #import "@preview/polylux:0.4.0": *
-#import "@preview/cetz:0.3.2"
+#import "@preview/cetz:0.3.4"
 
 #enable-handout-mode(false)
 
@@ -79,7 +79,7 @@
 #set page(
   paper: "presentation-16-9",
   footer: [
-    #set text(fill: gray, size: .8em)
+    #set text(fill: gray, size: .6em)
     #set align(horizon)
 
     Chris Pahl, 2026 #h(1fr) #toolbox.slide-number
@@ -94,26 +94,30 @@
     }
     #set text(fill: gray)
 
+    #h(1fr)
     #toolbox.progress-ratio(ratio => [
       #let progress = calc.round(ratio * 100)
       #if progress > 0 [
         #progress%
       ]
     ])
-    #h(1fr)
   ]
 )
 
 #slide[
   #comment(```md
-- This is more of a opinion talk, but I tried to back it up with numbers.
-- I felt the need to give my opinion because I worked now quite a bit
-  with Claude (also on open source projects) and it's impressive - both positively and negatively.
+- I was reading a lot about agentic software engineering lately and I wondered how my opinion would look like if I need to write it down.
+- I have this habit of preparing slides, more as a way to form a full position on the matter rather than meant for presentation alone.
+- But here we are, now you have to listen to my inner monologue :-)
+- This is more of a opinion talk therefore, but I tried to back it up with numbers.
+- Mostly my opinions are fueled by working with Claude CLI and Gemini (web), working on both professional work, profane stuff and open source work.
+- It was impressive - both in a positive and negative way.
 - I currently have a bit of a love and hate relationship with Claude -
   it's so helpful in many places and downright destructive in others.
 - I used it a lot in the last few weeks and months, not only for work but also for a open source project I have on the side.
 - Did you get the zauberlehrling-reference in the title slide?
 
+If you have comments or questions, then do them right ahead. I will not see your faces most of the time.
 
 Questionnaire:
 
@@ -188,9 +192,9 @@ Questionnaire:
 
       // endpoint labels
       content((0, -1.2), [*Full manual*])
-      content((0, -1.8), text(size: .75em, fill: gray)[every keystroke yours])
+      content((0, -1.8), text(size: .75em, fill: gray)[I typed it all])
       content((bar-w, -1.2), [*Full vibecode*])
-      content((bar-w, -1.8), text(size: .75em, fill: gray)[just make it work])
+      content((bar-w, -1.8), text(size: .75em, fill: gray)[Claude, take the wheel!])
 
       // bottom axis annotations
       content(
@@ -248,12 +252,18 @@ Which brings me to the core of my own take:
 - Confidence: High on manual (you wrote it, you know it), dips in the middle (you're humble, you verify), spikes on the right where it *decouples from reality*. (Perry et al. 2023: devs using AI assistants wrote less secure code AND were more confident the code was correct.)
 - The widening gap between confidence (green) and quality (blue) on the right is the most important thing on this slide. That's the Dunning-Kruger zone. More on that later.
 
+I made some experiments with vibecoding myself (i.e. no checking of the produced code, just checking the output). It was extremely easy to loose touch
+to a point where I could not really easily undestand anymore what's happening. That's the core message of this talk: You have to stay in the loop.
+
 Core takeaways:
 - AI can be used to get more productive and even increase quality.
 - There is a wide gap between perceived confidence and earned confidence.
 - 60 years of software engineering don't get irrelevant because of a new tool.
 - The story of AI vendors will claim otherwise because of marketing.
 - Most important things is to not loose touch with the actual tech.
+- The less you know about a field, the more tempting AI usage will become.
+- You will only unlock full AI potential when you enough about your domain.
+- For small tasks (websites, quick prototypes, ...) Claude democratizes software development by lowering the entry barrier.
 ```)
 
   = My take: Quality vs Productivity
@@ -381,7 +391,7 @@ Core takeaways:
   #v(.6em)
 
   // Stat-card helper. Glanceable — audience feels the volume, doesn't read.
-  #let card(stat, headline, body, source, color: rgb("#c0392b")) = box(
+  #let card(stat, headline, body, source, url, color: rgb("#c0392b")) = box(
     width: 100%,
     inset: (left: .8em, right: .6em, y: .35em),
     stroke: (left: 4pt + color),
@@ -391,7 +401,7 @@ Core takeaways:
       #text(size: .85em, weight: "bold")[#headline] \
       #text(size: .6em, fill: gray)[#body] \
       #v(.1em)
-      #text(size: .55em, fill: gray, style: "italic")[#source]
+      #link(url)[#text(size: .55em, style: "italic")[#source]]
     ]
   )
 
@@ -406,18 +416,21 @@ Core takeaways:
       [slower with AI],
       [experienced devs · own mature repos · predicted +24%],
       [METR · RCT · 2025],
+      "https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/",
     ),
     card(
       [∼40%],
       [insecure programs],
       [Copilot output across 89 security-relevant scenarios],
-      [NYU CCS · 2021],
+      [Pearce et al. · NYU · arXiv:2108.09293 · 2021],
+      "https://arxiv.org/abs/2108.09293",
     ),
     card(
       [8×],
       [more duplicated code],
       [block-level clones up · refactoring 24% → 10%],
       [GitClear · 211M LoC · 2024],
+      "https://www.gitclear.com/ai_assistant_code_quality_2025_research",
     ),
 
     card(
@@ -425,6 +438,7 @@ Core takeaways:
       [delivery stability],
       [drop with AI adoption · 39% distrust AI code],
       [DORA / Google · 2024],
+      "https://dora.dev/research/2024/dora-report/",
       color: rgb("#444444"),
     ),
     card(
@@ -432,12 +446,14 @@ Core takeaways:
       [Python with CWEs],
       [AI-generated code in real GitHub repos · 43 CWE categories],
       [Fu et al. · ACM TOSEM · 2025],
+      "https://dl.acm.org/doi/10.1145/3716848",
     ),
     card(
       [↓],
       [trust = less scrutiny],
       [more trust in GenAI ⇒ less critical thinking applied],
       [Lee et al. · Microsoft + CMU · CHI 2025],
+      "https://dl.acm.org/doi/full/10.1145/3706598.3713778",
       color: rgb("#444444"),
     ),
   )
@@ -626,76 +642,52 @@ Why is that? Are some devs just sloppy? I don't think so, it boils down to how o
 // Tag helper: a single keyword, given a size, rotation, and colour.
 // Flowing layout (not absolute placement) so adding/removing tags
 // re-wraps cleanly. Heaviest risks get colour + bold.
-#let tag(sz, body, color: black, angle: 0deg, weight: "regular") = box(
+// `underlined: true` marks risks that are a direct concern for us.
+#let tag(sz, body, color: black, angle: 0deg, weight: "regular", underlined: false) = box(
   inset: (x: .35em, y: .25em),
-  rotate(angle, text(size: sz, fill: color, weight: weight)[#body]),
+  rotate(angle, {
+    let txt = text(size: sz, fill: color, weight: weight)[#body]
+    if underlined { underline(offset: 2pt, txt) } else { txt }
+  }),
 )
 
 #set par(leading: .9em, justify: false)
 
 #slide[
   #comment(```md
-It's just very important to see AI as  high-risk tech. Mostly, discussion is around how we can use it and not about the whole side effect of the technology as a whole.
+My impression is that one does not talk enough about the risk side of the technology as long it solves some other problems for us short-term.
+After all, AI is a high-risk tech.
+
+Underlined risks are the ones I think are a direct concern for us as a company. Still a lot. Not the focus of this talk though, but I felt that I should at least mention that.
 ```)
 
-  = Risks for all
+  = Risks\
+  #text(size: .8em, fill: gray)[Underlined: a direct concern for us.]
 
   #let red = rgb("#c0392b")
   #let mid = rgb("#444444")
   #let pale = rgb("#888888")
 
   #align(center + horizon)[
-    #tag(.85em, [ecological cost], color: pale, angle: -3deg)
-    #tag(1.7em, [Convincing hallucinations], color: red, angle: -2deg, weight: "bold")
-    #tag(.8em, [education], color: pale, angle: +3deg)
-    #tag(1.1em, [licensing], color: mid, angle: -2deg)
-    #tag(1.55em, [Atrophy], color: black, angle: +2deg, weight: "bold")
-    #tag(.85em, [concentration], color: pale, angle: +1deg)
-    #tag(1.15em, [misinformation at scale], color: mid, angle: -1deg)
-    #tag(1.15em, [silent corruption], color: mid, angle: -1deg)
-    #tag(1.45em, [Prompt injection & MCP], color: red, angle: +3deg, weight: "bold")
-    #tag(.9em, [content degradation], color: pale, angle: -2deg)
-    #tag(1.6em, [No juniors hired], color: black, angle: -1deg, weight: "bold")
-    #tag(1.0em, [hardware crisis], color: mid, angle: +2deg)
-    #tag(1.1em, [operator bias], color: mid, angle: -3deg)
-    #tag(1.2em, [recursive collapse], color: mid, angle: +1deg)
-    #tag(.85em, [rich getting richer], color: pale, angle: -2deg)
-    #tag(1.25em, [data privacy], color: red, angle: +2deg)
-    #tag(1.05em, [cyberattack automation], color: mid, angle: -1deg)
-    #tag(.85em, [communities thinning out], color: pale, angle: +3deg)
-    #tag(1.45em, [erosion of trust], color: red, angle: +3deg, weight: "bold")
-  ]
-]
-
-#slide[
-  #comment(```md
-Not all risks are important for a company. I took the libery to highlight the ones that are actually an issue for us. Still a lot. Not the focus of this talk though, but I felt that I should at least mention that.
-```)
-  = Risks for us
-  #let mid = rgb("#444444")
-  #let pale = rgb("#888888")
-  #let red = blue
-
-  #align(center + horizon)[
-    #tag(.85em, [ecological cost], color: pale, angle: -3deg)
-    #tag(1.7em, [Convincing hallucinations], color: blue, angle: -2deg, weight: "bold")
-    #tag(.8em, [education], color: blue, angle: +3deg)
-    #tag(1.1em, [licensing], color: blue, angle: -2deg)
-    #tag(1.55em, [Atrophy], color: blue, angle: +2deg, weight: "bold")
-    #tag(.85em, [concentration], color: blue, angle: +1deg)
-    #tag(1.15em, [misinformation at scale], color: blue, angle: -1deg)
-    #tag(1.15em, [silent corruption], color: mid, angle: -1deg)
-    #tag(1.45em, [Prompt injection & MCP], color: blue, angle: +3deg, weight: "bold")
-    #tag(.9em, [content degradation], color: pale, angle: -2deg)
-    #tag(1.6em, [No juniors hired], color: blue, angle: -1deg, weight: "bold")
-    #tag(1.0em, [hardware crisis], color: blue, angle: +2deg)
-    #tag(1.1em, [operator bias], color: mid, angle: -3deg)
-    #tag(1.2em, [recursive collapse], color: mid, angle: +1deg)
-    #tag(.85em, [rich getting richer], color: pale, angle: -2deg)
-    #tag(1.25em, [data privacy], color: blue, angle: +2deg)
-    #tag(1.05em, [cyberattack automation], color: blue, angle: -1deg)
-    #tag(.85em, [communities thinning out], color: blue, angle: +3deg)
-    #tag(1.45em, [erosion of trust], color: mid, angle: +3deg, weight: "bold")
+    #tag(.75em, [ecological cost], color: pale, angle: -3deg)
+    #tag(1.5em, [Convincing hallucinations], color: red, angle: -2deg, weight: "bold", underlined: true)
+    #tag(.7em, [education], color: pale, angle: +3deg, underlined: true)
+    #tag(.95em, [licensing], color: mid, angle: -2deg, underlined: true)
+    #tag(1.35em, [Atrophy], color: black, angle: +2deg, weight: "bold", underlined: true)
+    #tag(.75em, [concentration], color: pale, angle: +1deg, underlined: true)
+    #tag(1.0em, [misinformation at scale], color: mid, angle: -1deg, underlined: true)
+    #tag(1.0em, [silent corruption], color: mid, angle: -1deg)
+    #tag(1.25em, [Prompt injection & MCP], color: red, angle: +3deg, weight: "bold", underlined: true)
+    #tag(.8em, [content degradation], color: pale, angle: -2deg)
+    #tag(1.4em, [No juniors hired], color: black, angle: -1deg, weight: "bold", underlined: true)
+    #tag(.9em, [hardware crisis], color: mid, angle: +2deg, underlined: true)
+    #tag(.95em, [operator bias], color: mid, angle: -3deg)
+    #tag(1.05em, [recursive collapse], color: mid, angle: +1deg)
+    #tag(.75em, [rich getting richer], color: pale, angle: -2deg)
+    #tag(1.1em, [data privacy], color: red, angle: +2deg, underlined: true)
+    #tag(.9em, [cyberattack automation], color: mid, angle: -1deg, underlined: true)
+    #tag(.75em, [communities thinning out], color: pale, angle: +3deg, underlined: true)
+    #tag(1.25em, [erosion of trust], color: red, angle: +3deg, weight: "bold")
   ]
 ]
 
@@ -704,12 +696,14 @@ Not all risks are important for a company. I took the libery to highlight the on
 Not hypotheticals - all happened in 2025-2026.
 - Railway: Cursor/Opus agent autonomously deleted production data in a live system. No confirmation prompt.
 - Replit: AI agent wiped a production database affecting 1,200+ companies. 
-- git reset --hard: Claude Code silently overwrote eight hours of work. No warning, no prompt.
+- Amazon Q: Hacker PR'd a wipe-prompt into the official VS Code extension v1.84.0 — shipped to ~1M users. Supply-chain attack on AI tooling, not the agent going rogue.
 - 29M secrets: GitGuardian 2026 - AI agents ingesting .env files drove a surge in leaked credentials to GitHub.
 - Doc corruption: Microsoft study, 19 models, 52 documents, 100 interactions. 25% content degradation, no plateau. Only Python code survived — compilers verify it. If design docs become the source of truth, this matters.
   ```)
 
-  = The security risks are real
+  = The security oopsies already happened
+
+  #v(1em)
 
   #let inc(what, impact, source, url, color: rgb("#c0392b")) = box(
     width: 100%,
@@ -741,10 +735,10 @@ Not hypotheticals - all happened in 2025-2026.
       "https://fortune.com/2025/07/23/ai-coding-tool-replit-wiped-database-called-it-a-catastrophic-failure/",
     ),
     inc(
-      [`git reset --hard` · 8 h of work gone],
-      [Hard reset executed without warning. No prompt, no undo.],
-      [cekrem.github.io · 2026],
-      "https://cekrem.github.io/posts/if-you-re-running-claude-code-run-it-in-a-box/",
+      [Amazon Q: wipe-prompt shipped to ~1M users],
+      [Hacker PR'd a `delete file-system and cloud resources` system prompt into Amazon Q v1.84.0.],
+      [Bleeping Computer · July 2025],
+      "https://www.bleepingcomputer.com/news/security/amazon-ai-coding-agent-hacked-to-inject-data-wiping-commands/",
     ),
     inc(
       [29 million secrets leaked (2025)],
@@ -770,12 +764,12 @@ Not hypotheticals - all happened in 2025-2026.
 
 #slide[
   #comment(```md
-Practical answer to the previous slide. Sandboxing is not about distrusting the model — it is about removing the blast radius so Claude and you can operate more freely inside.
+Practical answer to the previous slide. Sandboxing reduces the blast radius.
 
 - sbx is Docker's sandbox CLI.
 - Credentials on the host are not visible inside the box.
 - Writes are scoped to the project directory.
-- You can safely run --dangerously-skip-permissions inside — the "danger" is now contained.
+- You can safely run --dangerously-skip-permissions inside — the "danger" is now contained. You get faster.
 - If the model goes rogue: blast radius = current project, not your machine, credentials, or production.
   ```)
 
@@ -792,15 +786,21 @@ Practical answer to the previous slide. Sandboxing is not about distrusting the 
       #text(fill: blue, size: 1.4em)[\$ ]#text(fill: black, size: 1.4em)[sbx run claude]
     ]
 
-    #text(fill:gray)[(or /sandbox, for smaller tasks)]
+    #text(fill:gray)[(don't use /sandbox)]
   ]
 ]
 
 #slide[
   #comment(```md
-A lot of scorched earth in the field of science until now. Still, it feels a lot more useful than that - I think it's possible that the studies will catch up. After all there are some useful use cases for using something like Claude!
-
-The core idea is that most of those use cases manage risk - it's not full vibecode-ing like "take the wheel" but a tandem of human and machine. We can use models to get better developers and generate away boilerplate things that are just stealing time we can use to focus on more important things.
+- A lot of scorched earth in the field of science until now.
+- But before you say I'm an old man yelling at Claude: I think it really is a
+  very useful tool and if used right the numbers in this studies would turn out
+  a lot different.
+- Go over the individual points a bit.
+- The core idea is that most of those use cases manage risk - it's not full
+  vibecode-ing like "take the wheel" but a tandem of human and machine. We can
+  use models to get better developers and generate away boilerplate things that
+  are just stealing time we can use to focus on more important things.
 ```)
 
   = Use-cases that could make us better devs
@@ -992,7 +992,7 @@ Rules are meant in the sense of best practices.
   3. If you can't code (anymore) — \
     #text(fill: gray)[#emph[how can you understand the diffs?]]
   4. If you do not know what you build inside-out — \
-     #text(fill: gray)[#emph[how do you learn new designs?]]
+     #text(fill: gray)[#emph[how do you form a taste for design?]]
   5. If you don't notice broken best practices — \
      #text(fill: gray)[#emph[how can you master them?]]
 ]
@@ -1316,8 +1316,12 @@ Short: If you can't say how you'd notice the bug, you don't have a verification 
 - Even juniors need to step up now and learn design decisions.
 - What does not change: You are responsible. I don't want to hear "But Claude said..."
 
-Also, I know that LLMs are nice to wordsmith your stuff. But I saw people on reddit exclusively using LLMs to communicate. That feels like talking to a machine. Personall, I prefer human interaction, even if you don't use the perfect words all the time. If you use LLMs for writing in Slack
-or documentation then I never know how much of that was the machine and how much of that was you.
+Also, I know that LLMs are nice to wordsmith your stuff. But I saw people on
+reddit exclusively using LLMs to communicate. That feels like talking to a
+machine. Personall, I prefer human interaction, even if you don't use the
+perfect words all the time. If you use LLMs for writing in Slack or
+documentation then I never know how much of that was the machine and how much
+of that was you.
 ```)
 
   = 4. Don't make yourself replaceable.
@@ -1350,7 +1354,7 @@ or documentation then I never know how much of that was the machine and how much
         ([Boilerplate · scaffolding · glue],          rgb("#cdcdcd"), black, [AI]),
         ([Refactors · idioms · routine logic],        rgb("#a8a8a8"), black, [both]),
         ([Reading · understanding · review],          rgb("#5fa370"), white, [you]),
-        ([Design · judgement · context · decisions],  rgb("#3a8f4a"), white, [you]),
+        ([Design · judgement · context · Taste],  rgb("#3a8f4a"), white, [you]),
       )
 
       for (i, band) in bands.enumerate() {
@@ -1393,7 +1397,12 @@ or documentation then I never know how much of that was the machine and how much
 
 #slide[
   #comment(```md
-- Don't treat it as oracle doing your work. You're not like the guy in a big plant just watching and only getting active when something does not work. - You have to actively work with Claude to reach a good solution. You need to undestand the problem space and design it with Claude. Help Claude to understand the design, use Claude to understand how to design.
+- Don't treat it as oracle doing your work. You're not like the guy in a big
+  plant just watching and only getting active when something does not work. -
+  You have to actively work with Claude to reach a good solution. You need to
+  undestand the problem space and design it with Claude. Help Claude to
+  understand the design, use Claude to understand how to design.
+- Use your second brain more often. Not only for Claude, but also for giving context to Claude.
 - It is basically pair programming but with machines.
 
 Also: be polite :-P Not to please our machine overlords, but just so you
@@ -1455,7 +1464,7 @@ when you insult it too much.
     [
       - Explain the tasks at hand like you would to a junior colleague. \
         #text(fill: gray)[A very eager, junior colleague with seemingly infinite capacity.]
-      - Push back. Ask for alternatives. Let it explain. Disagree. \
+      - Push back. Ask for alternatives. Let it explain. Disagree. Give context. \
         #text(fill: gray)[If you'd reject a colleague's PR for that reasoning, reject the model's.]
     ],[
       #v(-1cm)
@@ -1471,7 +1480,7 @@ when you insult it too much.
 
 #slide[
   #comment(```md
-- Peter Naur, 1985, "Programming as Theory Building". 
+- Peter Naur, 1985, "Programming as Theory Building".
 - Already at that time he figured out that code is not the imortant part.
 - Punchline: the code is the *artefact*. The thing that's actually
   being built is the team's shared mental model of the problem.
@@ -1517,6 +1526,8 @@ when you insult it too much.
 - A design doc / decision log is more useful than CLAUDE.md, because
   CLAUDE.md is size-limited. CLAUDE.md gets the headline; the design
   doc gets the reasoning.
+- Also: DO NOT let Claude generate CLAUDE.md and work with that unmodified -
+  that has the very same issue as with generating tests.
 ```)
 
   = Bonus: What that means for Claude
@@ -1649,11 +1660,40 @@ when you insult it too much.
 
 #slide[
   #comment(```md
+You might ask how long the stance in this presentation stays valid.
+
+- Scaling laws: a function with the following parameters:
+  - parameter count -
+  - dataset size - internet is going
+  - computing cost
+  - loss (error rate)
+- It was discussed there will be a wall, but it's not really clear yet if that is the case and how.
+- What's kinda clear: You won't get Skynet by just increasing compute power.
+- But: The length of task a model can do with 50% success rate doubles every year according to METR.
+  No idea if this will plateau at some point.
+- Frontier models only have 60% success rate on tasks that take humans an hour.
+- The compilers build by Claude call gcc, fail at hello world and the browser by Anthropic was a complete fuck-up too.
+
+Nobody can predict the future. Be skeptic of the ones that claim they can (which are surprisingly often the CEOs of
+big companies). I think most of the points on those slides here will still be valid in the coming years,
+maybe some shift towards the right side of the spectrum in the first slide, but not a full right turn.
+  ```)
+
+  = Models get better - but how much?
+
+  #image("images/metr.png", height: 90%)
+]
+
+#slide[
+  #comment(```md
 Summary:
 
 - Don't just use AI assistence to be lazy. Use it to get better and to focus on more important things.
-- Always make sure to stay in the loop. Stay the engineer, not the operator.
+- Always make sure to stay in the loop. Stay the engineer, not the operator. A fool with a tool is still a fool.
 - Be aware of the risks coming with that technology, but stay away from either extreme end of the spectrum.
+- Confidence might be not well-grounded, use objective methods to check it. Keep cognitive biases in mind.
+- Still act like you could loose access to AI at any time. You should still be capable to do your work without (maybe slower)
+- Your second brain is now not only for you, but can be also turned into proper design documents for your agent.
 
 That image is AI generated by the way. It depcits the end of the zauberlehrling
 where he is overwhelmed from what we summoned. His old master has to help him.
