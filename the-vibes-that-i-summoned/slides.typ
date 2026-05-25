@@ -1694,6 +1694,7 @@ right turn.
   #image("images/metr.png", height: 90%)
 ]
 
+
 #slide[
   #comment(```md
 Summary: Risk manage AI usage. Specifically:
@@ -1858,3 +1859,57 @@ where he is overwhelmed from what we summoned. His old master has to help him.
   )
 ]
 
+
+#slide[
+  #comment(```md
+```)
+
+  = Backup: But are devs being replaced?
+
+  #let card(stat, headline, body, source, color: rgb("#c0392b")) = box(
+    width: 100%,
+    inset: (left: .8em, right: .6em, y: .4em),
+    stroke: (left: 4pt + color),
+    [
+      #text(size: 1.4em, weight: "bold", fill: color)[#stat]
+      #v(-.4em)
+      #text(size: .85em, weight: "bold")[#headline] \
+      #text(size: .6em, fill: gray)[#body] \
+      #v(.1em)
+      #text(size: .55em, fill: gray, style: "italic")[#source]
+    ],
+  )
+
+  #grid(
+    columns: (1fr, 1fr, 1fr),
+    column-gutter: .8em,
+
+    card(
+      [−50%+],
+      [tech postings collapsed],
+      [US software postings down from 2022 peak · entry-level fell faster than senior — pipeline thinning, not headcount],
+      [#link("https://www.hiringlab.org/")[Indeed Hiring Lab · 2024]],
+    ),
+    card(
+      [700 → re-hired],
+      [Klarna's AI walk-back],
+      [announced AI replacing 700 customer agents in 2024 · quietly re-hired humans in 2025 · CEO admitted quality dropped],
+      [Bloomberg · FT · 2025],
+      color: rgb("#3a8f4a"),
+    ),
+    card(
+      [+0.7% / decade],
+      [the macro bear case],
+      [projection of AI's aggregate productivity impact · two orders of magnitude below CEO claims],
+      [#link("https://www.nber.org/papers/w32487")[Acemoglu · NBER w32487 · 2024]],
+      color: rgb("#3a8f4a"),
+    ),
+  )
+
+  #v(.6em)
+  #align(center)[
+    #text(size: .8em, fill: gray, style: "italic")[
+      Senior roles augmented · juniors don't get hired in the first place.
+    ]
+  ]
+]
