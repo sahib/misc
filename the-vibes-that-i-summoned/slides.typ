@@ -114,7 +114,6 @@
 - It was impressive - both in a positive and negative way.
 - I currently have a bit of a love and hate relationship with Claude -
   it's so helpful in many places and downright destructive in others.
-- I used it a lot in the last few weeks and months, not only for work but also for a open source project I have on the side.
 - Did you get the zauberlehrling-reference in the title slide?
 
 If you have comments or questions, then do them right ahead. I will not see your faces most of the time.
@@ -159,6 +158,7 @@ Questionnaire:
 - Words like "AI slop" or "cope" is thrown around like confetti.
 - I just sit there in between and think, how so often in life,
   that both extremes are kinda weird.
+- In discussions, the area in the middle (where I would locate myself) is seldomly talked about.
 - The consensus is though, at least when it comes to software development,
   that there is a tradeoff between control and productivity.
 ```)
@@ -247,15 +247,16 @@ require 80% of the skill.
   #comment(```md
 Which brings me to the core of my own take:
 
-- Quality: starts middling (humans are flawed too!), rises with judicious AI assistance, then falls off a cliff when nobody is reading the diff. 
+- Quality: starts middling (humans are flawed too!), rises with careful AI assistance, then falls off a cliff when nobody is reviewing the result.
 - Productivity: low on full manual, climbs through the middle, peaks just right of centre — and then *falls again* as quality issues create rework. (METR 2025: experienced devs were 19% SLOWER with AI on their own mature OSS repos, while predicting +24% speed-up.)
 - Confidence: High on manual (you wrote it, you know it), dips in the middle (you're humble, you verify), spikes on the right where it *decouples from reality*. (Perry et al. 2023: devs using AI assistants wrote less secure code AND were more confident the code was correct.)
 - The widening gap between confidence (green) and quality (blue) on the right is the most important thing on this slide. That's the Dunning-Kruger zone. More on that later.
+- Dunning–Kruger effect: people who are bad at something tend to overestimate how good they are at it, precisely because the skills needed to do the task well are the same skills needed to recognise that you're doing it badly.
 
 I made some experiments with vibecoding myself (i.e. no checking of the produced code, just checking the output). It was extremely easy to loose touch
 to a point where I could not really easily undestand anymore what's happening. That's the core message of this talk: You have to stay in the loop.
 
-Core takeaways:
+Core elements:
 - AI can be used to get more productive and even increase quality.
 - There is a wide gap between perceived confidence and earned confidence.
 - 60 years of software engineering don't get irrelevant because of a new tool.
@@ -263,7 +264,9 @@ Core takeaways:
 - Most important things is to not loose touch with the actual tech.
 - The less you know about a field, the more tempting AI usage will become.
 - You will only unlock full AI potential when you enough about your domain.
-- For small tasks (websites, quick prototypes, ...) Claude democratizes software development by lowering the entry barrier.
+- For small tasks (websites, one-off tools, quick prototypes, ...) Claude democratizes software development by lowering the entry barrier - which is overall good.
+
+The rest of this presentation is mostly explaining why I think that.
 ```)
 
   = My take: Quality vs Productivity
@@ -302,9 +305,9 @@ Core takeaways:
       // Quality curve: starts mid, peaks in middle, drops at right
       let q-color = rgb("#1f77b4")
       hobby(
-        (0, 3.0),
+        (0, 3.5),
         (3, 4.0),
-        (6, 5.2),
+        (6, 5.0),
         (9, 4.6),
         (12, 2.6),
         (w, 1.2),
@@ -315,8 +318,8 @@ Core takeaways:
       // (rework from quality issues eats the perceived gains)
       let p-color = rgb("#d9542b")
       hobby(
-        (0, 0.8),
-        (3, 2.0),
+        (0, 1.8),
+        (3, 2.5),
         (6, 4.0),
         (9, 5.0),
         (12, 4.0),
@@ -338,13 +341,13 @@ Core takeaways:
       )
 
       // inline curve labels (no legend — cleaner)
-      content((2.3, 4.6), text(weight: "bold", fill: q-color)[Quality])
-      content((9.7, 5.5), text(weight: "bold", fill: p-color)[Productivity])
+      content((3.5, 5.0), text(weight: "bold", fill: q-color)[Quality])
+      content((2.9, 1.5), text(weight: "bold", fill: p-color)[Productivity])
       content((7.0, 2.8), text(weight: "bold", fill: c-color)[Confidence])
 
       // sweet-spot marker at the apex of the Quality curve
-      let sx = 6.0
-      let sy = 5.18
+      let sx = 7.0
+      let sy = 5.05
       circle((sx, sy), radius: 0.14, fill: black)
       line((sx, sy + 0.15), (sx, sy + 0.9), stroke: 0.7pt + gray)
       content((sx, sy + 1.2), text(size: .85em, fill: gray, style: "italic")[sweet spot])
@@ -366,7 +369,7 @@ Core takeaways:
   #v(.3em)
   #align(center)[
     #text(size: .85em, fill: gray)[
-      #text(fill: rgb(220, 80, 0))[Danger Zone:] Dunning-Kruger
+      #text(fill: rgb(220, 80, 0))[Danger Zone:] Dunning-Kruger / Automation Bias
     ]
   ]
 ]
@@ -579,7 +582,7 @@ Core takeaways:
 
 #slide[
   #comment(```md
-- To be fair: High suggestion rate might be flawed by the fact that you often let Claude do it's stuff and then use it to revert it. Still frightenly high.
+- To be fair: High suggestion rate might be flawed by the fact that you often let Claude do it's stuff and then use it to revert it. Or just produce some one-off prototype output. Still frightenly high.
 - If we correlate that with the number of lines generated you can do some basic math that make it unlikely that every line was actually checked.
 - Goal is not too blame everyone, but at some devleopers would have to spend
   8 hours a day for a proper review in that speed.
@@ -656,12 +659,14 @@ Why is that? Are some devs just sloppy? I don't think so, it boils down to how o
 #slide[
   #comment(```md
 My impression is that one does not talk enough about the risk side of the technology as long it solves some other problems for us short-term.
-After all, AI is a high-risk tech.
+After all, AI is a high-risk tech. You might know most of those issues already, but still, as an overview.
 
 Underlined risks are the ones I think are a direct concern for us as a company. Still a lot. Not the focus of this talk though, but I felt that I should at least mention that.
+
+If we use LLMs, we have to risk manage our use.
 ```)
 
-  = Risks\
+  = Risks & Issues\
   #text(size: .8em, fill: gray)[Underlined: a direct concern for us.]
 
   #let red = rgb("#c0392b")
@@ -672,30 +677,31 @@ Underlined risks are the ones I think are a direct concern for us as a company. 
     #tag(.75em, [ecological cost], color: pale, angle: -3deg)
     #tag(1.5em, [Convincing hallucinations], color: red, angle: -2deg, weight: "bold", underlined: true)
     #tag(.7em, [education], color: pale, angle: +3deg, underlined: true)
-    #tag(.95em, [licensing], color: mid, angle: -2deg, underlined: true)
+    #tag(.95em, [copyright infringement], color: mid, angle: -2deg, underlined: true)
     #tag(1.35em, [Atrophy], color: black, angle: +2deg, weight: "bold", underlined: true)
-    #tag(.75em, [concentration], color: pale, angle: +1deg, underlined: true)
+    #tag(.75em, [Vendor lock], color: pale, angle: +1deg, underlined: true)
     #tag(1.0em, [misinformation at scale], color: mid, angle: -1deg, underlined: true)
-    #tag(1.0em, [silent corruption], color: mid, angle: -1deg)
+    #tag(1.0em, [silent corruption], color: mid, angle: -1deg) // i.e. content getting altered in meaning slightly
     #tag(1.25em, [Prompt injection & MCP], color: red, angle: +3deg, weight: "bold", underlined: true)
     #tag(.8em, [content degradation], color: pale, angle: -2deg)
     #tag(1.4em, [No juniors hired], color: black, angle: -1deg, weight: "bold", underlined: true)
     #tag(.9em, [hardware crisis], color: mid, angle: +2deg, underlined: true)
-    #tag(.95em, [operator bias], color: mid, angle: -3deg)
-    #tag(1.05em, [recursive collapse], color: mid, angle: +1deg)
+    #tag(.95em, [operator bias], color: mid, angle: -3deg) // grok or deepseek e.g.
+    #tag(1.05em, [Lack of transparency], color: mid, angle: +1deg) // what training data was used?
     #tag(.75em, [rich getting richer], color: pale, angle: -2deg)
     #tag(1.1em, [data privacy], color: red, angle: +2deg, underlined: true)
     #tag(.9em, [cyberattack automation], color: mid, angle: -1deg, underlined: true)
-    #tag(.75em, [communities thinning out], color: pale, angle: +3deg, underlined: true)
+    #tag(.75em, [communities thinning out], color: pale, angle: +3deg, underlined: true) // bye stackoverflow
     #tag(1.25em, [erosion of trust], color: red, angle: +3deg, weight: "bold")
   ]
 ]
 
 #slide[
   #comment(```md
-Not hypotheticals - all happened in 2025-2026.
+Not hypotheticals.
+
 - Railway: Cursor/Opus agent autonomously deleted production data in a live system. No confirmation prompt.
-- Replit: AI agent wiped a production database affecting 1,200+ companies. 
+- Replit: AI agent wiped a production database affecting 1,200+ companies.
 - Amazon Q: Hacker PR'd a wipe-prompt into the official VS Code extension v1.84.0 — shipped to ~1M users. Supply-chain attack on AI tooling, not the agent going rogue.
 - 29M secrets: GitGuardian 2026 - AI agents ingesting .env files drove a surge in leaked credentials to GitHub.
 - Doc corruption: Microsoft study, 19 models, 52 documents, 100 interactions. 25% content degradation, no plateau. Only Python code survived — compilers verify it. If design docs become the source of truth, this matters.
@@ -946,19 +952,19 @@ Tying it back: the human biases and the model biases compound. We trust the flue
     bias-card(
       [Sycophancy],
       [It's easy to talk the model out of a correct answer.],
-      [echo chambers — but for code],
+      [It tends to confirm you. Echo chambers - but for code],
       mb,
     ),
     bias-card(
       [Historical / representation bias],
-      [Trained on the web — heavily modern, English, Western.],
+      [Trained on the web — heavily modern, English, Western / common tech.],
       [defaults track what's common, not what's right],
       mb,
     ),
     bias-card(
       [Attention bias],
       [First and last things dominate; the middle evaporates.],
-      [rules buried in long context get ignored],
+      [rules buried in long context get ignored, skills/CLAUDE.md/context gets ignored],
       mb,
     ),
     bias-card(
@@ -1663,20 +1669,24 @@ when you insult it too much.
 You might ask how long the stance in this presentation stays valid.
 
 - Scaling laws: a function with the following parameters:
-  - parameter count -
-  - dataset size - internet is going
-  - computing cost
-  - loss (error rate)
-- It was discussed there will be a wall, but it's not really clear yet if that is the case and how.
+  - parameter count - limited by memory usage
+  - dataset size - internet is already pretty much exchausted - going to synthetic data now.
+  - computing power - increases a lot - but computing cost as well
+  - loss (error rate) - more time spent in inference will yield better results.
+
+- It was discussed there will be a wall, but it's not really clear yet if that is the case and how. Might also be a wall because of money.
 - What's kinda clear: You won't get Skynet by just increasing compute power.
 - But: The length of task a model can do with 50% success rate doubles every year according to METR.
   No idea if this will plateau at some point.
-- Frontier models only have 60% success rate on tasks that take humans an hour.
+- Other improvements in architecture of those models (like Mixture of experts) also yield improvements.
+- Still, frontier models only have 60% success rate on tasks that take humans an hour.
 - The compilers build by Claude call gcc, fail at hello world and the browser by Anthropic was a complete fuck-up too.
 
-Nobody can predict the future. Be skeptic of the ones that claim they can (which are surprisingly often the CEOs of
-big companies). I think most of the points on those slides here will still be valid in the coming years,
-maybe some shift towards the right side of the spectrum in the first slide, but not a full right turn.
+Nobody can predict the future. Be skeptic of the ones that claim they can
+(which are surprisingly often the CEOs of big companies). I think most of the
+points on those slides here will still be valid in the coming years, maybe some
+shift towards the right side of the spectrum in the first slide, but not a full
+right turn.
   ```)
 
   = Models get better - but how much?
@@ -1684,9 +1694,10 @@ maybe some shift towards the right side of the spectrum in the first slide, but 
   #image("images/metr.png", height: 90%)
 ]
 
+
 #slide[
   #comment(```md
-Summary:
+Summary: Risk manage AI usage. Specifically:
 
 - Don't just use AI assistence to be lazy. Use it to get better and to focus on more important things.
 - Always make sure to stay in the loop. Stay the engineer, not the operator. A fool with a tool is still a fool.
@@ -1715,6 +1726,48 @@ where he is overwhelmed from what we summoned. His old master has to help him.
   ]
 
   #place(right + horizon, image("images/master.jpg", height: 110%))
+]
+
+#slide[
+  = Backup: Further reading — \
+    Programming as Theory Building
+
+  #v(.8em)
+
+  #let reading(title, subtitle, url) = box(
+    width: 100%,
+    inset: (left: .8em, right: .6em, y: .5em),
+    stroke: (left: 4pt + rgb("#444444")),
+    [
+      #link(url)[#text(size: .9em, weight: "bold")[#title]]
+      #v(-.25em)
+      #text(size: .7em, fill: gray)[#subtitle]
+    ]
+  )
+
+  #stack(
+    spacing: .6em,
+    reading(
+      [Peter Naur — "Programming as Theory Building" (1985, PDF)],
+      [The original paper.],
+      "https://pages.cs.wisc.edu/~remzi/Naur.pdf",
+    ),
+    reading(
+      [Christian Ekrem — "Programming as Theory Building"],
+      [Modern take: LLM-generated code belongs to nobody's theory. Good entry point.],
+      "https://cekrem.github.io/posts/programming-as-theory-building-naur",
+    ),
+    reading(
+      [Christian Ekrem — "Architecture by Autocomplete"],
+      [Concrete example: AI defaults to primitive types because training data is full of them.],
+      "https://cekrem.github.io/posts/architecture-by-autocomplete",
+    ),
+    reading(
+      [Christian Ekrem — "LLMs Corrupt Your Documents"],
+      ["The theory dies twice." Design docs as source of truth silently degrade under AI edits.],
+      "https://cekrem.github.io/posts/llms-corrupt-your-documents",
+    ),
+  )
 ]
 
 #slide[
@@ -1806,44 +1859,57 @@ where he is overwhelmed from what we summoned. His old master has to help him.
   )
 ]
 
+
 #slide[
-  = Backup: Further reading — \
-    Programming as Theory Building
+  #comment(```md
+```)
 
-  #v(.8em)
+  = Backup: But are devs being replaced?
 
-  #let reading(title, subtitle, url) = box(
+  #let card(stat, headline, body, source, color: rgb("#c0392b")) = box(
     width: 100%,
-    inset: (left: .8em, right: .6em, y: .5em),
-    stroke: (left: 4pt + rgb("#444444")),
+    inset: (left: .8em, right: .6em, y: .4em),
+    stroke: (left: 4pt + color),
     [
-      #link(url)[#text(size: .9em, weight: "bold")[#title]]
-      #v(-.25em)
-      #text(size: .7em, fill: gray)[#subtitle]
-    ]
+      #text(size: 1.4em, weight: "bold", fill: color)[#stat]
+      #v(-.4em)
+      #text(size: .85em, weight: "bold")[#headline] \
+      #text(size: .6em, fill: gray)[#body] \
+      #v(.1em)
+      #text(size: .55em, fill: gray, style: "italic")[#source]
+    ],
   )
 
-  #stack(
-    spacing: .6em,
-    reading(
-      [Peter Naur — "Programming as Theory Building" (1985, PDF)],
-      [The original paper.],
-      "https://pages.cs.wisc.edu/~remzi/Naur.pdf",
+  #grid(
+    columns: (1fr, 1fr, 1fr),
+    column-gutter: .8em,
+
+    card(
+      [−50%+],
+      [tech postings collapsed],
+      [US software postings down from 2022 peak · entry-level fell faster than senior — pipeline thinning, not headcount],
+      [#link("https://www.hiringlab.org/")[Indeed Hiring Lab · 2024]],
     ),
-    reading(
-      [Christian Ekrem — "Programming as Theory Building"],
-      [Modern take: LLM-generated code belongs to nobody's theory. Good entry point.],
-      "https://cekrem.github.io/posts/programming-as-theory-building-naur",
+    card(
+      [700 → re-hired],
+      [Klarna's AI walk-back],
+      [announced AI replacing 700 customer agents in 2024 · quietly re-hired humans in 2025 · CEO admitted quality dropped],
+      [Bloomberg · FT · 2025],
+      color: rgb("#3a8f4a"),
     ),
-    reading(
-      [Christian Ekrem — "Architecture by Autocomplete"],
-      [Concrete example: AI defaults to primitive types because training data is full of them.],
-      "https://cekrem.github.io/posts/architecture-by-autocomplete",
-    ),
-    reading(
-      [Christian Ekrem — "LLMs Corrupt Your Documents"],
-      ["The theory dies twice." Design docs as source of truth silently degrade under AI edits.],
-      "https://cekrem.github.io/posts/llms-corrupt-your-documents",
+    card(
+      [+0.7% / decade],
+      [the macro bear case],
+      [projection of AI's aggregate productivity impact · two orders of magnitude below CEO claims],
+      [#link("https://www.nber.org/papers/w32487")[Acemoglu · NBER w32487 · 2024]],
+      color: rgb("#3a8f4a"),
     ),
   )
+
+  #v(.6em)
+  #align(center)[
+    #text(size: .8em, fill: gray, style: "italic")[
+      Senior roles augmented · juniors don't get hired in the first place.
+    ]
+  ]
 ]
