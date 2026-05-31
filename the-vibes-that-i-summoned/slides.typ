@@ -265,6 +265,7 @@ Core elements:
 - The less you know about a field, the more tempting AI usage will become.
 - You will only unlock full AI potential when you enough about your domain.
 - For small tasks (websites, one-off tools, quick prototypes, ...) Claude democratizes software development by lowering the entry barrier - which is overall good.
+- Thing is: productivity is more valued by us because ticking of TODOs gives us dopamine, while building quality is really exhausting and mostly boring.
 
 The rest of this presentation is mostly explaining why I think that.
 ```)
