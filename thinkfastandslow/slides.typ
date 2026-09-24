@@ -1553,6 +1553,11 @@ There is also the opposite effect: The horn effect (so instead of an angel's hal
 - [...]
 ]
 
+// TODO:
+//
+// - Add a slide to explain that number of arguments are also a bias.
+//   One blocker on the con side and 10 pro points => feels like its clear pro, but numbers do not weight how important each point is.
+
 // DONE:
 // - Lack of Statistic Intuition https://en.wikipedia.org/wiki/Conjunction_fallacy and base rate fallacy
 //   (Intuition is just the experience of years)
